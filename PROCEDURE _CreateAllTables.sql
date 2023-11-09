@@ -1,16 +1,16 @@
-﻿CREATE PROCEDURE CreateAllTables AS
-BEGIN 
+﻿GO
+CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Student (
 	student_id INT PRIMARY KEY ,
-	f_name VARCHAR (40) ,
-	l_name VARCHAR (40) , 
-	gpa	 decimal , 
-	faculty VARCHAR (40), 
-	email   VARCHAR (40), 
-	major VARCHAR (40),
-	password VARCHAR (40), 
+	f_name     VARCHAR (40) ,
+	l_name     VARCHAR (40) , 
+	gpa	       DECIMAL (3,2) , 
+	faculty    VARCHAR (40), 
+	email      VARCHAR (40), 
+	major      VARCHAR (40),
+	password   VARCHAR (40), 
 	financial_status BIT CHECK (current_timestamp > Installment.deadline AND Installment.status = 1), 
-	semester INT, 
+	semester   INT, 
 	acquired_hours VARCHAR (40), 
 	assigned_hours VARCHAR (40) DEFAULT NULL, 
 	advisor_id INT ,
@@ -47,7 +47,7 @@ BEGIN
 	office VARCHAR(40)
 	) ;
 
-	CREATE TABLE Instructor_Course (
+	CREATE TABLE Instructor_Course ( 
 	course_id INT PRIMARY KEY,
 	instructor_id INT PRIMARY KEY,
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -60,10 +60,11 @@ BEGIN
 	instructor_id INT PRIMARY KEY, 
     semester_code VARCHAR(40),
 	exam_type VARCHAR(40) DEFAULT 'Normal',
-	grade decimal DEFAULT Null ,
+	grade DECIMAL (5,2)  DEFAULT Null ,
 	FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) ON DELETE CASCADE ON UPDATE CASCADE ,
+	FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) ON DELETE CASCADE ON UPDATE CASCADE
 	); 
 
 
@@ -130,41 +131,47 @@ BEGIN
 	advisor_id INT, 
 	course_id INT ,
 	FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE ON UPDATE CASCADE ,
-	FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE MakeUp_Exam (
 	exam_id INT PRIMARY KEY, 
 	date DATETIME, 
 	type VARCHAR(40), 
-	course_id INT FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE,
+	course_id INT ,
+	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	);
 
 	CREATE TABLE Exam_Student (
 	exam_id INT PRIMARY KEY, 
 	student_id INT PRIMARY KEY, 
-	course_id INT ,
+	course_id INT PRIMARY KEY,
 	FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE ON UPDATE CASCADE ,
 	FOREIGN KEY (exam_id) REFERENCES MakeUp_Exam (exam_id) ON DELETE CASCADE ON UPDATE CASCADE ,
+	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE Payment(
 	payment_id INT PRIMARY KEY, 
-	amount DECIMAL, 
+	amount DECIMAL(7,2), 
 	deadline DATETIME,
-	n_installments INT DEFAULT 0, 
-	fund_percentage decimal, 
+	n_installments INT DEFAULT 0,
+	status  VARCHAR(40) DEFAULT 'notPaid',
+	fund_percentage DECIMAL(5,2), 
 	student_id INT, 
-	semester_code VARCHAR(20), 
-	start_date DATETIME,
+	semester_code VARCHAR(40), 
+	start_date    DATETIME,
 	FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE ON UPDATE CASCADE ,
 	FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) ON DELETE CASCADE ON UPDATE CASCADE,
 	);
 
 	CREATE TABLE Installment (
 	payment_id INT PRIMARY KEY, 
-	deadline DATETIME, 
-	amount decimal, 
-	status  VARCHAR(40) DEFAULT 'notPaid',
-	start_date DATETIME)
-END
+	deadline   DATETIME, 
+	amount     DECIMAL(7,2), 
+	status     BIT  ,
+	start_date DATETIME
+	);
+GO
+

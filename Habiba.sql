@@ -76,3 +76,10 @@ INSERT INTO Students(f_name,l_name,password,faculty,email,major,semester)
 VALUES(@f_name,@l_name,@password,@faculty,@email,@major,@semester)
 SET @student_id = SCOPE_IDENTITY()   /* recheck */
 END
+
+
+
+
+
+
+

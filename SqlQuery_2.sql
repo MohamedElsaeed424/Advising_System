@@ -63,7 +63,18 @@ CREATE PROC Procedures_AdminLinkInstructor
 	@course_id INT,
 	@slot_id INT
 	AS
-	INSERT INTO Slot(slot_id,course_id,instructor_id) VALUES(@slot_id,@course_id,@instructor_id);
+	IF 
+		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
+		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
+		not exists(SELECT slot_id FROM Slot WHERE slot_id=@slot_id)
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
+	ELSE
+		BEGIN
+			INSERT INTO Slot(slot_id,course_id,instructor_id) VALUES(@slot_id,@course_id,@instructor_id);
+		END
+	
 	GO
 	EXEC Procedures_AdminLinkInstructor;
 
@@ -74,7 +85,18 @@ CREATE PROC Procedures_AdminLinkStudent
 	@course_id INT,
 	@semester_code VARCHAR(40)
 	AS
-	INSERT INTO Student_Instructor_Course_Take(student_id,course_id,instructor_id,semester_code) VALUES(@student_id,@course_id,@instructor_id,@semester_code);
+	IF 
+		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
+		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
+		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
+		not exists(SELECT semester_code FROM Semester WHERE semester_code=@semester_code)
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
+	ELSE
+		BEGIN
+			INSERT INTO Student_Instructor_Course_Take(student_id,course_id,instructor_id,semester_code) VALUES(@student_id,@course_id,@instructor_id,@semester_code);
+		END
 	GO
 	EXEC Procedures_AdminLinkStudent;
 
@@ -83,7 +105,16 @@ CREATE PROC Procedures_AdminLinkStudentToAdvisor
 	@student_id INT,
 	@advisor_id INT
 	AS
-	INSERT INTO Student(student_id,advisor_id) VALUES(@student_id,@advisor_id);
+	IF
+		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
+		not exists(SELECT advisor_id FROM Advisor WHERE advisor_id=@advisor_id)
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
+	ELSE
+		BEGIN
+			INSERT INTO Student(student_id,advisor_id) VALUES(@student_id,@advisor_id);
+		END
 	GO
 	EXEC Procedures_AdminLinkStudentToAdvisor
 

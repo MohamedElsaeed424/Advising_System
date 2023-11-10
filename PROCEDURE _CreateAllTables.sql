@@ -70,8 +70,8 @@ CREATE PROCEDURE CreateAllTables AS
 
 	CREATE TABLE Semester (
 	semester_code VARCHAR(40) PRIMARY KEY ,
-	start_date DATETIME , 
-	end_date DATETIME
+	start_date DATE , 
+	end_date DATE
 	);
 
 

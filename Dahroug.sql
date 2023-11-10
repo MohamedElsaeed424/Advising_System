@@ -2,4 +2,7 @@
 	@RequestID int, 
 	@Current_semester_code varchar (40)
 	AS
-	UPDATE 
+	UPDATE Request
+	SET status = 'accepted'
+	where request_id = @RequestID;
+	GO

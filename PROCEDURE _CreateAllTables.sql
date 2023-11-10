@@ -1,4 +1,4 @@
-﻿GO ;
+﻿GO
 CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Student (
 	student_id INT PRIMARY KEY ,
@@ -173,5 +173,5 @@ CREATE PROCEDURE CreateAllTables AS
 	status     BIT  ,
 	start_date DATETIME
 	);
-GO;
+GO
 

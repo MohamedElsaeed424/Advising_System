@@ -23,8 +23,8 @@ CREATE PROCEDURE Procedures_ViewOptionalCourse
 												 )
           ) AND
 		  S.major = c.major AND
-		  SE.end_date > @edate OR --course in later semetser
-		  SE.end_date < @enddate AND SE.start_date > @sdate	 --course in current semester  
+		  (SE.end_date > @edate OR --course in later semetser
+		   (SE.end_date < @enddate AND SE.start_date > @sdate))	 --course in current semester 
 GO
 EXEC Procedures_ViewOptionalCourse @Student_ID = 1 , @Current_semester_code= 'Spring 2023 à S23'  ;
 

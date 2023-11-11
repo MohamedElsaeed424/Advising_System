@@ -1,7 +1,7 @@
 ﻿-- MM) Check again
 CREATE PROCEDURE Procedures_ViewOptionalCourse
-	 @Student_ID int,
-	 @Current_semester_code Varchar(40)
+	@Student_ID int,
+	@Current_semester_code Varchar(40)
 	AS
 	DECLARE @sdate DATE ;
 	DECLARE @edate DATE ;

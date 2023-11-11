@@ -1,4 +1,7 @@
-﻿GO
+﻿CREATE DATABASE Advising_Team_13 ;
+
+
+GO
 CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Course (
 	course_id             INT PRIMARY KEY,

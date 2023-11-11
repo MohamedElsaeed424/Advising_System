@@ -1,66 +1,66 @@
 ﻿GO
 CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Student (
-	student_id INT PRIMARY KEY ,
-	f_name     VARCHAR (40) ,
-	l_name     VARCHAR (40) , 
-	gpa	       DECIMAL (3,2) , 
-	faculty    VARCHAR (40), 
-	email      VARCHAR (40), 
-	major      VARCHAR (40),
-	password   VARCHAR (40), 
-	financial_status BIT CHECK (current_timestamp > Installment.deadline AND Installment.status = 1), 
-	semester   INT, 
-	acquired_hours VARCHAR (40), 
-	assigned_hours VARCHAR (40) DEFAULT NULL, 
-	advisor_id INT ,
+	student_id            INT PRIMARY KEY ,
+	f_name                VARCHAR (40) ,
+	l_name                VARCHAR (40) , 
+	gpa	                  DECIMAL (3,2) , 
+	faculty               VARCHAR (40), 
+	email                 VARCHAR (40), 
+	major                 VARCHAR (40),
+	password              VARCHAR (40), 
+	financial_status      BIT CHECK (current_timestamp > Installment.deadline AND Installment.status = 1), 
+	semester              INT, 
+	acquired_hours        VARCHAR (40), 
+	assigned_hours        VARCHAR (40) DEFAULT NULL, 
+	advisor_id            INT ,
 	FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE Student_Phone (
-	student_id INT PRIMARY KEY ,
-	phone_number VARCHAR(40) PRIMARY KEY,
+	student_id            INT PRIMARY KEY ,
+	phone_number          VARCHAR(40) PRIMARY KEY,
     FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE ON UPDATE CASCADE
    	);
 
 	CREATE TABLE Course (
-	course_id VARCHAR(40) PRIMARY KEY,
-	name VARCHAR(40),
-	major VARCHAR(40),
-	is_offered BIT,
-	credit_hours INT,
-	semester INT
+	course_id             VARCHAR(40) PRIMARY KEY,
+	name                  VARCHAR(40),
+	major                 VARCHAR(40),
+	is_offered            BIT,
+	credit_hours          INT,
+	semester              INT
 	);
 
 	CREATE TABLE PreqCourse_course (
-	prerequisite_course_id INT PRIMARY KEY,
-	course_id INT PRIMARY KEY,
+	prerequisite_course_id  INT PRIMARY KEY,
+	course_id               INT PRIMARY KEY,
 	FOREIGN KEY (prerequisite_course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE Instructor (
-	instructor_id INT PRIMARY KEY,
-	name VARCHAR(40) ,
-	email VARCHAR(40),
-	faculty VARCHAR(40),
-	office VARCHAR(40)
+	instructor_id        INT PRIMARY KEY,
+	name                 VARCHAR(40) ,
+	email                VARCHAR(40),
+	faculty              VARCHAR(40),
+	office               VARCHAR(40)
 	) ;
 
 	CREATE TABLE Instructor_Course ( 
-	course_id INT PRIMARY KEY,
-	instructor_id INT PRIMARY KEY,
+	course_id            INT PRIMARY KEY,
+	instructor_id        INT PRIMARY KEY,
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) ON DELETE CASCADE ON UPDATE CASCADE
 	);
 
 	CREATE TABLE Student_Instructor_Course_Take (
-	student_id INT PRIMARY KEY,
-	course_id INT PRIMARY KEY,
-	instructor_id INT PRIMARY KEY, 
-    semester_code VARCHAR(40),
-	exam_type VARCHAR(40) DEFAULT 'Normal',
-	grade DECIMAL (5,2)  DEFAULT Null ,
+	student_id          INT PRIMARY KEY,
+	course_id           INT PRIMARY KEY,
+	instructor_id       INT PRIMARY KEY, 
+    semester_code       VARCHAR(40),
+	exam_type           VARCHAR(40) DEFAULT 'Normal',
+	grade               DECIMAL (5,2)  DEFAULT Null ,
 	FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) ON DELETE CASCADE ON UPDATE CASCADE ,
@@ -69,15 +69,15 @@ CREATE PROCEDURE CreateAllTables AS
 
 
 	CREATE TABLE Semester (
-	semester_code VARCHAR(40) PRIMARY KEY ,
-	start_date DATE , 
-	end_date DATE
+	semester_code       VARCHAR(40) PRIMARY KEY ,
+	start_date          DATE , 
+	end_date            DATE
 	);
 
 
 	CREATE TABLE Course_Semester (
-	course_id INT PRIMARY KEY,
-	semester_code VARCHAR(40) PRIMARY KEY,
+	course_id          INT PRIMARY KEY,
+	semester_code      VARCHAR(40) PRIMARY KEY,
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) ON DELETE CASCADE ON UPDATE CASCADE,
 	);

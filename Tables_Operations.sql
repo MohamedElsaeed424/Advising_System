@@ -175,3 +175,5 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 GO
 
+EXEC CreateAllTables
+GO

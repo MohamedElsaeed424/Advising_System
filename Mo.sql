@@ -26,11 +26,11 @@ GO
 CREATE PROC Procedure_AdminUpdateStudentStatus
 	@StudentID int
 	AS 
-	IF  EXISTS (SELECT Payment WHERE Payment.status = 'notPaid' AND Payment.deadline<GETDATE() AND Payment.student_id = @StudentID)
-		BEGIN
-		UPDATE Student
-		SET Student.financial_status = 0 
-		END
+	UPDATE Student
+	SET Student.financial_status = 0 
+	FROM Student
+	INNER JOIN Payment ON Payment.student_id = @StudentID
+	WHERE Payment.status = 'notPaid' AND Payment.deadline<GETDATE()
 	GO 
 	EXEC Procedure_AdminUpdateStudentStatus
 --0

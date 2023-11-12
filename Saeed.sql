@@ -1,4 +1,23 @@
-﻿-- KK) what tables should i insert into  and how to get table from anotehr procedure
+﻿
+
+
+--II) what is the date of first or secound makeup
+CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
+	@StudentID int, 
+	@courseID int, 
+	@studentCurrentsemester varchar (40)
+	AS
+		INSERT INTO MakeUp_Exam (course_id , type) 
+					VALUES (@courseID , 'First_makeup') ;
+		INSERT INTO Exam_Student(course_id , student_id) 
+					VALUES (@courseID , @StudentID)
+GO
+EXEC Procedures_StudentRegisterFirstMakeup @StudentID = 1 ,  @courseID= 1 ,@studentCurrentsemester = 'Spring 2023 à S23'  ;
+
+GO
+
+
+-- KK) what tables should i insert into  and how to get table from anotehr procedure
 CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	@StudentID int, 
 	@courseID int, 

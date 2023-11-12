@@ -133,10 +133,10 @@ CREATE PROCEDURE CreateAllTables AS
 	plan_id                INT , 
 	semester_code          VARCHAR(40), 
 	course_id              INT ,
-	CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id ,semester_code ,course_id ),
-	FOREIGN KEY (plan_id) REFERENCES Graduation_Plan (plan_id) ,
+	CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id ,semester_code ,course_id),
+	FOREIGN KEY (plan_id) REFERENCES Graduation_Plan (plan_id)  ,
 	FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) ,
-	FOREIGN KEY (course_id) REFERENCES Course (course_id) ,
+	FOREIGN KEY (course_id) REFERENCES Course (course_id)  ,
 	);
 
 	CREATE TABLE Request (

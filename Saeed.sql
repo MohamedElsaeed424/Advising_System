@@ -1,6 +1,4 @@
 ﻿
-
-
 --II) what is the date of first or secound makeup
 CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
 	@StudentID int, 
@@ -11,32 +9,42 @@ CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
 					VALUES (@courseID , 'First_makeup') ;
 		INSERT INTO Exam_Student(course_id , student_id) 
 					VALUES (@courseID , @StudentID)
+		UPDATE Student_Instructor_Course_Take
+		SET exam_type = 'First_makeup'
+		WHERE student_id = @StudentID AND
+			  course_id= @courseID
 GO
 EXEC Procedures_StudentRegisterFirstMakeup @StudentID = 1 ,  @courseID= 1 ,@studentCurrentsemester = 'Spring 2023 à S23'  ;
 
 GO
 
 
--- KK) what tables should i insert into  and how to get table from anotehr procedure
-CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
-	@StudentID int, 
-	@courseID int, 
-	@Student_Current_Semester Varchar (40)
-	AS
+-- JJ) How will i check for time of student makeup
+CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
+RETURNS BIT 
+AS
+BEGIN
+    DECLARE @IS_Eligible BIT ;
 	DECLARE @num_failed_courses INT ;
 	DECLARE @IF_course_firstMakeup INT ;
+	DECLARE @CurrentSemesterCode VARCHAR(40);
 	DECLARE @sdate DATE ;
     DECLARE @edate DATE ;
 
+	SELECT @sdate=SE.start_date , @edate=SE.end_date
+	FROM (( Course c INNER JOIN Course_Semester CS ON c.course_id = CS.course_id)
+				     INNER JOIN Semester SE ON CS.semester_code = SE.semester_code )
+
 	-- take reqired courses from Procedures_ViewRequiredCourses
-	CREATE TABLE TP(course_id INT , name VARCHAR(40) , major VARCHAR(40),is_offered BIT ,credit_hours INT ,semester INT)
-	INSERT INTO  TP EXEC Procedures_ViewRequiredCourses @Student_ID = @StudentID , @Current_semester_code= @Student_Current_Semester ;
+	CREATE TABLE TMP_REQUIRED_COURSES (course_id INT , name VARCHAR(40) , major VARCHAR(40),is_offered BIT ,credit_hours INT ,semester INT)
+	--INSERT INTO TMP_REQUIRED_COURSES EXEC Procedures_ViewRequiredCourses @Student_ID = @StudentID , @Current_semester_code= @Student_Current_Semester ;
+	INSERT INTO TMP_REQUIRED_COURSES EXEC Procedures_ViewRequiredCourses @Student_ID = @StudentID , @Current_semester_code= @CurrentSemesterCode ;
 	
-	SELECT @sdate=start_date , @edate=end_date FROM Semester WHERE semester_code = @Student_Current_Semester ;
+	--SELECT @sdate=start_date , @edate=end_date FROM Semester WHERE semester_code = @Student_Current_Semester ;
 
 	-- select num of faied or require courses
 	SELECT @num_failed_courses=COUNT(*)
-	FROM TP
+	FROM TMP_REQUIRED_COURSES
 
 	--  check if 
 	SELECT @IF_course_firstMakeup=COUNT(*)
@@ -48,16 +56,37 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 		  SE.start_date >= @sdate AND SE.end_date <=@edate -- in same semester
 
 
-	IF @num_failed_courses > 2 
+	IF @num_failed_courses > 2 AND  @IF_course_firstMakeup <> 0 
 	BEGIN
-		PRINT('YOU CANT REGISTER FOR THIS MAKEUP YOU FAILED IN MORE THAN 2 COURSES')
+		SET @IS_Eligible = 0
 	END
+	ELSE
+	BEGIN 
+		SET @IS_Eligible =1 
+	END
+	DROP TABLE TMP_REQUIRED_COURSES ;
+    RETURN @IS_Eligible ;
+END;
 
-	ELSE IF @IF_course_firstMakeup <> 0   -- student took first make up in the same semester
+-- KK) what tables should i insert into  and how to get table from anotehr procedure
+GO;
+CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
+	@StudentID int, 
+	@courseID int, 
+	@Student_Current_Semester Varchar (40)
+	AS
+	DECLARE @num_failed_courses INT ;
+	DECLARE @IF_course_firstMakeup INT ;
+	DECLARE @sdate DATE ;
+    DECLARE @edate DATE ;
+	DECLARE @IS_SecoundMakeup_Eligible BIT ;
+
+	SET @IS_SecoundMakeup_Eligible = dbo.FN_StudentCheckSMEligiability(@courseID,@StudentID  )
+
+	IF @IS_SecoundMakeup_Eligible = 0
 	BEGIN
-		PRINT('YOU TOOK FIRST MAKEUP EXAM THIS SEMESTER YOU CANT REGISTER FOR SECOUND ONE ')
+		PRINT('YOU CANT REGISTER FOR THE SECOUND MAKEUP ')
 	END
-
 	ELSE
 	BEGIN
 	PRINT('here')
@@ -65,11 +94,14 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 					VALUES (@courseID , 'Second_makeup') ;
 		INSERT INTO Exam_Student(course_id , student_id) 
 					VALUES (@courseID , @StudentID)
+		UPDATE Student_Instructor_Course_Take
+		SET exam_type = 'Second_makeup'
+		WHERE student_id = @StudentID AND
+			  course_id= @courseID
 	END
 	
 GO
 	EXEC Procedures_StudentRegisterSecondMakeup @StudentID = 1 ,  @courseID= 1 ,@Student_Current_Semester = 'Spring 2023 à S23'  ;
-
 GO
 	
 
@@ -95,7 +127,7 @@ CREATE PROCEDURE  Procedures_ViewRequiredCourses
 		      S.major = c.major 
 	 ) AS c1
 	   WHERE (c1.start_date < @sdate AND c1.end_date < @edate )   OR   -- course based
-			  c1.grade IS NULL                                         -- failed
+			  c1.grade < 50                                            -- failed
 	   
 GO 
 EXEC Procedures_ViewRequiredCourses @Student_ID = 1 , @Current_semester_code= 'Spring 2023 à S23'  ;

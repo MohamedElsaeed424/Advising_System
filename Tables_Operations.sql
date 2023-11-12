@@ -117,27 +117,27 @@ CREATE PROCEDURE CreateAllTables AS
 	FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) 
 	);
 
-	CREATE TABLE Graduation_Plan (
-	plan_id                INT , 
-	semester_code          VARCHAR(40) , 
-	semester_credit_hours  INT, 
-	expected_grad_semester INT, 
-	advisor_id             INT, 
-	student_id             INT,
-	CONSTRAINT PK_Graduation_Plan PRIMARY KEY (plan_id ,semester_code ),
-	FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id)  ,
-	FOREIGN KEY (student_id) REFERENCES Student (student_id) 
-	);
+CREATE TABLE Graduation_Plan (
+  plan_id                INT, 
+  semester_code          VARCHAR(40), 
+  semester_credit_hours  INT, 
+  expected_grad_semester INT, 
+  advisor_id             INT, 
+  student_id             INT,
+  CONSTRAINT PK_Graduation_Plan PRIMARY KEY (plan_id, semester_code),
+  FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id),
+  FOREIGN KEY (student_id) REFERENCES Student (student_id)
+);
 
-	CREATE TABLE GradPlan_Course (
-	plan_id                INT , 
-	semester_code          VARCHAR(40), 
-	course_id              INT ,
-	CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id ,semester_code ,course_id),
-	FOREIGN KEY (plan_id) REFERENCES Graduation_Plan (plan_id)  ,
-	FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) ,
-	FOREIGN KEY (course_id) REFERENCES Course (course_id)  ,
-	);
+CREATE TABLE GradPlan_Course (
+  plan_id                INT, 
+  semester_code          VARCHAR(40), 
+  course_id              INT,
+  CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id, semester_code, course_id),
+  FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_Plan (plan_id, semester_code),
+  FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code),
+  FOREIGN KEY (course_id)              REFERENCES Course (course_id)
+);
 
 	CREATE TABLE Request (
 	request_id             INT PRIMARY KEY, 

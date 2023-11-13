@@ -34,13 +34,7 @@ CREATE PROCEDURE CreateAllTables AS
 	password          VARCHAR(40)
 	);
 
-	CREATE TABLE Installment (
-	payment_id     INT PRIMARY KEY, 
-	deadline       DATE, 
-	amount         DECIMAL(7,2), 
-	status         BIT  ,
-	start_date     DATE
-	);
+
 
 	CREATE TABLE Student (
 	student_id            INT PRIMARY KEY ,
@@ -185,6 +179,15 @@ CREATE TABLE GradPlan_Course (
 	FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) ,
 	);
 
+	CREATE TABLE Installment (
+	payment_id     INT PRIMARY KEY, 
+	deadline       DATE, 
+	amount         DECIMAL(7,2), 
+	status         BIT  ,
+	start_date     DATE ,
+	CONSTRAINT  PK_Installment PRIMARY KEY (payment_id, deadline),
+	FOREIGN KEY (payment_id) REFERENCES Payment (payment_id) ,
+	);
 
 EXEC CreateAllTables
 GO
@@ -192,6 +195,7 @@ DROP PROCEDURE CreateAllTables;
 GO
 
 CREATE PROCEDURE  DropAllTables AS
+	DROP TABLE Installment;
 	DROP TABLE Payment;
 	DROP TABLE Exam_Student;
 	DROP TABLE MakeUp_Exam;
@@ -205,7 +209,6 @@ CREATE PROCEDURE  DropAllTables AS
 	DROP TABLE PreqCourse_course;
 	DROP TABLE Student_Phone;
 	DROP TABLE Student ;
-	DROP TABLE Installment;
 	DROP TABLE Advisor;
 	DROP TABLE Semester;
 	DROP TABLE Instructor;
@@ -215,6 +218,7 @@ EXEC DropAllTables
 GO
 
 CREATE PROCEDURE clearAllTables AS
+	TRUNCATE TABLE Installment;
 	TRUNCATE TABLE Payment;
 	TRUNCATE TABLE Exam_Student;
 	TRUNCATE TABLE MakeUp_Exam;
@@ -228,7 +232,6 @@ CREATE PROCEDURE clearAllTables AS
 	TRUNCATE TABLE PreqCourse_course;
 	TRUNCATE TABLE Student_Phone;
 	TRUNCATE TABLE Student ;
-	TRUNCATE TABLE Installment;
 	TRUNCATE TABLE Advisor;
 	TRUNCATE TABLE Semester;
 	TRUNCATE TABLE Instructor;

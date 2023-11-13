@@ -1,4 +1,21 @@
-﻿
+﻿-- GG)
+CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)
+	RETURNS DATE 
+	AS
+	BEGIN 
+	DECLARE @first_instalment_deadline DATE
+
+
+	SELECT @first_instalment_deadline  = MIN(I.deadline)
+	FROM (Student S INNER JOIN Payment P ON S.student_id = P.student_id
+                    INNER JOIN Installment I ON P.payment_id = I.payment_id ) 
+	WHERE P.status = 'notPaid' AND
+		  I.status = 0
+	RETURN @first_instalment_deadline ;
+END
+GO
+
+
 --II) what is the date of first or secound makeup
 CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
 	@StudentID int, 
@@ -21,50 +38,49 @@ GO
 
 -- JJ) How will i check for time of student makeup
 CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
-RETURNS BIT 
-AS
-BEGIN
-    DECLARE @IS_Eligible BIT ;
+	RETURNS BIT 
+	AS
+	BEGIN
+	DECLARE @IS_Eligible BIT ;
 	DECLARE @num_failed_courses INT ;
 	DECLARE @IF_course_firstMakeup INT ;
-	DECLARE @CurrentSemesterCode VARCHAR(40);
+    DECLARE @CurrentSemesterCode VARCHAR(40);
 	DECLARE @sdate DATE ;
-    DECLARE @edate DATE ;
+	DECLARE @edate DATE ;
+		SELECT @sdate=SE.start_date , @edate=SE.end_date
+		FROM (( Course c INNER JOIN Course_Semester CS ON c.course_id = CS.course_id)
+					     INNER JOIN Semester SE ON CS.semester_code = SE.semester_code )
 
-	SELECT @sdate=SE.start_date , @edate=SE.end_date
-	FROM (( Course c INNER JOIN Course_Semester CS ON c.course_id = CS.course_id)
-				     INNER JOIN Semester SE ON CS.semester_code = SE.semester_code )
+		-- take reqired courses from Procedures_ViewRequiredCourses
+		CREATE TABLE TMP_REQUIRED_COURSES (course_id INT , name VARCHAR(40) , major VARCHAR(40),is_offered BIT ,credit_hours INT ,semester INT)
+		--INSERT INTO TMP_REQUIRED_COURSES EXEC Procedures_ViewRequiredCourses @Student_ID = @StudentID , @Current_semester_code= @Student_Current_Semester ;
+		INSERT INTO TMP_REQUIRED_COURSES EXEC Procedures_ViewRequiredCourses @Student_ID = @StudentID , @Current_semester_code= @CurrentSemesterCode ;
+		
+		--SELECT @sdate=start_date , @edate=end_date FROM Semester WHERE semester_code = @Student_Current_Semester ;
 
-	-- take reqired courses from Procedures_ViewRequiredCourses
-	CREATE TABLE TMP_REQUIRED_COURSES (course_id INT , name VARCHAR(40) , major VARCHAR(40),is_offered BIT ,credit_hours INT ,semester INT)
-	--INSERT INTO TMP_REQUIRED_COURSES EXEC Procedures_ViewRequiredCourses @Student_ID = @StudentID , @Current_semester_code= @Student_Current_Semester ;
-	INSERT INTO TMP_REQUIRED_COURSES EXEC Procedures_ViewRequiredCourses @Student_ID = @StudentID , @Current_semester_code= @CurrentSemesterCode ;
-	
-	--SELECT @sdate=start_date , @edate=end_date FROM Semester WHERE semester_code = @Student_Current_Semester ;
+		-- select num of faied or require courses
+		SELECT @num_failed_courses=COUNT(*)
+		FROM TMP_REQUIRED_COURSES
 
-	-- select num of faied or require courses
-	SELECT @num_failed_courses=COUNT(*)
-	FROM TMP_REQUIRED_COURSES
-
-	--  check if 
-	SELECT @IF_course_firstMakeup=COUNT(*)
-	FROM (((MakeUp_Exam ME INNER JOIN Course c ON ME.course_id = c.course_id)
-						   INNER JOIN Course_Semester CS ON c.course_id = CS.course_id )
-						   INNER JOIN Semester SE ON CS.semester_code = SE.semester_code)
-	WHERE c.course_id = @courseID AND
-		  ME.type = 'First_makeup'AND
-		  SE.start_date >= @sdate AND SE.end_date <=@edate -- in same semester
+		--  check if 
+		SELECT @IF_course_firstMakeup=COUNT(*)
+		FROM (((MakeUp_Exam ME INNER JOIN Course c ON ME.course_id = c.course_id)
+							   INNER JOIN Course_Semester CS ON c.course_id = CS.course_id )
+							   INNER JOIN Semester SE ON CS.semester_code = SE.semester_code)
+		WHERE c.course_id = @courseID AND
+			  ME.type = 'First_makeup'AND
+			  SE.start_date >= @sdate AND SE.end_date <=@edate -- in same semester
 
 
-	IF @num_failed_courses > 2 AND  @IF_course_firstMakeup <> 0 
-	BEGIN
-		SET @IS_Eligible = 0
-	END
-	ELSE
-	BEGIN 
-		SET @IS_Eligible =1 
-	END
-	DROP TABLE TMP_REQUIRED_COURSES ;
+		IF @num_failed_courses > 2 AND  @IF_course_firstMakeup <> 0 
+		BEGIN
+			SET @IS_Eligible = 0
+		END
+		ELSE
+		BEGIN 
+			SET @IS_Eligible =1 
+		END
+		DROP TABLE TMP_REQUIRED_COURSES ;
     RETURN @IS_Eligible ;
 END;
 

@@ -116,7 +116,7 @@ CREATE PROC Procedures_AdminLinkStudentToAdvisor
 			INSERT INTO Student(student_id,advisor_id) VALUES(@student_id,@advisor_id);
 		END
 	GO
-	EXEC Procedures_AdminLinkStudentToAdvisor
+	EXEC Procedures_AdminLinkStudentToAdvisor;
 
 GO
 CREATE PROC Procedures_AdminAddExam
@@ -126,5 +126,5 @@ CREATE PROC Procedures_AdminAddExam
 	AS
 	INSERT INTO MakeUp_Exam(date,type,course_id) VALUES(@date,@Type,@course_id);
 	GO
-	EXEC Procedures_AdminAddExam;
+	EXEC Procedures_AdminAddExam ;
 

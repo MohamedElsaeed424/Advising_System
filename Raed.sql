@@ -7,11 +7,18 @@ CREATE PROC Procedures_AdvisorRegistration
 	 @advisor_id INT OUTPUT
 	 AS
 	 INSERT INTO Advisor(name,password,email,office) VALUES(@name,@password,@email,@office);
-	 SELECT advisor_id 
+	 SELECT @advisor_id = advisor_id 
 	 FROM Advisor 
 	 WHERE Advisor.name=@name AND Advisor.password=@password AND Advisor.email=@email AND Advisor.office=@office;
 	 GO
-	 EXEC Procedures_AdvisorRegistration;
+	 DECLARE 
+	 @result INT;
+	 EXEC Procedures_AdvisorRegistration 
+	 @name = 'RAED',
+	 @password = 'JOUMAA',
+	 @email = 'HOTMAIL',
+	 @office = 'C6205',
+	 @advisor_id = @result OUTPUT
 
 GO
 CREATE PROC Procedures_AdminListStudents

@@ -1,4 +1,27 @@
-﻿-- GG)
+﻿--FF) 
+CREATE FUNCTION FN_StudentViewGP (@student_ID int) 
+RETURNS TABLE
+AS
+RETURN
+    SELECT 
+		S.student_id AS 'Student Id',
+		CONCAT(S.f_name, ' ', S.l_name) AS ' Student_name', 
+		GP.plan_id AS ' graduation Plan Id', 
+		c.course_id AS 'Course id',
+		c.name AS 'Course name', 
+		GP.semester_code AS 'Semester code', 
+		SE.end_date AS ' expected graduation date', --IS this correct ??
+		GP.semester_credit_hours  AS 'Semester credit hours', 
+		GP.advisor_id AS 'advisor id'
+    FROM ((Student S INNER JOIN Graduation_Plan GP ON S.student_id = GP.student_id
+					INNER JOIN GradPlan_Course GPC ON (GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code ) )
+					INNER JOIN Course c ON GPC.course_id = c.course_id
+					INNER JOIN Semester SE ON SE.semester_code = GP.semester_code)
+GO
+SELECT * FROM FN_StudentViewGP(1);
+GO
+
+-- GG)
 CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)
 	RETURNS DATE 
 	AS
@@ -15,6 +38,23 @@ CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)
 END
 GO
 
+--HH)
+CREATE FUNCTION  FN_StudentViewSlot (@CourseID INT , @InstructorID INT) 
+RETURNS TABLE
+AS
+RETURN
+    SELECT SL.slot_id AS 'Slot ID', 
+			SL.location AS'location', 
+			SL.time AS'time', 
+			SL.day AS 'day' , 
+		    c.name AS'course name' ,
+		    ISC.name AS'Instructor name' 
+    FROM (Course c INNER JOIN Slot SL ON c.course_id = SL.course_id
+				   INNER JOIN Instructor ISC ON SL.instructor_id = ISC.instructor_id)
+
+GO
+SELECT * FROM  FN_StudentViewSlot(1 ,1);
+GO
 
 --II) what is the date of first or secound makeup
 CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
@@ -32,9 +72,7 @@ CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
 			  course_id= @courseID
 GO
 EXEC Procedures_StudentRegisterFirstMakeup @StudentID = 1 ,  @courseID= 1 ,@studentCurrentsemester = 'Spring 2023 à S23'  ;
-
 GO
-
 
 -- JJ) How will i check for time of student makeup
 CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
@@ -205,11 +243,7 @@ CREATE PROCEDURE Procedures_ViewMS
 	--	  S.major = c.major 	  
 GO
 EXEC Procedures_ViewMS @StudentID=1 ;
-
-
 GO
-
-
 
 -- OO)
 CREATE PROCEDURE Procedures_ChooseInstructor
@@ -221,7 +255,5 @@ CREATE PROCEDURE Procedures_ChooseInstructor
 	 VALUES (@StudentID ,@CourseID , @InstructorID) ;
 GO
 EXEC Procedures_ChooseInstructor  @StudentID=1, @InstructorID=1 ,@CourseID=1 ;
-
-
 GO
 

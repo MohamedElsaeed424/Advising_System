@@ -6,10 +6,17 @@ CREATE PROC Procedures_AdvisorRegistration
 	 @office VARCHAR(40),
 	 @advisor_id INT OUTPUT
 	 AS
-	 INSERT INTO Advisor(name,password,email,office) VALUES(@name,@password,@email,@office);
-	 SELECT @advisor_id = advisor_id 
-	 FROM Advisor 
-	 WHERE Advisor.name=@name AND Advisor.password=@password AND Advisor.email=@email AND Advisor.office=@office;
+	 IF @name IS NULL OR @password IS NULL OR @email IS NULL OR @office IS NULL 
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
+	 ELSE
+		BEGIN
+			 INSERT INTO Advisor(name,password,email,office) VALUES(@name,@password,@email,@office);
+			 SELECT @advisor_id = advisor_id 
+			 FROM Advisor 
+			 WHERE Advisor.name=@name AND Advisor.password=@password AND Advisor.email=@email AND Advisor.office=@office;
+		END
 	 GO
 	 DECLARE 
 	 @result INT;
@@ -48,7 +55,14 @@ CREATE PROC AdminAddingSemester
 	@end_date DATE,
 	@semester_code VARCHAR(40)
 	AS
-	INSERT INTO Semester VALUES(@semester_code,@start_date,@end_date);
+	IF @start_date IS NULL OR @end_date IS NULL OR @semester_code IS NULL 
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
+	ELSE
+		BEGIN
+			INSERT INTO Semester VALUES(@semester_code,@start_date,@end_date);
+		END
 	GO
 	EXEC AdminAddingSemester
 	@start_date = '24/01/2003',
@@ -63,7 +77,14 @@ CREATE PROC Procedures_AdminAddingCourse
 	@name VARCHAR (40), 
 	@is_offered BIT
 	AS
-	INSERT INTO Course(name,major,is_offered,credit_hours,semester) VALUES(@name,@major,@is_offered,@credit_hours,@semester);
+	IF @major IS NULL OR @semester IS NULL OR @credit_hours IS NULL OR @name IS NULL OR @is_offered IS NULL 
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
+	ELSE
+		BEGIN
+			INSERT INTO Course(name,major,is_offered,credit_hours,semester) VALUES(@name,@major,@is_offered,@credit_hours,@semester);
+		END
 	GO
 	EXEC Procedures_AdminAddingCourse
 	@major = '',
@@ -78,6 +99,10 @@ CREATE PROC Procedures_AdminLinkInstructor
 	@course_id INT,
 	@slot_id INT
 	AS
+	IF @instructor_id IS NULL OR @course_id IS NULL OR @slot_id IS NULL 
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
 	IF 
 		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
 		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
@@ -92,7 +117,9 @@ CREATE PROC Procedures_AdminLinkInstructor
 	
 	GO
 	EXEC Procedures_AdminLinkInstructor
-	@instructor_id = 1;
+	@instructor_id = 1,
+	@course_id = 1,
+	@slot_id = 1;
 
 GO 
 CREATE PROC Procedures_AdminLinkStudent
@@ -101,6 +128,10 @@ CREATE PROC Procedures_AdminLinkStudent
 	@course_id INT,
 	@semester_code VARCHAR(40)
 	AS
+	IF @instructor_id IS NULL OR @student_id IS NULL OR @course_id IS NULL OR @semester_code IS NULL  
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
 	IF 
 		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
 		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
@@ -114,13 +145,21 @@ CREATE PROC Procedures_AdminLinkStudent
 			INSERT INTO Student_Instructor_Course_Take(student_id,course_id,instructor_id,semester_code) VALUES(@student_id,@course_id,@instructor_id,@semester_code);
 		END
 	GO
-	EXEC Procedures_AdminLinkStudent;
+	EXEC Procedures_AdminLinkStudent
+	@instructor_id = 1,
+	@student_id = 1,
+	@course_id = 1,
+	@semester_code = '';
 
 GO 
 CREATE PROC Procedures_AdminLinkStudentToAdvisor
 	@student_id INT,
 	@advisor_id INT
 	AS
+	IF  @student_id IS NULL OR @advisor_id IS NULL  
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
 	IF
 		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
 		not exists(SELECT advisor_id FROM Advisor WHERE advisor_id=@advisor_id)
@@ -132,7 +171,9 @@ CREATE PROC Procedures_AdminLinkStudentToAdvisor
 			INSERT INTO Student(student_id,advisor_id) VALUES(@student_id,@advisor_id);
 		END
 	GO
-	EXEC Procedures_AdminLinkStudentToAdvisor;
+	EXEC Procedures_AdminLinkStudentToAdvisor
+	@student_id =1,
+	@advisor_id =1;
 
 GO
 CREATE PROC Procedures_AdminAddExam
@@ -140,7 +181,17 @@ CREATE PROC Procedures_AdminAddExam
 	@date DATETIME,
 	@course_id INT
 	AS
-	INSERT INTO MakeUp_Exam(date,type,course_id) VALUES(@date,@Type,@course_id);
+	IF @Type IS NULL OR @date IS NULL OR @course_id IS NULL
+		BEGIN
+			PRINT("CAN'T DO THIS SERVICE")
+		END
+	ELSE 
+		BEGIN
+			INSERT INTO MakeUp_Exam(date,type,course_id) VALUES(@date,@Type,@course_id);
+		END
 	GO
-	EXEC Procedures_AdminAddExam ;
+	EXEC Procedures_AdminAddExam 
+	@Type = '',
+	@date = '',
+	@course_id =1;
 

@@ -97,4 +97,20 @@ CREATE PROC Procedures_StudentSendingCourseRequest
 		INSERT INTO request (student_id, course_id, type, comment) values (@StudentID ,@courseID ,@type ,@comment) 
 	END
 	GO
+/*EE*/
+CREATE PROC Procedures_StudentSendingCHRequest
+	@StudentID int, 
+	@credit_hours int, 
+	@type varchar (40),
+	@comment varchar (40) 
+	AS
+	IF @StudentID IS NULL OR @courseID IS NULL
+	BEGIN
+		PRINT 'ERROR';
+	END
+	ELSE
+	BEGIN
+		INSERT INTO request (student_id, course_id, type, comment) values (@StudentID ,@courseID ,@type ,@comment) 
+	END
+	GO
 

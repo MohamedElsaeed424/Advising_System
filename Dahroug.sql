@@ -60,10 +60,11 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 	GO
 /*Z*/
 CREATE PROC Procedures_AdvisorViewPendingRequests
-	@AdvisorID int 
+	@AdvisorID int,
+	@Table OUTPUT
 	AS
-	Select * from request 
-	where student_id in (Select student_id from student where advisor_id = @AdvisorID);
+	Select @Table = (Select * from request 
+		where student_id in (Select student_id from student where advisor_id = @AdvisorID));
 	GO
 
 /*BB*/
@@ -71,7 +72,28 @@ CREATE PROC Procedures_StudentaddMobile
 	@StudentID int, 
 	@mobile_number varchar (40)
 	AS
-	IF EXISTS(Select student_id from student where student_id = @StudentID)
+	IF NOT EXISTS(Select student_id from student where student_id = @StudentID) OR  @StudentID IS NULL OR @mobile_number IS NULL
+	BEGIN
+		PRINT 'ERROR';
+	END
+	ELSE
 	BEGIN
 		INSERT INTO Student_Phone values(@StudentID ,@mobile_number);
 	END
+	GO
+/*DD*/
+CREATE PROC Procedures_StudentSendingCourseRequest
+	@StudentID int, 
+	@courseID int, 
+	@type varchar (40),
+	@comment varchar (40) 
+	AS
+	IF @StudentID IS NULL OR @courseID IS NULL
+	BEGIN
+		PRINT 'ERROR';
+	END
+	ELSE
+	BEGIN
+		INSERT INTO request
+	END
+

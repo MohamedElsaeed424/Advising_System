@@ -66,3 +66,12 @@ CREATE PROC Procedures_AdvisorViewPendingRequests
 	where student_id in (Select student_id from student where advisor_id = @AdvisorID);
 	GO
 
+/*BB*/
+CREATE PROC Procedures_StudentaddMobile
+	@StudentID int, 
+	@mobile_number varchar (40)
+	AS
+	IF EXISTS(Select student_id from student where student_id = @StudentID)
+	BEGIN
+		INSERT INTO Student_Phone values(@StudentID ,@mobile_number);
+	END

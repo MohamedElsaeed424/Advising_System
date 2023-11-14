@@ -132,7 +132,7 @@ CREATE TABLE GradPlan_Course (
   FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code),
   FOREIGN KEY (course_id)              REFERENCES Course (course_id)
 );
-
+	/*is type not null since a request is either course or credit hours*/
 	CREATE TABLE Request (
 	request_id             INT IDENTITY(1,1) PRIMARY KEY, 
 	type                   VARCHAR(40) ,

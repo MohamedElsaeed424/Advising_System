@@ -9,4 +9,8 @@
 		Set status = 'accepted'
 		where @RequestID = request_id
 	End
+	ELSE
+		UPDATE request
+		Set status = 'rejected'
+		where @RequestID = request_id
 	GO

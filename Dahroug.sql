@@ -94,6 +94,6 @@ CREATE PROC Procedures_StudentSendingCourseRequest
 	END
 	ELSE
 	BEGIN
-		INSERT INTO request 
+		INSERT INTO request (student_id, course_id, type, comment) values (@StudentID ,@courseID ,@type ,@comment) 
 	END
-
+	GO

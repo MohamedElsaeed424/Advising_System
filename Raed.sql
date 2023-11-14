@@ -91,7 +91,8 @@ CREATE PROC Procedures_AdminLinkInstructor
 		END
 	
 	GO
-	EXEC Procedures_AdminLinkInstructor;
+	EXEC Procedures_AdminLinkInstructor
+	@instructor_id = 1;
 
 GO 
 CREATE PROC Procedures_AdminLinkStudent

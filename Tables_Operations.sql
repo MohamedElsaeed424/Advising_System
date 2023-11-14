@@ -134,7 +134,7 @@ CREATE TABLE GradPlan_Course (
 );
 
 	CREATE TABLE Request (
-	request_id             INT PRIMARY KEY, 
+	request_id             INT IDENTITY(1,1) PRIMARY KEY, 
 	type                   VARCHAR(40) ,
 	comment                VARCHAR(40), 
 	status                 VARCHAR(40) DEFAULT 'pending', 

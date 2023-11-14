@@ -18,7 +18,7 @@ CREATE PROC Procedures_AdvisorRegistration
 	 @password = 'JOUMAA',
 	 @email = 'HOTMAIL',
 	 @office = 'C6205',
-	 @advisor_id = @result OUTPUT
+	 @advisor_id = @result OUTPUT;
 
 GO
 CREATE PROC Procedures_AdminListStudents
@@ -50,7 +50,10 @@ CREATE PROC AdminAddingSemester
 	AS
 	INSERT INTO Semester VALUES(@semester_code,@start_date,@end_date);
 	GO
-	EXEC AdminAddingSemester;
+	EXEC AdminAddingSemester
+	@start_date = '24/01/2003',
+	@end_date = '24/01/2075' ,
+	@semester_code = '';
 
 GO
 CREATE PROC Procedures_AdminAddingCourse 
@@ -62,7 +65,12 @@ CREATE PROC Procedures_AdminAddingCourse
 	AS
 	INSERT INTO Course(name,major,is_offered,credit_hours,semester) VALUES(@name,@major,@is_offered,@credit_hours,@semester);
 	GO
-	EXEC Procedures_AdminAddingCourse;
+	EXEC Procedures_AdminAddingCourse
+	@major = '',
+	@semester = 1,
+	@credit_hours = 4,
+	@name ='',
+	@is_offered =0;
 
 GO
 CREATE PROC Procedures_AdminLinkInstructor

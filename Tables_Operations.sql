@@ -189,8 +189,8 @@ CREATE TABLE GradPlan_Course (
 	FOREIGN KEY (payment_id) REFERENCES Payment (payment_id) ,
 	);
 
-EXEC CreateAllTables
 GO
+EXEC CreateAllTables;
 DROP PROCEDURE CreateAllTables;
 GO
 
@@ -214,7 +214,8 @@ CREATE PROCEDURE  DropAllTables AS
 	DROP TABLE Instructor;
 	DROP TABLE Course;
 
-EXEC DropAllTables
+GO
+EXEC DropAllTables;
 GO
 
 CREATE PROCEDURE clearAllTables AS
@@ -238,5 +239,6 @@ CREATE PROCEDURE clearAllTables AS
 	TRUNCATE TABLE Course;
 
 
-EXEC clearAllTables
+GO
+EXEC clearAllTables;
 GO

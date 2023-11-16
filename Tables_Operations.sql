@@ -45,12 +45,13 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40), 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	financial_status      AS (SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-								CASE
-									WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-									THEN 1 ELSE 0 END
-								from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
-									 AND p.student_id = Student.student_id),
+	financial_status      BIT ,
+							--AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
+							--		CASE
+							--		WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
+							--		THEN 1 ELSE 0 END
+							--		from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
+							--		 AND p.student_id = Student.student_id),
 	semester              INT, 
 	acquired_hours        VARCHAR (40), 
 	assigned_hours        VARCHAR (40) DEFAULT NULL, 
@@ -89,7 +90,7 @@ CREATE PROCEDURE CreateAllTables AS
 	instructor_id       INT , 
     semester_code       VARCHAR(40),
 	exam_type           VARCHAR(40) DEFAULT 'Normal',
-	grade               VARCHAR ,
+	grade               VARCHAR(40) ,
 	CONSTRAINT PK_Student_Instructor_Course_Take PRIMARY KEY (student_id, course_id ,instructor_id),
 	FOREIGN KEY (student_id) REFERENCES Student (student_id) ,
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ,
@@ -185,7 +186,7 @@ CREATE TABLE GradPlan_Course (
 	);
 
 	CREATE TABLE Installment (
-	payment_id     INT PRIMARY KEY, 
+	payment_id     INT , 
 	deadline       DATE, 
 	amount         DECIMAL(7,2), 
 	status         BIT  ,
@@ -213,19 +214,21 @@ CREATE PROCEDURE  DropAllTables AS
 	DROP TABLE Instructor_Course;
 	DROP TABLE PreqCourse_course;
 	DROP TABLE Student_Phone;
-	DROP TABLE Student ;
+	DROP TABLE Student;
 	DROP TABLE Advisor;
 	DROP TABLE Semester;
 	DROP TABLE Instructor;
 	DROP TABLE Course;
 
 GO
+
+DROP PROC DropAllTables;
 EXEC DropAllTables;
 GO
 
 CREATE PROCEDURE clearAllTables AS
-	TRUNCATE TABLE Installment;
 	TRUNCATE TABLE Payment;
+	TRUNCATE TABLE Installment;
 	TRUNCATE TABLE Exam_Student;
 	TRUNCATE TABLE MakeUp_Exam;
 	TRUNCATE TABLE Request;
@@ -245,5 +248,7 @@ CREATE PROCEDURE clearAllTables AS
 
 
 GO
+
+DROP PROC clearAllTables;
 EXEC clearAllTables;
 GO

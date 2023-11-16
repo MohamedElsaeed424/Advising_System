@@ -84,7 +84,7 @@ CREATE PROCEDURE CreateAllTables AS
 	instructor_id       INT , 
     semester_code       VARCHAR(40),
 	exam_type           VARCHAR(40) DEFAULT 'Normal',
-	grade               DECIMAL (5,2)  DEFAULT Null ,
+	grade               VARCHAR ,
 	CONSTRAINT PK_Student_Instructor_Course_Take PRIMARY KEY (student_id, course_id ,instructor_id),
 	FOREIGN KEY (student_id) REFERENCES Student (student_id) ,
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ,

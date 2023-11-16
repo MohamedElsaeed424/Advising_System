@@ -45,7 +45,12 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40), 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	financial_status      BIT ,--AS (CASE WHEN CURRENT_TIMESTAMP > Installment.deadline AND Installment.status = 1 THEN 1 ELSE 0 END),
+	financial_status      AS (SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
+								CASE
+									WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
+									THEN 1 ELSE 0 END
+								from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
+									 AND p.student_id = Student.student_id),
 	semester              INT, 
 	acquired_hours        VARCHAR (40), 
 	assigned_hours        VARCHAR (40) DEFAULT NULL, 
@@ -132,9 +137,9 @@ CREATE TABLE GradPlan_Course (
   FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code),
   FOREIGN KEY (course_id)              REFERENCES Course (course_id)
 );
-
+	/*is type not null since a request is either course or credit hours*/
 	CREATE TABLE Request (
-	request_id             INT PRIMARY KEY, 
+	request_id             INT IDENTITY(1,1) PRIMARY KEY, 
 	type                   VARCHAR(40) ,
 	comment                VARCHAR(40), 
 	status                 VARCHAR(40) DEFAULT 'pending', 
@@ -189,8 +194,8 @@ CREATE TABLE GradPlan_Course (
 	FOREIGN KEY (payment_id) REFERENCES Payment (payment_id) ,
 	);
 
-EXEC CreateAllTables
 GO
+EXEC CreateAllTables;
 DROP PROCEDURE CreateAllTables;
 GO
 
@@ -214,7 +219,8 @@ CREATE PROCEDURE  DropAllTables AS
 	DROP TABLE Instructor;
 	DROP TABLE Course;
 
-EXEC DropAllTables
+GO
+EXEC DropAllTables;
 GO
 
 CREATE PROCEDURE clearAllTables AS
@@ -238,5 +244,6 @@ CREATE PROCEDURE clearAllTables AS
 	TRUNCATE TABLE Course;
 
 
-EXEC clearAllTables
+GO
+EXEC clearAllTables;
 GO

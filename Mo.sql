@@ -64,9 +64,21 @@ CREATE PROC Procedures_AdminDeleteSlots
 
 
 --Q
---GO
---FN_AdvisorLogin
-
+GO
+CREATE FUNCTION FN_AdvisorLogin 
+	(@ID int, @password varchar (40))
+	RETURNS BIT 
+	AS
+	BEGIN 
+	DECLARE @Success bit 
+	if EXISTS (SELECT Advisor FROM Advisor WHERE Advisor.advisor_id = @ID AND  Advisor.password = @password)
+		SET @Success = 1
+	ELSE 
+		SET @Success = 0
+	
+	RETURN @Success  
+	END
+	
 
 --R
 --TO BE CHECKED SINCE THE INPUT IS A DATE AND IT SHOULD BE AN INTEGER REPRESENTING THE SEMESTER

@@ -298,4 +298,4 @@ CREATE FUNCTION FN_num_of_falied_courses_HELPER (@Season1 VARCHAR(40) , @Season2
 				(grade = 'F' OR grade = 'FF')
 
 	RETURN @Num_of_falied_courses ;
-	END
+	END  

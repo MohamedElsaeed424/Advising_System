@@ -2,6 +2,19 @@
 
 
 GO
+CREATE FUNCTION GetFinance (@id INT)
+	RETURNS BIT
+	AS
+	BEGIN
+		RETURN CASE
+			WHEN EXISTS (SELECT * 
+			from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
+				AND p.student_id = @id
+				AND CURRENT_TIMESTAMP > i.deadline AND i.status = 1)
+			THEN 1 ELSE 0 END 
+	END;
+GO
+
 CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Course (
 	course_id             INT PRIMARY KEY,
@@ -59,7 +72,6 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 
 
-
 	CREATE TABLE Student (
 	student_id            INT PRIMARY KEY ,
 	f_name                VARCHAR (40) ,
@@ -69,12 +81,7 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40) UNIQUE, 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	financial_status      AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-									CASE
-									WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-									THEN 1 ELSE 0 END
-									from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
-									 AND p.student_id = Student.student_id),
+	financial_status      AS		(GetFinance(student_id) ),
 	semester              INT, 
 	acquired_hours        VARCHAR (40), 
 	assigned_hours        VARCHAR (40) DEFAULT NULL, 

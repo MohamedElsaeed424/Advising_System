@@ -3,9 +3,16 @@ GO
 CREATE PROC Procedures_AdminIssueInstallment
 	@paymentID INT 
 	AS 
-	SELECT COUNT(Installment)
-	FROM Installment
-	WHERE Installment.payment_id = @paymentID
+	IF @paymentID IS NULL
+	BEGIN 
+		PRINT 'INVALID INPUT'
+	END
+	ELSE 
+	BEGIN
+		SELECT COUNT(*)
+		FROM Installment
+		WHERE Installment.payment_id = @paymentID
+	END
 	GO 
 	EXEC Procedures_AdminIssueInstallment
 
@@ -14,11 +21,17 @@ GO
 CREATE PROC Procedures_AdminDeleteCourse
 	@courseID INT 
 	AS
-	DELETE FROM Slot
-		WHERE course_id = @courseID;
-
-	DELETE FROM Course
-       WHERE course_id = @courseID;
+	IF @courseID IS NULL
+	BEGIN 
+		PRINT 'INVALID INPUT'
+	END
+	ELSE
+	BEGIN 
+		DELETE FROM Slot
+			WHERE course_id = @courseID;
+		DELETE FROM Course
+			WHERE course_id = @courseID;
+	END
 	GO
 	EXEC Procedures_AdminDeleteCourse
 
@@ -26,24 +39,27 @@ GO
 CREATE PROC Procedure_AdminUpdateStudentStatus
 	@StudentID int
 	AS 
-	UPDATE Student
-	SET Student.financial_status = 0 
-	FROM Student
-	INNER JOIN Payment ON Payment.student_id = @StudentID
-	WHERE Payment.status = 'notPaid' AND Payment.deadline<GETDATE()
+	IF @StudentID IS NULL
+	BEGIN
+		PRINT 'INVALID INPUT'
+	END
+	ELSE
+	BEGIN
+		UPDATE Student
+		SET Student.financial_status = 0 
+		FROM Student
+		INNER JOIN Payment ON Payment.student_id = @StudentID
+		WHERE Payment.status = 'notPaid' AND Payment.deadline<GETDATE()
+	END
 	GO 
 	EXEC Procedure_AdminUpdateStudentStatus
 --0
 GO
 CREATE VIEW all_Pending_Requests AS
-	SELECT r.request_id ,
-	r.type ,
-	r.comment ,
-	r.status , 
-	r.credit_hours ,
-	r.student_id ,
-	r.advisor_id 
-	FROM Request r
+	SELECT r.* , S.f_name , S.l_name , A.name
+	FROM Request r 
+	INNER JOIN Student S ON S.student_id = r.student_id
+	INNER JOIN Advisor A ON A.advisor_id = r.advisor_id
 	WHERE status = 'pending'
 	GO
 	EXEC all_Pending_Requests
@@ -54,11 +70,18 @@ GO
 CREATE PROC Procedures_AdminDeleteSlots 
 	@current_semester VARCHAR (40)
 	AS
-	DELETE S
-	FROM Slot S
-	INNER JOIN Course C on S.course_id = C.course_id
-	WHERE C.is_offered = 0 AND
-	C.semester <> @current_semester;
+	IF @current_semester IS NULL 
+	BEGIN
+		PRINT 'INVALID INPUT'
+	END 
+	ELSE 
+	BEGIN
+		DELETE S
+		FROM Slot S
+		INNER JOIN Course C ON S.course_id = C.course_id
+		INNER JOIN Course_Semester CS ON @current_semester = CS.semester_code
+		WHERE C.is_offered = 0 
+	END
 	GO
 	EXEC Procedures_AdminDeleteSlots
 
@@ -70,7 +93,7 @@ CREATE FUNCTION FN_AdvisorLogin
 	RETURNS BIT 
 	AS
 	BEGIN 
-	DECLARE @Success bit 
+		DECLARE @Success bit 
 	if EXISTS (SELECT Advisor FROM Advisor WHERE Advisor.advisor_id = @ID AND  Advisor.password = @password)
 		SET @Success = 1
 	ELSE 
@@ -107,7 +130,7 @@ CREATE PROC Procedures_AdvisorAddCourseGP
 	DECLARE @course_id INT  
 	SELECT @course_id = course_id FROM Course WHERE Course.name = @course_name
 	DECLARE @plan_id INT 
-	SELECT @plan_id = plan_id FROM Graduation_Plan WHERE @student_Id = student_id
+	SELECT @plan_id = plan_id FROM Graduation_Plan WHERE Graduation_Plan.student_id = @student_Id
 	INSERT INTO GradPlan_Course (plan_id,semester_code,course_id)
 	VALUES (@plan_id , @Semester_code , @course_id )
 	GO 
@@ -121,6 +144,11 @@ CREATE PROC Procedures_AdvisorUpdateGP
 	@studentID int
 	AS
 	--type cast varchar semester into an int to match data types
+	--assuming that the input is a semester as an integer value
+	--since it isn't called semester code 
+	--wala eh
+	--hab2a as2al kamilia fel mawdo3 dah
+	--bas 5aleeha kda delwa2ty
 	DECLARE @ExpectedGradSemInt INT = CAST(@expected_grad_semster AS INT)
 	UPDATE Graduation_Plan 
 	SET expected_grad_semester = @ExpectedGradSemInt

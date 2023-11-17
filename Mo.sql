@@ -118,9 +118,10 @@ CREATE PROC Procedures_AdvisorCreateGP
 	BEGIN 
 		PRINT 'INVALID INPUT'
 	END
+	ELSE
 	BEGIN
-	INSERT INTO Graduation_Plan (semester_code , semester_credit_hours ,advisor_id , student_id  )
-	VALUES (@Semestercode ,@sem_credit_hours ,@advisorid , @studentid )
+		INSERT INTO Graduation_Plan (semester_code , semester_credit_hours ,advisor_id , student_id  )
+		VALUES (@Semestercode ,@sem_credit_hours ,@advisorid , @studentid )
 	END
 	GO
 	EXEC Procedures_AdvisorCreateGP
@@ -132,12 +133,19 @@ CREATE PROC Procedures_AdvisorAddCourseGP
 	@Semester_code varchar (40), 
 	@course_name varchar (40)
 	AS 
-	DECLARE @course_id INT  
-	SELECT @course_id = course_id FROM Course WHERE Course.name = @course_name
-	DECLARE @plan_id INT 
-	SELECT @plan_id = plan_id FROM Graduation_Plan WHERE Graduation_Plan.student_id = @student_Id
-	INSERT INTO GradPlan_Course (plan_id,semester_code,course_id)
-	VALUES (@plan_id , @Semester_code , @course_id )
+	IF @student_Id IS NULL OR @Semester_code IS NULL OR @course_name IS NULL
+	BEGIN
+		PRINT 'INVALID INPUT'
+	END
+	ELSE
+	BEGIN
+		DECLARE @course_id INT  
+		SELECT @course_id = course_id FROM Course WHERE Course.name = @course_name
+		DECLARE @plan_id INT 
+		SELECT @plan_id = plan_id FROM Graduation_Plan WHERE Graduation_Plan.student_id = @student_Id
+		INSERT INTO GradPlan_Course (plan_id,semester_code,course_id)
+		VALUES (@plan_id , @Semester_code , @course_id )
+	END
 	GO 
 	EXEC Procedures_AdvisorAddCourseGP
 
@@ -148,6 +156,12 @@ CREATE PROC Procedures_AdvisorUpdateGP
 	@expected_grad_semster varchar (40), 
 	@studentID int
 	AS
+	IF @expected_grad_semster IS NULL OR @studentID IS NULL
+	BEGIN 
+		PRINT 'INVALID INPUT'
+	END
+	ELSE 
+	BEGIN
 	--type cast varchar semester into an int to match data types
 	--assuming that the input is a semester as an integer value
 	--since it isn't called semester code 
@@ -158,6 +172,7 @@ CREATE PROC Procedures_AdvisorUpdateGP
 	UPDATE Graduation_Plan 
 	SET expected_grad_semester = @ExpectedGradSemInt
 	WHERE Graduation_Plan.student_id = @studentID 
+	END
 	GO 
 	EXEC Procedures_AdvisorUpdateGP
 
@@ -170,10 +185,17 @@ CREATE PROC Procedures_AdvisorDeleteFromGP
 	@semesterCode varchar (40) ,
 	@courseID INT
 	AS
+	IF @studentID IS NULL OR @semesterCode IS NULL OR @courseID IS NULL
+	BEGIN 
+		PRINT 'INVALID INPUT'
+	END
+	ELSE
+	BEGIN
 	DELETE C
 	FROM Course C
 	INNER JOIN Graduation_Plan GP ON GP.student_id = @studentID
 	INNER JOIN Semester S ON S.semester_code = @semesterCode
 	WHERE C.course_id = @courseID
+	END
 	GO 
 	EXEC Procedures_AdvisorDeleteFromGP

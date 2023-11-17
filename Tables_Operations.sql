@@ -15,7 +15,7 @@ CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Instructor (
 	instructor_id        INT PRIMARY KEY,
 	name                 VARCHAR(40) ,
-	email                VARCHAR(40),
+	email                VARCHAR(40) UNIQUE,
 	faculty              VARCHAR(40),
 	office               VARCHAR(40)
 	) ;
@@ -29,7 +29,7 @@ CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Advisor (
 	advisor_id        INT PRIMARY KEY, 
 	name              VARCHAR(40),
-	email             VARCHAR(40), 
+	email             VARCHAR(40) UNIQUE, 
 	office            VARCHAR(40), 
 	password          VARCHAR(40)
 	);
@@ -42,7 +42,7 @@ CREATE PROCEDURE CreateAllTables AS
 	l_name                VARCHAR (40) , 
 	gpa	                  DECIMAL (3,2) , 
 	faculty               VARCHAR (40), 
-	email                 VARCHAR (40), 
+	email                 VARCHAR (40) UNIQUE, 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
 	--financial_status      BIT ,

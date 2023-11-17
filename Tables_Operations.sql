@@ -1,7 +1,6 @@
 ﻿CREATE DATABASE Advising_Team_13 ;
-
-
 GO
+
 CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Course (
 	course_id             INT PRIMARY KEY,
@@ -196,16 +195,16 @@ CREATE TABLE GradPlan_Course (
 	);
 
 	ALTER TABLE Student
-	ADD financial_status AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
+	ADD financial_status AS		(   SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
 									CASE
 									WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
 									THEN 1 ELSE 0 END
 									from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
 									 AND p.student_id = Student.student_id);
-
 GO
-EXEC CreateAllTables;
 DROP PROCEDURE CreateAllTables;
+GO;
+EXEC CreateAllTables;
 GO
 
 CREATE PROCEDURE  DropAllTables AS
@@ -227,10 +226,9 @@ CREATE PROCEDURE  DropAllTables AS
 	DROP TABLE Semester;
 	DROP TABLE Instructor;
 	DROP TABLE Course;
-
 GO
-
 DROP PROC DropAllTables;
+GO
 EXEC DropAllTables;
 GO
 
@@ -253,10 +251,8 @@ CREATE PROCEDURE clearAllTables AS
 	TRUNCATE TABLE Semester;
 	TRUNCATE TABLE Instructor;
 	TRUNCATE TABLE Course;
-
-
 GO
-
 DROP PROC clearAllTables;
+GO
 EXEC clearAllTables;
 GO

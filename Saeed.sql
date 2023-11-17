@@ -5,12 +5,12 @@ AS
 RETURN
     SELECT 
 		S.student_id                    AS 'Student Id',
-		CONCAT(S.f_name, ' ', S.l_name) AS ' Student_name', 
-		GP.plan_id                      AS ' graduation Plan Id', 
+		CONCAT(S.f_name, ' ', S.l_name) AS 'Student_name', 
+		GP.plan_id                      AS 'graduation Plan Id', 
 		c.course_id                     AS 'Course id',
 		c.name                          AS 'Course name', 
 		GP.semester_code                AS 'Semester code', 
-		SE.end_date                     AS ' expected graduation date', --IS this correct ??
+		SE.end_date                     AS 'expected graduation date', --IS this correct ??
 		GP.semester_credit_hours        AS 'Semester credit hours', 
 		GP.advisor_id                   AS 'advisor id'
     FROM ((Student S INNER JOIN Graduation_Plan GP ON S.student_id = GP.student_id

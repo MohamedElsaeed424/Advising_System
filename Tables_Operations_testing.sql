@@ -26,6 +26,30 @@ CREATE PROCEDURE CreateAllTables AS
 	end_date            DATE
 	);
 
+	CREATE TABLE Payment(
+	payment_id      INT PRIMARY KEY, 
+	amount          DECIMAL(7,2), 
+	deadline        DATE,
+	n_installments  INT DEFAULT 0,
+	status          VARCHAR(40) DEFAULT 'notPaid',
+	fund_percentage DECIMAL(5,2), 
+	student_id      INT, 
+	semester_code   VARCHAR(40), 
+	start_date      DATE,
+	--FOREIGN KEY (student_id) REFERENCES Student (student_id)  ON DELETE SET NULL,
+	FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) ON DELETE SET NULL,
+	);
+
+	CREATE TABLE Installment (
+	payment_id     INT , 
+	deadline       DATE, 
+	amount         DECIMAL(7,2), 
+	status         BIT  ,
+	start_date     DATE ,
+	CONSTRAINT  PK_Installment PRIMARY KEY (payment_id, deadline),
+	FOREIGN KEY (payment_id) REFERENCES Payment (payment_id) ON DELETE CASCADE,
+	);
+
 	CREATE TABLE Advisor (
 	advisor_id        INT PRIMARY KEY, 
 	name              VARCHAR(40),
@@ -45,19 +69,23 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40) UNIQUE, 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	--financial_status      BIT ,
-							--AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-							--		CASE
-							--		WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-							--		THEN 1 ELSE 0 END
-							--		from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
-							--		 AND p.student_id = Student.student_id),
+	financial_status      AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
+									CASE
+									WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
+									THEN 1 ELSE 0 END
+									from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
+									 AND p.student_id = Student.student_id),
 	semester              INT, 
 	acquired_hours        VARCHAR (40), 
 	assigned_hours        VARCHAR (40) DEFAULT NULL, 
 	advisor_id            INT ,
 	FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) ON DELETE SET NULL
 	);
+
+	-- CONTINUATION OF Payment table
+	ALTER TABLE Payment 
+	ADD CONSTRAINT FK_Student
+	FOREIGN KEY (student_id) REFERENCES Semester (semester_code) ON DELETE SET NULL;
 
 	CREATE TABLE Student_Phone (
 	student_id            INT  ,
@@ -117,27 +145,27 @@ CREATE PROCEDURE CreateAllTables AS
 	FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) ON DELETE SET NULL
 	);
 
-CREATE TABLE Graduation_Plan (
-  plan_id                INT, 
-  semester_code          VARCHAR(40), 
-  semester_credit_hours  INT, 
-  expected_grad_semester INT, 
-  advisor_id             INT, 
-  student_id             INT,
-  CONSTRAINT PK_Graduation_Plan PRIMARY KEY (plan_id, semester_code),
-  FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) ON DELETE SET NULL,
-  FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE
-);
+	CREATE TABLE Graduation_Plan (
+	  plan_id                INT, 
+	  semester_code          VARCHAR(40), 
+	  semester_credit_hours  INT, 
+	  expected_grad_semester INT, 
+	  advisor_id             INT, 
+	  student_id             INT,
+	  CONSTRAINT PK_Graduation_Plan PRIMARY KEY (plan_id, semester_code),
+	  FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) ON DELETE SET NULL,
+	  FOREIGN KEY (student_id) REFERENCES Student (student_id) ON DELETE CASCADE
+	);
 
-CREATE TABLE GradPlan_Course (
-  plan_id                INT, 
-  semester_code          VARCHAR(40), 
-  course_id              INT,
-  CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id, semester_code, course_id),
-  FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_Plan (plan_id, semester_code) ON DELETE CASCADE,
-  FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code) ON DELETE CASCADE, -- OR SET NULL???
-  FOREIGN KEY (course_id)              REFERENCES Course (course_id) ON DELETE CASCADE 
-);
+	CREATE TABLE GradPlan_Course (
+	  plan_id                INT, 
+	  semester_code          VARCHAR(40), 
+	  course_id              INT,
+	  CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id, semester_code, course_id),
+	  FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_Plan (plan_id, semester_code) ON DELETE CASCADE,
+	  FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code) ON DELETE CASCADE, -- OR SET NULL???
+	  FOREIGN KEY (course_id)              REFERENCES Course (course_id) ON DELETE CASCADE 
+	);
 	/*is type not null since a request is either course or credit hours*/
 	CREATE TABLE Request (
 	request_id             INT IDENTITY(1,1) PRIMARY KEY, 
@@ -171,37 +199,7 @@ CREATE TABLE GradPlan_Course (
 	FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE CASCADE
 	);
 
-	CREATE TABLE Payment(
-	payment_id      INT PRIMARY KEY, 
-	amount          DECIMAL(7,2), 
-	deadline        DATE,
-	n_installments  INT DEFAULT 0,
-	status          VARCHAR(40) DEFAULT 'notPaid',
-	fund_percentage DECIMAL(5,2), 
-	student_id      INT, 
-	semester_code   VARCHAR(40), 
-	start_date      DATE,
-	FOREIGN KEY (student_id) REFERENCES Student (student_id)  ON DELETE SET NULL,
-	FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) ON DELETE SET NULL,
-	);
-
-	CREATE TABLE Installment (
-	payment_id     INT , 
-	deadline       DATE, 
-	amount         DECIMAL(7,2), 
-	status         BIT  ,
-	start_date     DATE ,
-	CONSTRAINT  PK_Installment PRIMARY KEY (payment_id, deadline),
-	FOREIGN KEY (payment_id) REFERENCES Payment (payment_id) ON DELETE CASCADE,
-	);
-
-	ALTER TABLE Student
-	ADD financial_status AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-									CASE
-									WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-									THEN 1 ELSE 0 END
-									from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
-									 AND p.student_id = Student.student_id);
+	
 
 GO
 EXEC CreateAllTables;

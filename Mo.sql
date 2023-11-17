@@ -114,11 +114,16 @@ CREATE PROC Procedures_AdvisorCreateGP
 	@advisorid INT,
 	@studentid INT
 	AS
+	IF @Semestercode IS NULL OR @expected_graduation_date IS NULL OR @sem_credit_hours IS NULL OR @advisorid IS NULL OR @studenti IS NULL
+	BEGIN 
+		PRINT 'INVALID INPUT'
+	END
+	BEGIN
 	INSERT INTO Graduation_Plan (semester_code , semester_credit_hours ,advisor_id , student_id  )
 	VALUES (@Semestercode ,@sem_credit_hours ,@advisorid , @studentid )
+	END
 	GO
 	EXEC Procedures_AdvisorCreateGP
-
 
 --S
 GO 

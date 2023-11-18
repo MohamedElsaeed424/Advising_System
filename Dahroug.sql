@@ -46,7 +46,10 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 	@studentID int,
 	@advisorID int
 	AS
-	Declare @prereq BIT
+	DECLARE @Current_semester_code varchar(40)
+	SET @Current_semester_code = SELECT semester_code from Smester 
+			Where CURRENT_TIMESTAMP 
+	DECLARE @prereq BIT
 	SET @prereq = CASE
 		WHEN EXISTS (
 			SELECT p.prerequisite_course_id

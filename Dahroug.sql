@@ -67,6 +67,18 @@ CREATE PROC Procedures_AdvisorViewPendingRequests
 		where student_id in (Select student_id from student where advisor_id = @AdvisorID));
 	GO
 
+
+-- AA
+CREATE FUNCTION  FN_StudentLogin(@StudentID int, @password varchar (40))
+	RETURNS BIT
+	AS
+	BEGIN
+		RETURN CASE WHEN EXISTS (SELECT 1 from Student
+							WHERE student_id = @StudentID AND password = @password)
+			   THEN 1 ELSE 0 END
+	END;
+GO
+
 /*BB*/
 CREATE PROC Procedures_StudentaddMobile
 	@StudentID int, 

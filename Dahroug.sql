@@ -1,4 +1,15 @@
-﻿/*W What to do with semester code?????*/
+﻿/* V */
+CREATE FUNCTION FN_Advisors_Requests (@advisorID INT)
+	RETURNS TABLE
+	AS
+	RETURN (
+		SELECT *
+		FROM Request
+		WHERE advisor_id = @advisorID
+	);
+GO
+
+/*W What to do with semester code?????*/
 Create PROC Procedures_AdvisorApproveRejectCHRequest
 	@RequestID int, 
 	@Current_semester_code varchar (40)
@@ -68,7 +79,7 @@ CREATE PROC Procedures_AdvisorViewPendingRequests
 	GO
 
 
--- AA
+/* AA  */
 CREATE FUNCTION  FN_StudentLogin(@StudentID int, @password varchar (40))
 	RETURNS BIT
 	AS

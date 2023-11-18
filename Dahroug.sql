@@ -1,4 +1,4 @@
-﻿/* V */
+﻿/* V Handle what to show when type = course and when type = CH*/
 CREATE FUNCTION FN_Advisors_Requests (@advisorID INT)
 	RETURNS TABLE
 	AS
@@ -47,8 +47,8 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 	@advisorID int
 	AS
 	DECLARE @Current_semester_code varchar(40)
-	SET @Current_semester_code = SELECT semester_code from Smester 
-			Where CURRENT_TIMESTAMP 
+	SET @Current_semester_code = (SELECT TOP 1 semester_code from Semester 
+			Where CURRENT_TIMESTAMP <= end_date and CURRENT_TIMESTAMP >= start_date)
 	DECLARE @prereq BIT
 	SET @prereq = CASE
 		WHEN EXISTS (

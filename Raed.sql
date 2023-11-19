@@ -11,7 +11,7 @@ CREATE PROC Procedures_AdvisorRegistration
 			PRINT("CAN'T DO THIS SERVICE")
 		END
 	 ELSE
-		BEGIN
+		BEGIN 
 			 INSERT INTO Advisor(name,password,email,office) VALUES(@name,@password,@email,@office);
 			 SELECT @advisor_id = advisor_id 
 			 FROM Advisor 

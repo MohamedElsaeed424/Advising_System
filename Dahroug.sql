@@ -1,4 +1,15 @@
-﻿/*W What to do with semester code?????*/
+﻿/* V Handle what to show when type = course and when type = CH*/
+CREATE FUNCTION FN_Advisors_Requests (@advisorID INT)
+	RETURNS TABLE
+	AS
+	RETURN (
+		SELECT *
+		FROM Request
+		WHERE advisor_id = @advisorID
+	);
+GO
+
+/*W What to do with semester code?????*/
 Create PROC Procedures_AdvisorApproveRejectCHRequest
 	@RequestID int, 
 	@Current_semester_code varchar (40)
@@ -35,7 +46,10 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 	@studentID int,
 	@advisorID int
 	AS
-	Declare @prereq BIT
+	DECLARE @Current_semester_code varchar(40)
+	SET @Current_semester_code = (SELECT TOP 1 semester_code from Semester 
+			Where CURRENT_TIMESTAMP <= end_date and CURRENT_TIMESTAMP >= start_date)
+	DECLARE @prereq BIT
 	SET @prereq = CASE
 		WHEN EXISTS (
 			SELECT p.prerequisite_course_id
@@ -66,6 +80,18 @@ CREATE PROC Procedures_AdvisorViewPendingRequests
 	Select @Table = (Select * from request 
 		where student_id in (Select student_id from student where advisor_id = @AdvisorID));
 	GO
+
+
+/* AA  */
+CREATE FUNCTION  FN_StudentLogin(@StudentID int, @password varchar (40))
+	RETURNS BIT
+	AS
+	BEGIN
+		RETURN CASE WHEN EXISTS (SELECT 1 from Student
+							WHERE student_id = @StudentID AND password = @password)
+			   THEN 1 ELSE 0 END
+	END;
+GO
 
 /*BB*/
 CREATE PROC Procedures_StudentaddMobile

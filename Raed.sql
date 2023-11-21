@@ -1,5 +1,4 @@
 ﻿GO
-----------------------------------
 CREATE PROC Procedures_AdvisorRegistration
 	 @name VARCHAR(40),
 	 @password VARCHAR(40), 
@@ -15,40 +14,20 @@ CREATE PROC Procedures_AdvisorRegistration
 		BEGIN 
 			 SELECT @advisor_id = MAX(advisor_id) + 1 FROM Advisor;
 			 INSERT INTO Advisor(advisor_id,name,password,email,office) VALUES(@advisor_id,@name,@password,@email,@office);
-		END
-	 GO
-	 DECLARE 
-	 @result INT;
-	 EXEC Procedures_AdvisorRegistration 
-	 @name = 'RAED',
-	 @password = 'JOUMAA',
-	 @email = 'HOTMAIL',
-	 @office = 'C6205',
-	 @advisor_id = @result OUTPUT;
-
-
+		END 
 GO
 CREATE PROC Procedures_AdminListStudents
 	AS
-	SELECT * FROM Student;
-	GO
-	EXEC Procedures_AdminListStudents;
-
+	SELECT * FROM Student;	
 GO 
 CREATE PROC Procedures_AdminListAdvisors
 	AS
-	SELECT * FROM Advisor;
-	GO
-	EXEC Procedures_AdminListAdvisors;
-
+	SELECT * FROM Advisor;	
 GO
 CREATE PROC AdminListStudentsWithAdvisors
 	AS
 	SELECT Student.f_name,Student.l_name , Advisor.name
 	FROM Student INNER JOIN Advisor ON Student.advisor_id = Advisor.advisor_id;
-	GO
-	EXEC AdminListStudentsWithAdvisors
-
 GO
 CREATE PROC AdminAddingSemester 
 	@start_date DATE,
@@ -63,14 +42,7 @@ CREATE PROC AdminAddingSemester
 		BEGIN
 			INSERT INTO Semester VALUES(@semester_code,@start_date,@end_date);
 		END
-	GO
-	EXEC AdminAddingSemester
-	@start_date = '2003-01-24',
-	@end_date = '2075-01-24' ,
-	@semester_code = '';
-
 GO
------------------------
 CREATE PROC Procedures_AdminAddingCourse 
 	@major VARCHAR (40), 
 	@semester INT, 
@@ -89,15 +61,6 @@ CREATE PROC Procedures_AdminAddingCourse
 		BEGIN
 			INSERT INTO Course(course_id,name,major,is_offered,credit_hours,semester) VALUES(@courseID,@name,@major,@is_offered,@credit_hours,@semester);
 		END
-	GO
-	EXEC Procedures_AdminAddingCourse
-	@major = '',
-	@semester = 1,
-	@credit_hours = 4,
-	@name ='',
-	@is_offered =0;
-	
-
 GO
 CREATE PROC Procedures_AdminLinkInstructor
 	@instructor_id INT,
@@ -119,13 +82,6 @@ CREATE PROC Procedures_AdminLinkInstructor
 		BEGIN
 			INSERT INTO Slot(slot_id,course_id,instructor_id) VALUES(@slot_id,@course_id,@instructor_id);
 		END
-	
-	GO
-	EXEC Procedures_AdminLinkInstructor
-	@instructor_id = 1,
-	@course_id = 1,
-	@slot_id = 1;
-
 GO 
 CREATE PROC Procedures_AdminLinkStudent
 	@instructor_id INT,
@@ -148,14 +104,7 @@ CREATE PROC Procedures_AdminLinkStudent
 	ELSE
 		BEGIN
 			INSERT INTO Student_Instructor_Course_Take(student_id,course_id,instructor_id,semester_code) VALUES(@student_id,@course_id,@instructor_id,@semester_code);
-		END
-	GO
-	EXEC Procedures_AdminLinkStudent
-	@instructor_id = 1,
-	@student_id = 1,
-	@course_id = 1,
-	@semester_code = '';
-
+		END	
 GO 
 CREATE PROC Procedures_AdminLinkStudentToAdvisor
 	@student_id INT,
@@ -175,13 +124,7 @@ CREATE PROC Procedures_AdminLinkStudentToAdvisor
 		BEGIN
 			INSERT INTO Student(student_id,advisor_id) VALUES(@student_id,@advisor_id);
 		END
-	GO
-	EXEC Procedures_AdminLinkStudentToAdvisor
-	@student_id =1,
-	@advisor_id =1;
-
-GO
--------------------------------
+GO 
 CREATE PROC Procedures_AdminAddExam
 	@Type VARCHAR (40),
 	@date DATETIME,
@@ -195,9 +138,5 @@ CREATE PROC Procedures_AdminAddExam
 		BEGIN
 			INSERT INTO MakeUp_Exam(date,type,course_id) VALUES(@date,@Type,@course_id);
 		END
-	GO
-	EXEC Procedures_AdminAddExam 
-	@Type = '',
-	@date = '',
-	@course_id =1;
+GO
 

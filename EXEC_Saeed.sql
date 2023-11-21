@@ -1,4 +1,13 @@
-﻿EXEC Procedures_StudentRegisterFirstMakeup 
+﻿
+EXEC CreateAllTables;
+EXEC DropAllTables;
+EXEC clearAllTables;
+DROP PROCEDURE CreateAllTables;
+DROP PROC DropAllTables;
+DROP PROC clearAllTables;
+
+
+EXEC Procedures_StudentRegisterFirstMakeup 
 @StudentID = 1 ,  
 @courseID= 1 ,
 @studentCurrentsemester = 'Spring 2023 à S23'  ;

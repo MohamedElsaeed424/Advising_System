@@ -182,7 +182,7 @@ CREATE TABLE GradPlan_Course (
 	semester_code   VARCHAR(40), 
 	start_date      DATETIME,
 	CONSTRAINT FK_student FOREIGN KEY (student_id) REFERENCES Student (student_id) ,-- ON DELETE SET NULL,
-	CONSTRAINT FK_semesterFOREIGN KEY (semester_code) REFERENCES Semester (semester_code) --ON DELETE SET NULL,
+	CONSTRAINT FK_semesterFOREIGN FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) --ON DELETE SET NULL,
 	);
 
 	CREATE TABLE Installment (

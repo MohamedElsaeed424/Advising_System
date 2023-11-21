@@ -72,7 +72,7 @@ CREATE PROCEDURE CreateAllTables AS
 	prerequisite_course_id  INT ,
 	course_id               INT NOT NULL ,
 	CONSTRAINT PK_PreqCourse_course PRIMARY KEY (prerequisite_course_id, course_id),
-	CONSTRAINT FK_PreqCourse_course FOREIGN KEY (prerequisite_course_id ) REFERENCES Course (course_id ) ON DELETE CASCADE ,
+	CONSTRAINT FK_PreqCourse_course FOREIGN KEY (prerequisite_course_id ) REFERENCES Course (course_id ) ,-- ON DELETE CASCADE ,
 	CONSTRAINT FK_PreqCourse_course2 FOREIGN KEY (course_id ) REFERENCES Course (course_id)  --ON DELETE CASCADE
 	);
 
@@ -194,9 +194,7 @@ CREATE TABLE GradPlan_Course (
 	CONSTRAINT PK_Installment PRIMARY KEY (payment_id, deadline),
 	CONSTRAINT FK_Payment FOREIGN KEY (payment_id) REFERENCES Payment (payment_id),
 	);
-GO
-EXEC CreateAllTables;
-DROP PROCEDURE CreateAllTables;
+
 GO
 
 CREATE PROCEDURE  DropAllTables AS
@@ -221,9 +219,7 @@ CREATE PROCEDURE  DropAllTables AS
 
 GO
 
-DROP PROC DropAllTables;
-EXEC DropAllTables;
-GO
+
 
 CREATE PROCEDURE clearAllTables AS
 	TRUNCATE TABLE Installment;
@@ -250,7 +246,4 @@ CREATE PROCEDURE clearAllTables AS
 	TRUNCATE TABLE Semester;
 	TRUNCATE TABLE Instructor;
 	TRUNCATE TABLE Course;
-GO
-DROP PROC clearAllTables;
-EXEC clearAllTables;
-GO
+

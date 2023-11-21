@@ -259,10 +259,7 @@ CREATE PROCEDURE clearAllTables AS
 	TRUNCATE TABLE Semester;
 	TRUNCATE TABLE Instructor;
 	TRUNCATE TABLE Course;
-
-
 GO
-
 DROP PROC clearAllTables;
 EXEC clearAllTables;
 GO

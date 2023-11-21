@@ -202,3 +202,40 @@ INSERT INTO MakeUp_Exam VALUES
 (10, '2024-12-15', 'Final', 10);
 
 -- Adding 10 records to the Exam_Student table
+INSERT INTO Exam_Student VALUES (1, 1, 1);
+INSERT INTO Exam_Student VALUES (1, 2, 1);
+INSERT INTO Exam_Student VALUES (1, 3, 1);
+INSERT INTO Exam_Student VALUES (2, 2, 1);
+INSERT INTO Exam_Student VALUES (2, 3, 1);
+INSERT INTO Exam_Student VALUES (2, 4, 1);
+INSERT INTO Exam_Student VALUES (3, 3, 2);
+INSERT INTO Exam_Student VALUES (3, 4, 2);
+INSERT INTO Exam_Student VALUES (3, 5, 2);
+INSERT INTO Exam_Student VALUES (4, 4, 2);
+
+-- Adding 10 records to the Payment table
+INSERT INTO Payment VALUES
+(1, 500, '2023-11-22', 3, 'notPaid', 50.00, 1, 'W23', '2023-11-22'),
+(2, 700, '2023-11-23', 4, 'notPaid', 60.00, 2, 'S23', '2023-11-23'),
+(3, 600, '2023-11-24', 2, 'notPaid', 40.00, 3, 'S23R1', '2023-11-24'),
+(4, 800, '2023-11-25', 3, 'notPaid', 70.00, 4, 'S23R2', '2023-11-25'),
+(5, 550, '2023-11-26', 4, 'notPaid', 45.00, 5, 'F23', '2023-11-26'),
+(6, 900, '2023-11-27', 2, 'notPaid', 80.00, 6, 'W24', '2023-11-27'),
+(7, 750, '2023-11-28', 3, 'notPaid', 65.00, 7, 'S24', '2023-11-28'),
+(8, 620, '2023-11-29', 4, 'notPaid', 55.00, 8, 'S24R1', '2023-11-29'),
+(9, 720, '2023-11-30', 2, 'notPaid', 75.00, 9, 'S24R2', '2023-11-30'),
+(10, 580, '2023-12-01', 3, 'notPaid', 47.00, 10, 'F24', '2023-12-01');
+
+
+-- Adding 10 records to the Installment table
+INSERT INTO Installment VALUES
+(1, '2023-12-01', 50, 'pending', '2023-12-01'),
+(2, '2023-12-02', 70, 'pending', '2023-12-02'),
+(3, '2023-12-03', 60, 'pending', '2023-12-03'),
+(4, '2023-12-04', 80, 'pending', '2023-12-04'),
+(5, '2023-12-05', 55, 'pending', '2023-12-05'),
+(6, '2023-12-06', 90, 'pending', '2023-12-06'),
+(7, '2023-12-07', 75, 'pending', '2023-12-07'),
+(8, '2023-12-08', 62, 'pending', '2023-12-08'),
+(9, '2023-12-09', 72, 'pending', '2023-12-09'),
+(10, '2023-12-10', 58, 'pending', '2023-12-10');

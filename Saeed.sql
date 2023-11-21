@@ -10,7 +10,7 @@ RETURN
 		c.course_id                     AS 'Course id',
 		c.name                          AS 'Course name', 
 		GP.semester_code                AS 'Semester code', 
-		SE.end_date                     AS ' expected graduation date', --IS this correct ??
+		SE.end_date                     AS 'expected graduation date', --IS this correct ??
 		GP.semester_credit_hours        AS 'Semester credit hours', 
 		GP.advisor_id                   AS 'advisor id'
     FROM ((Student S INNER JOIN Graduation_Plan GP ON S.student_id = GP.student_id
@@ -18,9 +18,6 @@ RETURN
 					INNER JOIN Course c ON GPC.course_id = c.course_id
 					INNER JOIN Semester SE ON SE.semester_code = GP.semester_code)
 	WHERE S.student_id = @student_ID
-
-
-
 -- GG)
 GO
 CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)

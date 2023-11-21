@@ -45,7 +45,7 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40) UNIQUE, 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	--financial_status      BIT ,
+	financial_status      BIT ,
 							--AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
 							--		CASE
 							--		WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 

@@ -1,11 +1,23 @@
-﻿EXEC Procedures_StudentRegisterFirstMakeup @StudentID = 1 ,  @courseID= 1 ,@studentCurrentsemester = 'Spring 2023 à S23'  ;
-EXEC Procedures_StudentRegisterSecondMakeup @StudentID = 1 ,  @courseID= 1 ,@Student_Current_Semester = 'Spring 2023 à S23'  ;
-EXEC Procedures_ViewRequiredCourses @Student_ID = 1 , @Current_semester_code= 'Spring 2023 à S23'  ;
-EXEC Procedures_ViewOptionalCourse @Student_ID = 1 , @Current_semester_code= 'Spring 2023 à S23'  ;
-EXEC Procedures_ViewMS @StudentID=1 ;
-EXEC Procedures_ChooseInstructor  @StudentID=1, @InstructorID=1 ,@CourseID=1 ;
-
-
+﻿EXEC Procedures_StudentRegisterFirstMakeup 
+@StudentID = 1 ,  
+@courseID= 1 ,
+@studentCurrentsemester = 'Spring 2023 à S23'  ;
+EXEC Procedures_StudentRegisterSecondMakeup 
+@StudentID = 1 ,  
+@courseID= 1 ,
+@Student_Current_Semester = 'Spring 2023 à S23'  ;
+EXEC Procedures_ViewRequiredCourses 
+@Student_ID = 1 , 
+@Current_semester_code= 'Spring 2023 à S23'  ;
+EXEC Procedures_ViewOptionalCourse 
+@Student_ID = 1 , 
+@Current_semester_code= 'Spring 2023 à S23'  ;
+EXEC Procedures_ViewMS 
+@StudentID=1 ;
+EXEC Procedures_ChooseInstructor  
+@StudentID=1, 
+@InstructorID=1 ,
+@CourseID=1 ;
 
 DROP FUNCTION FN_StudentViewGP ;
 DROP FUNCTION FN_StudentUpcoming_installment ;

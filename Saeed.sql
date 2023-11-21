@@ -17,11 +17,12 @@ RETURN
 					INNER JOIN GradPlan_Course GPC ON (GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code ) )
 					INNER JOIN Course c ON GPC.course_id = c.course_id
 					INNER JOIN Semester SE ON SE.semester_code = GP.semester_code)
-GO
-SELECT * FROM FN_StudentViewGP(1);
-GO
+	WHERE S.student_id = @student_ID
+
+
 
 -- GG)
+GO
 CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)
 	RETURNS DATE 
 	AS
@@ -36,9 +37,10 @@ CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)
 		  I.status = 0
 	RETURN @first_instalment_deadline ;
 END
-GO
+
 
 --HH)
+GO
 CREATE FUNCTION  FN_StudentViewSlot (@CourseID INT , @InstructorID INT) 
 RETURNS TABLE
 AS
@@ -53,9 +55,6 @@ RETURN
 				   INNER JOIN Instructor ISC ON SL.instructor_id = ISC.instructor_id)
 
 GO
-SELECT * FROM  FN_StudentViewSlot(1 ,1);
-GO
-
 --II) what is the date of first or secound makeup
 CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
 	@StudentID int, 
@@ -70,11 +69,10 @@ CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
   
 		INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
 			   VALUES (@StudentID ,@CourseID , @InstructorID ,@studentCurrentsemester , 'First_makeup' ,  NULL ) ;
-GO
-EXEC Procedures_StudentRegisterFirstMakeup @StudentID = 1 ,  @courseID= 1 ,@studentCurrentsemester = 'Spring 2023 à S23'  ;
-GO
 
 -- JJ) How will i check for time of student makeup
+
+GO
 CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
 	RETURNS BIT 
 	AS
@@ -104,23 +102,30 @@ CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
 
 		ELSE IF ( @CurrentSemesterCode LIKE 'Spring%' OR @CurrentSemesterCode LIKE '%Round 2%' OR @CurrentSemesterCode LIKE '%R2%'  )
 		BEGIN
-			IF ( @num_failed_courses_Even > 2  )
-				BEGIN SET @IS_Eligible = 0 END
-			ELSE 
+			IF ( @num_failed_courses_Even < 2  )
 				BEGIN SET @IS_Eligible = 1 END
+			ELSE 
+				BEGIN 
+					SET @IS_Eligible = 0 
+					-- add course to required courses
+				END
+				
 		END
 		ELSE IF ( @CurrentSemesterCode LIKE 'Winter%' OR @CurrentSemesterCode LIKE '%Round 1%' OR @CurrentSemesterCode LIKE '%R1%' )
 		BEGIN
-			IF ( @num_failed_courses_Odd > 2  )
-				BEGIN SET @IS_Eligible = 0 END
-			ELSE 
+			IF ( @num_failed_courses_Odd < 2  )
 				BEGIN SET @IS_Eligible = 1 END
+			ELSE 
+				BEGIN 
+					SET @IS_Eligible = 0 
+					-- add course to required courses
+				END
 		END
     RETURN @IS_Eligible ;
 END;
 
 -- KK) what tables should i insert into  and how to get table from anotehr procedure
-GO;
+GO
 CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	@StudentID int, 
 	@courseID int, 
@@ -143,18 +148,10 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
   
 		INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
 			   VALUES (@StudentID ,@CourseID , @InstructorID ,@Student_Current_Semester , 'Second_makeup' ,  NULL ) ;
-		END
-	
-GO
-	EXEC Procedures_StudentRegisterSecondMakeup @StudentID = 1 ,  @courseID= 1 ,@Student_Current_Semester = 'Spring 2023 à S23'  ;
-GO
-
-
-
-
+		END	
 --------------------------------------------------Courses Procedures---------------------------------------------------------------------------
-
 -- LL) 
+GO
 CREATE PROCEDURE  Procedures_ViewRequiredCourses
 	 @Student_ID int,
 	 @Current_semester_code Varchar (40)
@@ -167,10 +164,6 @@ CREATE PROCEDURE  Procedures_ViewRequiredCourses
 		    ( SC.grade = 'F' OR SC.grade ='FF' OR SC.grade IS NULL ) AND               -- check for grade
 			dbo.FN_IS_COURSE_OFFERED_HELPER(c1.course_id , @Current_semester_code) = 1 --check if course offered in current semester
 GO 
-EXEC Procedures_ViewRequiredCourses @Student_ID = 1 , @Current_semester_code= 'Spring 2023 à S23'  ;
-GO
-
-GO
 -- MM) Check again
 CREATE PROCEDURE Procedures_ViewOptionalCourse
 	 @Student_ID int,
@@ -182,9 +175,6 @@ CREATE PROCEDURE Procedures_ViewOptionalCourse
 		  dbo.FN_IS_prerequisite_Courses_TAKEN_HELPER(@Student_ID , c.course_id) =1 AND  -- Took all prerequisite
 		  NOT EXISTS  ( SELECT * FROM dbo.FN_FIND_REQ_Courses_HELPER (@Student_ID   , @Current_semester_code  , c.course_id))  --not required
 GO
-EXEC Procedures_ViewOptionalCourse @Student_ID = 1 , @Current_semester_code= 'Spring 2023 à S23'  ;
-GO
-
 -- NN) 
 CREATE PROCEDURE Procedures_ViewMS
 	@StudentID int
@@ -198,9 +188,6 @@ CREATE PROCEDURE Procedures_ViewMS
 			c1.major = S.major
 	)	  
 GO
-EXEC Procedures_ViewMS @StudentID=1 ;
-GO
-
 -- OO)
 CREATE PROCEDURE Procedures_ChooseInstructor
 	 @StudentID int, 
@@ -209,13 +196,8 @@ CREATE PROCEDURE Procedures_ChooseInstructor
 	 AS
 	 INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id) 
 	 VALUES (@StudentID ,@CourseID , @InstructorID) ;
-GO
-EXEC Procedures_ChooseInstructor  @StudentID=1, @InstructorID=1 ,@CourseID=1 ;
-GO
 
 ---------------------------------------------------------------HELPER FUNCTIONS-------------------------------------------------------
-
-
 GO
 CREATE FUNCTION FN_IS_COURSE_OFFERED_HELPER (@CourseID INT , @Current_Semester_Code VARCHAR(40) )
 	RETURNS BIT 
@@ -224,17 +206,14 @@ CREATE FUNCTION FN_IS_COURSE_OFFERED_HELPER (@CourseID INT , @Current_Semester_C
 	DECLARE @Is_offered BIT ,
 			@course_semester INT 
 		SELECT @course_semester=semester  FROM Course WHERE course_id = @CourseID
-		IF( @course_semester % 2 = 0 AND( @Current_Semester_Code LIKE 'Spring%' OR @Current_Semester_Code LIKE '%Round 2%'  OR @CurrentSemesterCode LIKE '%R2%' ) )
+		IF( @course_semester % 2 = 0 AND( @Current_Semester_Code LIKE 'Spring%' OR @Current_Semester_Code LIKE '%Round 2%'  OR @Current_Semester_Code LIKE '%R2%' ) )
 			BEGIN  SET @Is_offered = 1 END
-		ELSE IF( @course_semester % 2 <> 0 AND( @Current_Semester_Code LIKE 'Winter%' OR @Current_Semester_Code LIKE '%Round 1%' OR @CurrentSemesterCode LIKE '%R1%'  ) )
+		ELSE IF( @course_semester % 2 <> 0 AND( @Current_Semester_Code LIKE 'Winter%' OR @Current_Semester_Code LIKE '%Round 1%' OR @Current_Semester_Code LIKE '%R1%'  ) )
 		    BEGIN  SET @Is_offered = 1 END
 		ELSE
 			BEGIN  SET @Is_offered  = 0 END
 	RETURN @Is_offered ;
 END
-GO
-
-
 GO
 CREATE FUNCTION FN_FIND_REQ_Courses_HELPER (@Student_ID int  , @Current_semester_code Varchar (40) , @CourseID INT) 
 	RETURNS TABLE
@@ -247,13 +226,8 @@ CREATE FUNCTION FN_FIND_REQ_Courses_HELPER (@Student_ID int  , @Current_semester
 				c1.course_id = @CourseID AND
 				c1.semester <= S.semester AND
 				( SC.grade = 'F' OR SC.grade ='FF' OR SC.grade IS NULL ) AND               -- check for grade
-				dbo.FN_IS_COURSE_OFFERED_HELPER(c1.course_id , @Current_semester_code) = 1 
-		
+				dbo.FN_IS_COURSE_OFFERED_HELPER(c1.course_id , @Current_semester_code) = 1 	
 GO
-SELECT * FROM FN_FIND_prerequisite_Courses_HELPER(1);
-GO
-
-
 CREATE FUNCTION FN_IS_prerequisite_Courses_TAKEN_HELPER (@StudentID INT , @CourseID INT ) 
 	RETURNS BIT 
 	AS
@@ -282,8 +256,6 @@ CREATE FUNCTION FN_IS_prerequisite_Courses_TAKEN_HELPER (@StudentID INT , @Cours
 	RETURN @Is_ALL_PRE_TAKEN ;
 	END ;
 GO
-
-
 CREATE FUNCTION FN_num_of_falied_courses_HELPER (@Season1 VARCHAR(40) , @Season2 VARCHAR(40) , @Season3 VARCHAR(40),@CourseID INT , @StudentID INT)
 	RETURNS INT
 	AS

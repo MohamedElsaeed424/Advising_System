@@ -194,15 +194,6 @@ CREATE TABLE GradPlan_Course (
 	CONSTRAINT PK_Installment PRIMARY KEY (payment_id, deadline),
 	CONSTRAINT FK_Payment FOREIGN KEY (payment_id) REFERENCES Payment (payment_id),
 	);
-
-	--ALTER TABLE Student
-	--ADD financial_status AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-	--								CASE
-	--								WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-	--								THEN 1 ELSE 0 END
-	--								from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
-	--								 AND p.student_id = Student.student_id);
-
 GO
 EXEC CreateAllTables;
 DROP PROCEDURE CreateAllTables;

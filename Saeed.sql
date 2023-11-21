@@ -125,7 +125,7 @@ CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
 END;
 
 -- KK) what tables should i insert into  and how to get table from anotehr procedure
-GO;
+GO
 CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	@StudentID int, 
 	@courseID int, 
@@ -206,9 +206,9 @@ CREATE FUNCTION FN_IS_COURSE_OFFERED_HELPER (@CourseID INT , @Current_Semester_C
 	DECLARE @Is_offered BIT ,
 			@course_semester INT 
 		SELECT @course_semester=semester  FROM Course WHERE course_id = @CourseID
-		IF( @course_semester % 2 = 0 AND( @Current_Semester_Code LIKE 'Spring%' OR @Current_Semester_Code LIKE '%Round 2%'  OR @CurrentSemesterCode LIKE '%R2%' ) )
+		IF( @course_semester % 2 = 0 AND( @Current_Semester_Code LIKE 'Spring%' OR @Current_Semester_Code LIKE '%Round 2%'  OR @Current_Semester_Code LIKE '%R2%' ) )
 			BEGIN  SET @Is_offered = 1 END
-		ELSE IF( @course_semester % 2 <> 0 AND( @Current_Semester_Code LIKE 'Winter%' OR @Current_Semester_Code LIKE '%Round 1%' OR @CurrentSemesterCode LIKE '%R1%'  ) )
+		ELSE IF( @course_semester % 2 <> 0 AND( @Current_Semester_Code LIKE 'Winter%' OR @Current_Semester_Code LIKE '%Round 1%' OR @Current_Semester_Code LIKE '%R1%'  ) )
 		    BEGIN  SET @Is_offered = 1 END
 		ELSE
 			BEGIN  SET @Is_offered  = 0 END

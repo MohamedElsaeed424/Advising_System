@@ -298,7 +298,7 @@ CREATE PROCEDURE clearAllTables AS
 	ALTER TABLE Course_Semester ADD CONSTRAINT FK_semester2 FOREIGN KEY (semester_code) REFERENCES Semester (semester_code)
 	ALTER TABLE Slot ADD CONSTRAINT FK_course4 FOREIGN KEY (course_id) REFERENCES Course (course_id)
 	ALTER TABLE Slot ADD CONSTRAINT FK_instructor3 FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id)
-	ALTER TABLE Graduation_Plan ADD CONSTRAINT FK_advisor FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id)
+	ALTER TABLE Graduation_Plan ADD CONSTRAINT FK_advisor2 FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id)
 	ALTER TABLE Graduation_Plan ADD CONSTRAINT FK_student3 FOREIGN KEY (student_id) REFERENCES Student (student_id)
 	ALTER TABLE GradPlan_Course ADD CONSTRAINT FK_planSem FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_Plan (plan_id, semester_code)
 	ALTER TABLE GradPlan_Course ADD CONSTRAINT FK_semester3 FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code)

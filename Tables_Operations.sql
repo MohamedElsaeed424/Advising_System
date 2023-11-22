@@ -117,27 +117,27 @@ CREATE PROCEDURE CreateAllTables AS
 	CONSTRAINT FK_instructor3 FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) ,--ON DELETE SET NULL
 	);
 
-CREATE TABLE Graduation_Plan (
-  plan_id                INT, 
-  semester_code          VARCHAR(40), 
-  semester_credit_hours  INT, 
-  expected_grad_semester VARCHAR(40), 
-  advisor_id             INT, 
-  student_id             INT,
-  CONSTRAINT PK_Graduation_Plan PRIMARY KEY (plan_id, semester_code),
-  CONSTRAINT FK_advisor2 FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) ,--ON DELETE SET NULL,
-  CONSTRAINT FK_student3 FOREIGN KEY (student_id) REFERENCES Student (student_id) --ON DELETE CASCADE
-);														   
+	CREATE TABLE Graduation_Plan (
+	  plan_id                INT, 
+	  semester_code          VARCHAR(40), 
+	  semester_credit_hours  INT, 
+	  expected_grad_semester VARCHAR(40), 
+	  advisor_id             INT, 
+	  student_id             INT,
+	  CONSTRAINT PK_Graduation_Plan PRIMARY KEY (plan_id, semester_code),
+	  CONSTRAINT FK_advisor2 FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) ,--ON DELETE SET NULL,
+	  CONSTRAINT FK_student3 FOREIGN KEY (student_id) REFERENCES Student (student_id) --ON DELETE CASCADE
+	);														   
 
-CREATE TABLE GradPlan_Course (
-  plan_id                INT, 
-  semester_code          VARCHAR(40), 
-  course_id              INT,
-  CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id, semester_code, course_id),
-  CONSTRAINT FK_planSem FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_Plan (plan_id, semester_code) , --ON DELETE CASCADE,
-  CONSTRAINT FK_semester3 FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code) ,-- ON DELETE CASCADE, -- OR SET NULL???
-  CONSTRAINT FK_course5 FOREIGN KEY (course_id)              REFERENCES Course (course_id),-- ON DELETE CASCADE  -- not FK in schema !!
-);
+	CREATE TABLE GradPlan_Course (
+	  plan_id                INT, 
+	  semester_code          VARCHAR(40), 
+	  course_id              INT,
+	  CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id, semester_code, course_id),
+	  CONSTRAINT FK_planSem FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_Plan (plan_id, semester_code) , --ON DELETE CASCADE,
+	  CONSTRAINT FK_semester3 FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code) ,-- ON DELETE CASCADE, -- OR SET NULL???
+	  CONSTRAINT FK_course5 FOREIGN KEY (course_id)              REFERENCES Course (course_id),-- ON DELETE CASCADE  -- not FK in schema !!
+	);
 	/*is type not null since a request is either course or credit hours*/
 	CREATE TABLE Request (
 	request_id             INT PRIMARY KEY, 

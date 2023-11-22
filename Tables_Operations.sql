@@ -132,8 +132,8 @@ CREATE PROCEDURE CreateAllTables AS
 	  course_id              INT,
 	  CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id, semester_code, course_id),
 	  CONSTRAINT FK_planSem FOREIGN KEY (plan_id, semester_code) REFERENCES Graduation_Plan (plan_id, semester_code) , --ON DELETE CASCADE,
-	  CONSTRAINT FK_semester3 FOREIGN KEY (semester_code)          REFERENCES Semester (semester_code) ,-- ON DELETE CASCADE, -- OR SET NULL???
-	  CONSTRAINT FK_course5 FOREIGN KEY (course_id)              REFERENCES Course (course_id),-- ON DELETE CASCADE  -- not FK in schema !!
+	  CONSTRAINT FK_semester3 FOREIGN KEY (semester_code)  REFERENCES Graduation_Plan (semester_code) ,-- ON DELETE CASCADE, -- OR SET NULL???
+	  CONSTRAINT FK_course5 FOREIGN KEY (course_id) REFERENCES Course (course_id),-- ON DELETE CASCADE  -- not FK in schema !!
 	);
 	/*is type not null since a request is either course or credit hours*/
 	CREATE TABLE Request (

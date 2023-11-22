@@ -63,14 +63,14 @@ GO
 
 CREATE VIEW all_Pending_Requests
 AS
-SELECT r.*
+SELECT R.*
 	,S.f_name
 	,S.l_name
 	,A.name
-FROM Request r
+FROM Request R
 INNER JOIN Student S ON S.student_id = r.student_id
 INNER JOIN Advisor A ON A.advisor_id = r.advisor_id
-WHERE STATUS = 'pending'
+WHERE R.status = 'pending'
 GO
 
 
@@ -107,7 +107,7 @@ BEGIN
 	DECLARE @Success BIT
 
 	IF EXISTS (
-			SELECT Advisor
+			SELECT *
 			FROM Advisor
 			WHERE Advisor.advisor_id = @ID
 				AND Advisor.password = @password
@@ -133,7 +133,7 @@ IF @Semestercode IS NULL
 	OR @expected_graduation_date IS NULL
 	OR @sem_credit_hours IS NULL
 	OR @advisorid IS NULL
-	OR @studenti IS NULL
+	OR @studentid IS NULL
 BEGIN
 	PRINT 'INVALID INPUT'
 END

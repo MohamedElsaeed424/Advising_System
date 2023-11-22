@@ -1,7 +1,7 @@
 ﻿
 CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Course (
-	course_id             INT PRIMARY KEY,
+	course_id             INT IDENTITY PRIMARY KEY,
 	name                  VARCHAR(40),
 	major                 VARCHAR(40),
 	is_offered            BIT,
@@ -10,7 +10,7 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 
 	CREATE TABLE Instructor (
-	instructor_id        INT PRIMARY KEY,
+	instructor_id        INT IDENTITY PRIMARY KEY,
 	name                 VARCHAR(40) ,
 	email                VARCHAR(40) UNIQUE,
 	faculty              VARCHAR(40),
@@ -24,7 +24,7 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 
 	CREATE TABLE Advisor (
-	advisor_id        INT PRIMARY KEY, 
+	advisor_id        INT IDENTITY PRIMARY KEY, 
 	name              VARCHAR(40),
 	email             VARCHAR(40) UNIQUE, 
 	office            VARCHAR(40), 
@@ -34,7 +34,7 @@ CREATE PROCEDURE CreateAllTables AS
 
 
 	CREATE TABLE Student (
-	student_id            INT PRIMARY KEY ,
+	student_id            INT IDENTITY PRIMARY KEY ,
 	f_name                VARCHAR (40) ,
 	l_name                VARCHAR (40) , 
 	gpa	                  DECIMAL (3,2) , 
@@ -104,7 +104,7 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 
 	CREATE TABLE Slot (
-	slot_id           INT PRIMARY KEY,
+	slot_id           INT IDENTITY PRIMARY KEY,
 	day               VARCHAR(40), 
 	time              VARCHAR(40), 
 	location          VARCHAR(40), 
@@ -115,7 +115,7 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 
 	CREATE TABLE Graduation_Plan (
-	  plan_id                INT, 
+	  plan_id                INT , 
 	  semester_code          VARCHAR(40), 
 	  semester_credit_hours  INT, 
 	  expected_grad_semester VARCHAR(40), 
@@ -127,7 +127,7 @@ CREATE PROCEDURE CreateAllTables AS
 	);														   
 
 	CREATE TABLE GradPlan_Course (
-	  plan_id                INT, 
+	  plan_id                INT, -- Can i make it identity
 	  semester_code          VARCHAR(40), 
 	  course_id              INT,
 	  CONSTRAINT PK_GradPlan_Course PRIMARY KEY (plan_id, semester_code, course_id),
@@ -137,7 +137,7 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 	/*is type not null since a request is either course or credit hours*/
 	CREATE TABLE Request (
-	request_id             INT PRIMARY KEY, 
+	request_id             INT IDENTITY PRIMARY KEY, 
 	type                   VARCHAR(40) ,
 	comment                VARCHAR(40), 
 	status                 VARCHAR(40) DEFAULT 'pending', 
@@ -151,7 +151,7 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 
 	CREATE TABLE MakeUp_Exam (
-	exam_id        INT PRIMARY KEY, 
+	exam_id        INT IDENTITY PRIMARY KEY, 
 	date           DATE, 
 	type           VARCHAR(40), 
 	course_id      INT ,
@@ -169,7 +169,7 @@ CREATE PROCEDURE CreateAllTables AS
 	);
 
 	CREATE TABLE Payment(
-	payment_id      INT PRIMARY KEY, 
+	payment_id      INT IDENTITY PRIMARY KEY, 
 	amount          INT , 
 	deadline        DATETIME,
 	n_installments  INT DEFAULT 0,

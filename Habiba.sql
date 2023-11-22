@@ -2,12 +2,12 @@
 CREATE VIEW view_Students AS 
 SELECT * 
 FROM student 
-WHERE financial_status = 1;
+WHERE financial_status = 1; --REMINDER: Need to make view for student with derived financial status
 
 GO
 CREATE VIEW view_Course_prerequisites AS 
 SELECT c.course_id , c.name ,c.credit_hours ,c.is_offered ,c.major ,c.semester ,PC.prerequisite_course_id 
-FROM Course c INNER JOIN PreqCourse_course PC on c.course_id = PC.prerequisite_course_id;
+FROM Course c INNER JOIN PreqCourse_course PC on c.course_id = PC.prerequisite_course_id; 
 
 GO
 CREATE VIEW Instructors_AssignedCourses AS
@@ -73,9 +73,9 @@ CREATE PROCEDURE Procedures_StudentRegistration
 @student_id INT OUTPUT
 AS 
 BEGIN 
-	INSERT INTO Students(f_name,l_name,password,faculty,email,major,semester)
+	INSERT INTO Student(f_name,l_name,password,faculty,email,major,semester)
 			VALUES(@first_name,@last_name,@password,@faculty,@email,@major,@Semester)
-	SELECT @student_id = S.student_id 
+	SELECT @student_id = S.student_id
 	FROM Student S
 	WHERE S.email = @email
 END

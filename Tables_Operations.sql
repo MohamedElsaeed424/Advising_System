@@ -88,7 +88,7 @@ CREATE PROCEDURE CreateAllTables AS
     semester_code       VARCHAR(40),
 	exam_type           VARCHAR(40) DEFAULT 'Normal',
 	grade               VARCHAR(40) ,
-	CONSTRAINT PK_Student_Instructor_Course_Take PRIMARY KEY (student_id, course_id ,instructor_id),
+	CONSTRAINT PK_Student_Instructor_Course_Take PRIMARY KEY (student_id, course_id ,instructor_id, semester_code),
 	CONSTRAINT FK_student2 FOREIGN KEY (student_id) REFERENCES Student (student_id), -- ON DELETE CASCADE,
 	CONSTRAINT FK_course2 FOREIGN KEY (course_id) REFERENCES Course (course_id) , --ON DELETE CASCADE,
 	CONSTRAINT FK_instructor2 FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id),--  ON DELETE CASCADE,

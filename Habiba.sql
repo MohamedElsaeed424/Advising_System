@@ -6,7 +6,7 @@ WHERE financial_status = 1;
 
 GO
 CREATE VIEW view_Course_prerequisites AS 
-SELECT * 
+SELECT Course.* 
 FROM Course
 INNER JOIN PreqCourse_course on Course.course_id = PreqCourse_course.prerequisite_course_id;
 

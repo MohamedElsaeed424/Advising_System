@@ -15,7 +15,7 @@ BEGIN
 END
 GO
 
-EXEC Procedures_AdminIssueInstallment
+
 	--m
 GO
 
@@ -37,7 +37,7 @@ BEGIN
 END
 GO
 
-EXEC Procedures_AdminDeleteCourse
+
 GO
 
 CREATE PROC Procedure_AdminUpdateStudentStatus @StudentID INT
@@ -57,7 +57,7 @@ BEGIN
 END
 GO
 
-EXEC Procedure_AdminUpdateStudentStatus
+
 	--0
 GO
 
@@ -73,7 +73,7 @@ INNER JOIN Advisor A ON A.advisor_id = r.advisor_id
 WHERE STATUS = 'pending'
 GO
 
-EXEC all_Pending_Requests
+
 	--p
 GO
 
@@ -93,7 +93,7 @@ BEGIN
 END
 GO
 
-EXEC Procedures_AdminDeleteSlots
+
 	--Q
 GO
 
@@ -154,7 +154,7 @@ BEGIN
 END
 GO
 
-EXEC Procedures_AdvisorCreateGP
+
 	--S
 GO
 
@@ -195,7 +195,7 @@ BEGIN
 END
 GO
 
-EXEC Procedures_AdvisorAddCourseGP
+
 	--T
 GO
 
@@ -223,7 +223,7 @@ BEGIN
 END
 GO
 
-EXEC Procedures_AdvisorUpdateGP
+
 	--U
 GO
 
@@ -247,4 +247,4 @@ BEGIN
 END
 GO
 
-EXEC Procedures_AdvisorDeleteFromGP
+

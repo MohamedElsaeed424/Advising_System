@@ -1,0 +1,9 @@
+EXEC Procedures_AdminIssueInstallment
+EXEC Procedures_AdminDeleteCourse
+EXEC Procedure_AdminUpdateStudentStatus
+EXEC all_Pending_Requests
+EXEC Procedures_AdminDeleteSlots
+EXEC Procedures_AdvisorCreateGP
+EXEC Procedures_AdvisorAddCourseGP
+EXEC Procedures_AdvisorUpdateGP
+EXEC Procedures_AdvisorDeleteFromGP

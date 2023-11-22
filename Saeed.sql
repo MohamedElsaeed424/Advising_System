@@ -102,11 +102,11 @@ CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
 			IF ( @num_failed_courses_Even < 2  )
 				BEGIN SET @IS_Eligible = 1 END
 			ELSE 
-				BEGIN 
+				BEGIN   
 					SET @IS_Eligible = 0 
 					-- add course to required courses
 				END
-				
+				 
 		END
 		ELSE IF ( @CurrentSemesterCode LIKE 'Winter%' OR @CurrentSemesterCode LIKE '%Round 1%' OR @CurrentSemesterCode LIKE '%R1%' )
 		BEGIN

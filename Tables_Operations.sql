@@ -118,7 +118,7 @@ CREATE PROCEDURE CreateAllTables AS
 	  plan_id                INT , 
 	  semester_code          VARCHAR(40), 
 	  semester_credit_hours  INT, 
-	  expected_grad_semester VARCHAR(40), 
+	  expected_grad_date	 DATE, 
 	  advisor_id             INT, 
 	  student_id             INT,
 	  CONSTRAINT PK_Graduation_Plan PRIMARY KEY (plan_id, semester_code),

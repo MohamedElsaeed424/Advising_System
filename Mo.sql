@@ -1,7 +1,7 @@
 ﻿--l
 GO
 
-CREATE PROC Procedures_AdminIssueInstallment @paymentID INT
+CREATE PROC Procedures_AdminIssueInstallment @paymentID INT --mahmoud medaye2
 AS
 IF @paymentID IS NULL
 BEGIN
@@ -9,17 +9,16 @@ BEGIN
 END
 ELSE
 BEGIN
-	SELECT COUNT(*)
-	FROM Installment
-	WHERE Installment.payment_id = @paymentID
+	SELECT n_installments
+	FROM Payment 
+	WHERE payment_id = @paymentID
 END
 GO
-
 
 	--m
 GO
 
-CREATE PROC Procedures_AdminDeleteCourse @courseID INT
+CREATE PROC Procedures_AdminDeleteCourse @courseID INT --delete slot or update it ??
 AS
 IF @courseID IS NULL
 BEGIN
@@ -27,8 +26,8 @@ BEGIN
 END
 ELSE
 BEGIN
-	DELETE
-	FROM Slot
+	UPDATE Slot
+	SET course_id = NULL
 	WHERE course_id = @courseID;
 
 	DELETE
@@ -48,12 +47,24 @@ BEGIN
 END
 ELSE
 BEGIN
-	UPDATE Student
-	SET Student.financial_status = 0
-	FROM Student
-	INNER JOIN Payment ON Payment.student_id = @StudentID
-	WHERE Payment.STATUS = 'notPaid'
-		AND Payment.deadline < GETDATE()
+DECLARE @isBlocked INT ;
+		Select @isBlocked = COUNT(*)
+		FROM  Student INNER JOIN Payment ON Payment.student_id = @StudentID
+			 WHERE Payment.STATUS = 'notPaid'
+				AND Payment.deadline < GETDATE()
+
+		if (@isBlocked = 0 ) -- no passed deadlines 
+			BEGIN 
+				UPDATE Student
+				SET Student.financial_status = 1
+				WHERE student_id = @StudentID
+			END
+		ELSE
+			BEGIN 
+				UPDATE Student
+				SET Student.financial_status = 0
+				WHERE student_id = @StudentID
+			END
 END
 GO
 
@@ -62,19 +73,19 @@ GO
 GO
 
 CREATE VIEW all_Pending_Requests
-AS
-SELECT R.*
-	,S.f_name
-	,S.l_name
-	,A.name
-FROM Request R
-INNER JOIN Student S ON S.student_id = r.student_id
-INNER JOIN Advisor A ON A.advisor_id = r.advisor_id
-WHERE R.status = 'pending'
+	AS
+	SELECT R.*
+		  ,S.f_name
+		  ,S.l_name
+		  ,A.name
+	FROM Request R
+		INNER JOIN Student S ON S.student_id = R.student_id
+		INNER JOIN Advisor A ON A.advisor_id = R.advisor_id
+	WHERE R.status = 'pending'
 GO
 
 
-	--p
+	--p revise here ..
 GO
 
 CREATE PROC Procedures_AdminDeleteSlots @current_semester VARCHAR(40)

@@ -216,6 +216,7 @@ BEGIN
 	--hab2a as2al kamilia fel mawdo3 dah
 	--bas 5aleeha kda delwa2ty
 	DECLARE @ExpectedGradSemInt INT = CAST(@expected_grad_semster AS INT)
+	
 
 	UPDATE Graduation_Plan
 	SET expected_grad_semester = @ExpectedGradSemInt

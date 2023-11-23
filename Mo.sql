@@ -142,12 +142,14 @@ BEGIN
 	INSERT INTO Graduation_Plan (
 		semester_code
 		,semester_credit_hours
+		,expected_grad_date
 		,advisor_id
 		,student_id
 		)
 	VALUES (
 		@Semestercode
 		,@sem_credit_hours
+		,@expected_graduation_date
 		,@advisorid
 		,@studentid
 		)
@@ -215,11 +217,9 @@ BEGIN
 	--wala eh
 	--hab2a as2al kamilia fel mawdo3 dah
 	--bas 5aleeha kda delwa2ty
-	DECLARE @ExpectedGradSemInt INT = CAST(@expected_grad_semster AS INT)
-	
-
+	--all the comments above to be ignored till another announcment
 	UPDATE Graduation_Plan
-	SET expected_grad_semester = @ExpectedGradSemInt
+	SET expected_grad_semester = @expected_grad_semster
 	WHERE Graduation_Plan.student_id = @studentID
 END
 GO

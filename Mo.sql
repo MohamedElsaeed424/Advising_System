@@ -160,31 +160,40 @@ CREATE PROC Procedures_AdvisorCreateGP @Semestercode VARCHAR(40)
 	,@advisorid INT
 	,@studentid INT
 AS
-IF @Semestercode IS NULL
+	-- saeed added
+	DECLARE @std_acq_hours INT
+
+	SELECT @std_acq_hours= acquired_hours
+	FROM Student
+	WHERE student_id = @studentid
+IF @std_acq_hours <= 157
+	BEGIN PRINT 'INVALID ACTION the student dont have enough acquired_hours' END
+ELSE IF @Semestercode IS NULL
 	OR @expected_graduation_date IS NULL
 	OR @sem_credit_hours IS NULL
 	OR @advisorid IS NULL
 	OR @studentid IS NULL
-BEGIN
-	PRINT 'INVALID INPUT'
-END
+	BEGIN
+		PRINT 'INVALID INPUT'
+	END
 ELSE
-BEGIN
-	INSERT INTO Graduation_Plan (
-		semester_code
-		,semester_credit_hours
-		,expected_grad_date
-		,advisor_id
-		,student_id
-		)
-	VALUES (
-		@Semestercode
-		,@sem_credit_hours
-		,@expected_graduation_date
-		,@advisorid
-		,@studentid
-		)
-END
+	BEGIN
+	
+		INSERT INTO Graduation_Plan (
+			semester_code
+			,semester_credit_hours
+			,expected_grad_date
+			,advisor_id
+			,student_id
+			)
+		VALUES (
+			@Semestercode
+			,@sem_credit_hours
+			,@expected_graduation_date
+			,@advisorid
+			,@studentid
+			)
+	END
 GO
 
 

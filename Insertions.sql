@@ -53,16 +53,16 @@ INSERT INTO Advisor VALUES
 
 -- Adding 10 records to the Student table
 INSERT INTO Student VALUES
-( 'John', 'Doe', 3.5, 'Computer Science', 'john.doe@example.com', 'CS', 'password123', 1, 1, 90, NULL, 1),
-( 'Jane', 'Smith', 3.8, 'Mathematics', 'jane.smith@example.com', 'Math', 'password456', 1, 2, 85, NULL, 2),
-( 'Mike', 'Johnson', 3.2, 'Physics', 'mike.johnson@example.com', 'Physics', 'password789', 1, 3, 75, NULL, 3),
-( 'Emily', 'White', 3.9, 'Computer Science', 'emily.white@example.com', 'CS', 'passwordabc', 0, 4, 95, NULL, 4),
-( 'David', 'Lee', 3.4, 'Psychology', 'david.lee@example.com', 'Psych', 'passworddef', 1, 5, 80, NULL, 5),
-( 'Grace', 'Brown', 3.7, 'Literature', 'grace.brown@example.com', 'Lit', 'passwordghi', 0, 6, 88, NULL, 6),
-( 'Robert', 'Miller', 3.1, 'Chemistry', 'robert.miller@example.com', 'Chem', 'passwordjkl', 1, 7, 78, NULL, 7),
-( 'Sophie', 'Clark', 3.6, 'Psychology', 'sophie.clark@example.com', 'Psych', 'passwordmno', 1, 8, 92, NULL, 8),
-( 'Daniel', 'Wilson', 3.3, 'Fine Arts', 'daniel.wilson@example.com', 'Fine Arts', 'passwordpqr', 1, 9, 87, NULL, 9),
-( 'Olivia', 'Anderson', 3.7, 'Computer Science', 'olivia.anderson@example.com', 'CS', 'passwordstu', 0, 10, 89, NULL, 10);
+( 'John', 'Doe', 3.5, 'Computer Science', 'john.doe@example.com', 'CS', 'password123',  1, 90, NULL, 1),
+( 'Jane', 'Smith', 3.8, 'Mathematics', 'jane.smith@example.com', 'Math', 'password456',  2, 85, NULL, 2),
+( 'Mike', 'Johnson', 3.2, 'Physics', 'mike.johnson@example.com', 'Physics', 'password789',  3, 75, NULL, 3),
+( 'Emily', 'White', 3.9, 'Computer Science', 'emily.white@example.com', 'CS', 'passwordabc',  4, 95, NULL, 4),
+( 'David', 'Lee', 3.4, 'Psychology', 'david.lee@example.com', 'Psych', 'passworddef',  5, 80, NULL, 5),
+( 'Grace', 'Brown', 3.7, 'Literature', 'grace.brown@example.com', 'Lit', 'passwordghi',  6, 88, NULL, 6),
+( 'Robert', 'Miller', 3.1, 'Chemistry', 'robert.miller@example.com', 'Chem', 'passwordjkl',  7, 78, NULL, 7),
+( 'Sophie', 'Clark', 3.6, 'Psychology', 'sophie.clark@example.com', 'Psych', 'passwordmno',  8, 92, NULL, 8),
+( 'Daniel', 'Wilson', 3.3, 'Fine Arts', 'daniel.wilson@example.com', 'Fine Arts', 'passwordpqr',  9, 87, NULL, 9),
+( 'Olivia', 'Anderson', 3.7, 'Computer Science', 'olivia.anderson@example.com', 'CS', 'passwordstu',  10, 89, NULL, 10);
 
 
 -- Adding 10 records to the Student_Phone table
@@ -239,3 +239,6 @@ INSERT INTO Installment VALUES
 ( 8,'2023-12-08', 62, 'pending', '2023-12-08'),
 ( 9,'2023-12-09', 72, 'pending', '2023-12-09'),
 ( 10,'2023-12-10', 58, 'pending', '2023-12-10');
+
+
+SELECT * FROM Student

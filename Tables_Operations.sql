@@ -42,13 +42,7 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40) UNIQUE, 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	financial_status      BIT ,
-							--AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-							--		CASE
-							--		WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-							--		THEN 1 ELSE 0 END
-							--		from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
-							--		 AND p.student_id = Student.student_id),
+	financial_status      AS dbo.CALC_STUDENT_FINANTIAL_STATUS_HELPER(student_id)  ,		
 	semester              INT, 
 	acquired_hours        INT, 
 	assigned_hours        INT DEFAULT NULL, 

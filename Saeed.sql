@@ -191,8 +191,9 @@ CREATE PROCEDURE Procedures_ChooseInstructor
 	 @InstructorID int,
 	 @CourseID int
 	 AS
-	 INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id) 
-	 VALUES (@StudentID ,@CourseID , @InstructorID) ;
+	 UPDATE Student_Instructor_Course_Take
+	 SET instructor_id = @InstructorID
+	 WHERE student_id =@StudentID AND course_id = @CourseID
 
 ---------------------------------------------------------------HELPER FUNCTIONS-------------------------------------------------------
 GO

@@ -1,4 +1,4 @@
-﻿--l
+﻿	--l
 GO
 
 CREATE PROC Procedures_AdminIssueInstallment @paymentID INT --mahmoud medaye2
@@ -49,9 +49,10 @@ ELSE
 BEGIN
 DECLARE @isBlocked INT ;
 		Select @isBlocked = COUNT(*)
-		FROM  Student INNER JOIN Payment ON Payment.student_id = @StudentID
+		FROM  Student INNER JOIN Payment ON Payment.student_id = Student.student_id
 			 WHERE Payment.STATUS = 'notPaid'
 				AND Payment.deadline < GETDATE()
+				AND Student.student_id = @StudentId
 
 		if (@isBlocked = 0 ) -- no passed deadlines 
 			BEGIN 
@@ -68,10 +69,29 @@ DECLARE @isBlocked INT ;
 END
 GO
 
+-- saeed added
+CREATE FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER (@StudentId INT)
+	RETURNS BIT
+	BEGIN
+		DECLARE @financial_status BIT
+		DECLARE @isBlocked INT ;
 
-	--0
+		Select @isBlocked = COUNT(*)
+		FROM  Student INNER JOIN Payment ON Payment.student_id = Student.student_id
+			 WHERE Payment.STATUS = 'notPaid'
+				AND Payment.deadline < GETDATE()
+				AND Student.student_id = @StudentId
+
+		if (@isBlocked = 0 )
+			BEGIN SET @financial_status = 1 END
+		ELSE
+			BEGIN SET @financial_status = 0 END
+
+	RETURN @financial_status
+	END
 GO
 
+--0
 CREATE VIEW all_Pending_Requests
 	AS
 	SELECT R.*

@@ -32,13 +32,12 @@ Create PROC Procedures_AdvisorApproveRejectCHRequest
 /*X*/
 CREATE PROC Procedures_AdvisorViewAssignedStudents
 	@AdvisorID int,
-	@major varchar (40),
-	@Table OUTPUT
+	@major varchar (40)
 	AS
-	Select @Table = (Select s.student_id, Concat(s.f_name, ' ', s.l_name) as Student_name , s.major as Student_major, c.name as course_name 
+	Select s.student_id, Concat(s.f_name, ' ', s.l_name) as Student_name , s.major as Student_major, c.name as course_name 
 				from student s INNER JOIN Student_Instructor_Course_Take t on s.student_id = t.student_id
 				INNER JOIN Course c on t.course_id = c.course_id
-				where s.advisor_id = @AdvisorID And s.major = @major);
+				where s.advisor_id = @AdvisorID And s.major = @major;
 	GO
 /*Y               NOT FINISHED     Missing semester code */
 CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
@@ -74,11 +73,10 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 	GO
 /*Z*/
 CREATE PROC Procedures_AdvisorViewPendingRequests
-	@AdvisorID int,
-	@Table OUTPUT
+	@AdvisorID int
 	AS
-	Select @Table = (Select * from request 
-		where student_id in (Select student_id from student where advisor_id = @AdvisorID));
+	Select * from request 
+		where student_id in (Select student_id from student where advisor_id = @AdvisorID);
 	GO
 
 

@@ -12,17 +12,17 @@ DROP PROC clearAllTables;
 EXEC Procedures_StudentRegisterFirstMakeup 
 @StudentID = 1 ,  
 @courseID= 1 ,
-@studentCurrentsemester = 'Spring 2023 à S23'  ;
+@studentCurrentsemester = 'W23'  ;
 EXEC Procedures_StudentRegisterSecondMakeup 
 @StudentID = 1 ,  
 @courseID= 1 ,
-@Student_Current_Semester = 'Spring 2023 à S23'  ;
+@Student_Current_Semester = 'W23'  ;
 EXEC Procedures_ViewRequiredCourses 
 @Student_ID = 1 , 
-@Current_semester_code= 'Spring 2023 à S23'  ;
+@Current_semester_code= 'W23'  ;
 EXEC Procedures_ViewOptionalCourse 
-@Student_ID = 1 , 
-@Current_semester_code= 'Spring 2023 à S23'  ;
+@Student_ID = 2 , 
+@Current_semester_code= 'W23'  ;
 EXEC Procedures_ViewMS 
 @StudentID=1 ;
 EXEC Procedures_ChooseInstructor  
@@ -41,6 +41,7 @@ DROP PROCEDURE Procedures_ViewOptionalCourse
 DROP PROCEDURE Procedures_ViewMS
 DROP PROCEDURE Procedures_ChooseInstructor
 DROP FUNCTION FN_IS_COURSE_OFFERED_HELPER
+DROP FUNCTION FN_FIND_OPTIONAL_Courses_HELPER
 DROP FUNCTION FN_FIND_REQ_Courses_HELPER
 DROP FUNCTION FN_IS_prerequisite_Courses_TAKEN_HELPER
 DROP FUNCTION FN_num_of_falied_courses_HELPER

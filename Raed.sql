@@ -1,4 +1,4 @@
-﻿GO
+﻿--B)
 CREATE PROC Procedures_AdvisorRegistration
 	 @name VARCHAR(40),
 	 @password VARCHAR(40), 
@@ -17,19 +17,23 @@ CREATE PROC Procedures_AdvisorRegistration
 			 SET @advisor_id = SCOPE_IDENTITY() ;
 		END 
 GO
+--C)
 CREATE PROC Procedures_AdminListStudents
 	AS
 	SELECT * FROM Student;	
 GO 
+--D)
 CREATE PROC Procedures_AdminListAdvisors
 	AS
 	SELECT * FROM Advisor;	
 GO
+--E)
 CREATE PROC AdminListStudentsWithAdvisors
 	AS
 	SELECT Student.f_name,Student.l_name , Advisor.name
 	FROM Student INNER JOIN Advisor ON Student.advisor_id = Advisor.advisor_id;
 GO
+--F)
 CREATE PROC AdminAddingSemester 
 	@start_date DATE,
 	@end_date DATE,
@@ -44,6 +48,7 @@ CREATE PROC AdminAddingSemester
 			INSERT INTO Semester VALUES(@semester_code,@start_date,@end_date);
 		END
 GO
+--G)
 CREATE PROC Procedures_AdminAddingCourse 
 	@major VARCHAR (40), 
 	@semester INT, 
@@ -61,6 +66,7 @@ CREATE PROC Procedures_AdminAddingCourse
 			VALUES(@name,@major,@is_offered,@credit_hours,@semester);
 		END
 GO
+--H)
 CREATE PROC Procedures_AdminLinkInstructor -- update or insert ??
 	@instructor_id INT,
 	@course_id INT,
@@ -83,7 +89,8 @@ CREATE PROC Procedures_AdminLinkInstructor -- update or insert ??
 			SET instructor_id =@instructor_id , course_id = @course_id
 			WHERE slot_id = @slot_id
 		END
-GO 
+GO
+--I)
 CREATE PROC Procedures_AdminLinkStudent
 	@instructor_id INT,
 	@student_id INT,
@@ -108,6 +115,7 @@ CREATE PROC Procedures_AdminLinkStudent
 			VALUES(@student_id,@course_id,@instructor_id,@semester_code);
 		END	
 GO 
+--J)
 CREATE PROC Procedures_AdminLinkStudentToAdvisor --update or insert ??
 	@student_id INT,
 	@advisor_id INT
@@ -130,6 +138,7 @@ CREATE PROC Procedures_AdminLinkStudentToAdvisor --update or insert ??
 			WHERE student_id = @student_id
 		END
 GO 
+--K)
 CREATE PROC Procedures_AdminAddExam
 	@Type VARCHAR (40),
 	@date DATETIME,

@@ -80,11 +80,11 @@ CREATE FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER (@StudentId INT)
 	BEGIN
 		DECLARE @financial_status BIT;
 
-		SET @financial_status =(SELECT	CASE
+		SET @financial_status =(SELECT TOP 1 CASE
 						WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 'notPaid' 
 								THEN 0 ELSE 1 END
 								from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
-								 AND p.student_id = @StudentID);
+								 AND p.student_id = @StudentID Order by i.deadline);
 
 	RETURN @financial_status
 	END

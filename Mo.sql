@@ -79,8 +79,7 @@ GO
 CREATE FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER (@StudentId INT)
 	RETURNS BIT
 	BEGIN
-		DECLARE @financial_status BIT
-		DECLARE @isBlocked INT ;
+		DECLARE @financial_status BIT;
 
 		SET @financial_status =(SELECT	CASE
 						WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 'notPaid' 

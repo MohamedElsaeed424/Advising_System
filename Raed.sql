@@ -8,7 +8,7 @@ CREATE PROC Procedures_AdvisorRegistration
 	 AS
 	 IF @name IS NULL OR @password IS NULL OR @email IS NULL OR @office IS NULL 
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	 ELSE
 		BEGIN 
@@ -37,7 +37,7 @@ CREATE PROC AdminAddingSemester
 	AS
 	IF @start_date IS NULL OR @end_date IS NULL OR @semester_code IS NULL 
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	ELSE
 		BEGIN
@@ -53,7 +53,7 @@ CREATE PROC Procedures_AdminAddingCourse
 	AS
 	IF @major IS NULL OR @semester IS NULL OR @credit_hours IS NULL OR @name IS NULL OR @is_offered IS NULL 
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE');
+			PRINT('CAN''T DO THIS SERVICE');
 		END
 	ELSE
 		BEGIN
@@ -68,14 +68,14 @@ CREATE PROC Procedures_AdminLinkInstructor -- update or insert ??
 	AS
 	IF @instructor_id IS NULL OR @course_id IS NULL OR @slot_id IS NULL 
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	IF 
 		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
 		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
 		not exists(SELECT slot_id FROM Slot WHERE slot_id=@slot_id)
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	ELSE
 		BEGIN
@@ -92,7 +92,7 @@ CREATE PROC Procedures_AdminLinkStudent
 	AS
 	IF @instructor_id IS NULL OR @student_id IS NULL OR @course_id IS NULL OR @semester_code IS NULL  
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	IF 
 		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
@@ -100,7 +100,7 @@ CREATE PROC Procedures_AdminLinkStudent
 		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
 		not exists(SELECT semester_code FROM Semester WHERE semester_code=@semester_code)
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	ELSE
 		BEGIN
@@ -114,13 +114,13 @@ CREATE PROC Procedures_AdminLinkStudentToAdvisor --update or insert ??
 	AS
 	IF  @student_id IS NULL OR @advisor_id IS NULL  
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	IF
 		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
 		not exists(SELECT advisor_id FROM Advisor WHERE advisor_id=@advisor_id)
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	ELSE
 		BEGIN
@@ -137,7 +137,7 @@ CREATE PROC Procedures_AdminAddExam
 	AS
 	IF @Type IS NULL OR @date IS NULL OR @course_id IS NULL
 		BEGIN
-			PRINT('CAN T DO THIS SERVICE')
+			PRINT('CAN''T DO THIS SERVICE')
 		END
 	ELSE 
 		BEGIN

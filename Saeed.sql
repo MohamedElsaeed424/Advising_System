@@ -92,9 +92,7 @@ CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
 							   VALUES (@StudentID ,@CourseID , @InstructorID ,@studentCurrentsemester , 'First_makeup' ,  NULL ) ;
 					END
 			END
-
--- JJ) How will i check for time of student makeup
-
+-- JJ) 
 GO
 CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
 	RETURNS BIT 
@@ -147,7 +145,7 @@ CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
     RETURN @IS_Eligible ;
 END;
 
--- KK) what tables should i insert into  and how to get table from anotehr procedure
+-- KK)
 GO
 CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	@StudentID int, 

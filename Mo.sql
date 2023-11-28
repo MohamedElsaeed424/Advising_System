@@ -31,7 +31,6 @@ BEGIN ------ add condition if procedure is done twice on same payment_id i.e. if
 	END
 END
 GO
-SELECT * FROM Installment
 GO
 --m
 CREATE PROC Procedures_AdminDeleteCourse @courseID INT --delete slot or update it ??

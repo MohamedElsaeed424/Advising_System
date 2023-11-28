@@ -228,7 +228,7 @@ INSERT INTO Payment VALUES
 
 INSERT INTO Payment Values ( 700, '2023-10-01', 10, 'notPaid', 50.00, 10, 'F24', '2023-1-01')
 
-SELECT * FROM Payment
+
 -- Adding 10 records to the Installment table
 INSERT INTO Installment VALUES
 (1, '2023-12-01', 50, 'pending', '2023-12-01'),
@@ -244,4 +244,5 @@ INSERT INTO Installment VALUES
 
 
 SELECT * FROM Student
+SELECT * FROM Payment
 SELECT * FROM Installment

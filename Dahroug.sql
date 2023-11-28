@@ -14,15 +14,30 @@ Create PROC Procedures_AdvisorApproveRejectCHRequest
 	@RequestID int, 
 	@Current_semester_code varchar (40)
 	AS
-	IF Exists (Select s.student_id from request R INNER JOIN Student S on r.student_id = s.student_id AND r.type = 'credit hours' /*is type like this?*/
-		where @RequestID = request_id And s.gpa <= 3.7 AND r.credit_hours <= 3 And r.credit_hours + s.assigned_hours < 34)
+	Declare @stID INT
+	Declare @ch INT
+
+	IF @RequestID IS NULL OR @Current_semester_code IS NULL OR Not EXISTS (Select s.student_id from Request r WHERE r.type = 'credit hours' AND @RequestID = request_id)
+		Print 'Not Found'
+
+	ELSE IF Exists (Select s.student_id from Request R INNER JOIN Student S on r.student_id = s.student_id AND r.type = 'credit hours' /*is type like this?*/
+		AND @RequestID = request_id And s.gpa <= 3.7 AND r.credit_hours <= 3 And r.credit_hours + s.assigned_hours < 34)
 	Begin
 		UPDATE request 
 		Set status = 'accepted'
 		where @RequestID = request_id
+
+		
+		SET @stID = (SELECT student_id from Request where @RequestID = request_id)
+		SET @ch = (SELECT credits_hours from Request where @RequestID = request_id)
 		UPDATE student
-		SET assigned_hours = (SELECT TOP 1 s.assigned_hours + r.credit_hours
-							from student s INNER JOIN request r on s.student_id = r.student_id AND r.request_id = @RequestID);
+		SET assigned_hours = (SELECT assigned_hours + @ch
+							from Student where student_id = @stID)
+		where student_id = @stID
+
+		UPDATE Installments
+		SET amount = (SELECT i.amount + @ch from Installment i JOIN Payment p on i.payment_id = p.payment_id AND p.student_id = @stID)
+		-- wahda wahda
 	End
 	ELSE
 		UPDATE request

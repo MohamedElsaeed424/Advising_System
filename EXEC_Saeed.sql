@@ -1,4 +1,5 @@
 ﻿CREATE DATABASE Advising_Team_13 ;
+DROP DATABASE Advising_Team_13 ;
 
 EXEC CreateAllTables;
 EXEC DropAllTables;

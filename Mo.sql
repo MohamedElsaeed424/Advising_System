@@ -1,9 +1,7 @@
-﻿	--l
-GO
-
-CREATE PROC Procedures_AdminIssueInstallment @paymentID INT --mahmoud medaye2
+﻿--l
+CREATE PROC Procedures_AdminIssueInstallment @paymentID INT --mahmoud mabsoot
 AS
-IF @paymentID IS NULL
+IF @paymentID IS NULL OR EXISTS(SELECT * FROM Installment WHERE payment_id = @paymentID)
 BEGIN
 	PRINT 'INVALID INPUT'
 END
@@ -18,9 +16,8 @@ BEGIN ------ add condition if procedure is done twice on same payment_id i.e. if
 	SELECT @amount = amount ,
 		   @start_date = start_date,
 		   @end_date = deadline
-		   FROM Payment 
+	FROM Payment 
 	WHERE payment_id = @paymentID
-
 	SET @num_instalments = MONTH(@end_date) - MONTH(@start_date)
 	SET @amount = @amount / @num_instalments
 	SET @i = 0 
@@ -28,17 +25,15 @@ BEGIN ------ add condition if procedure is done twice on same payment_id i.e. if
 	WHILE @i < @num_instalments
 	BEGIN
 		SET @end_date = DATEADD(MONTH, 1, @start_date)
-		INSERT INTO Installment VALUES(@paymentID ,@end_date ,@amount ,'not paid',@start_date)
+		INSERT INTO Installment VALUES(@paymentID ,@end_date ,@amount ,'notPaid',@start_date)
 		SET @start_date = DATEADD(MONTH, 1, @start_date)
 		SET @i = @i +1
 	END
 END
 GO
 SELECT * FROM Installment
-
-	--m
 GO
-
+--m
 CREATE PROC Procedures_AdminDeleteCourse @courseID INT --delete slot or update it ??
 AS
 IF @courseID IS NULL
@@ -69,24 +64,14 @@ END
 ELSE
 BEGIN
 DECLARE @isBlocked INT ;
-		Select @isBlocked = COUNT(*)
-		FROM  Student INNER JOIN Payment ON Payment.student_id = Student.student_id
-			 WHERE Payment.STATUS = 'notPaid'
-				AND Payment.deadline < GETDATE()
-				AND Student.student_id = @StudentId
-
-		if (@isBlocked = 0 ) -- no passed deadlines 
-			BEGIN 
-				UPDATE Student
-				SET Student.financial_status = 1
-				WHERE student_id = @StudentID
-			END
-		ELSE
-			BEGIN 
-				UPDATE Student
-				SET Student.financial_status = 0
-				WHERE student_id = @StudentID
-			END
+		SET @isBlocked =(SELECT	CASE
+						WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 'notPaid' 
+								THEN 0 ELSE 1 END
+								from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
+								 AND p.student_id = @StudentID);
+		UPDATE Student
+		SET Student.financial_status = @isBlocked
+		WHERE student_id = @StudentID
 END
 GO
 
@@ -97,16 +82,11 @@ CREATE FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER (@StudentId INT)
 		DECLARE @financial_status BIT
 		DECLARE @isBlocked INT ;
 
-		Select @isBlocked = COUNT(*)
-		FROM  Student INNER JOIN Payment ON Payment.student_id = Student.student_id
-			 WHERE Payment.STATUS = 'notPaid'
-				AND Payment.deadline < GETDATE()
-				AND Student.student_id = @StudentId
-
-		if (@isBlocked = 0 )
-			BEGIN SET @financial_status = 1 END
-		ELSE
-			BEGIN SET @financial_status = 0 END
+		SET @financial_status =(SELECT	CASE
+						WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 'notPaid' 
+								THEN 0 ELSE 1 END
+								from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
+								 AND p.student_id = @StudentID);
 
 	RETURN @financial_status
 	END

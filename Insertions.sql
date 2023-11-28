@@ -244,3 +244,4 @@ INSERT INTO Installment VALUES
 
 
 SELECT * FROM Student
+SELECT * FROM Installment

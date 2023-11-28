@@ -1,5 +1,5 @@
 EXEC Procedures_AdminIssueInstallment
-@paymentID = 13 ;
+@paymentID = 11 ;
 EXEC Procedures_AdminDeleteCourse
 @courseID = 5678;
 EXEC Procedure_AdminUpdateStudentStatus

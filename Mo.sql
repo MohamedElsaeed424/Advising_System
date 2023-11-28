@@ -8,16 +8,16 @@ BEGIN
 	PRINT 'INVALID INPUT'
 END
 ELSE
-BEGIN
+BEGIN ------ add condition if procedure is done twice on same payment_id i.e. if exists installment with payment_id
 	DECLARE @num_instalments INT ,
 			@i INT ,
 			@date DATE ,
 			@start_date DATE ,
 			@end_date DATE ,
 			@amount INT
-
 	SELECT @amount = amount ,
-		   @start_date = start_date 
+		   @start_date = start_date,
+		   @end_date = deadline
 		   FROM Payment 
 	WHERE payment_id = @paymentID
 

@@ -37,7 +37,7 @@ Create PROC Procedures_AdvisorApproveRejectCHRequest
 		where student_id = @stID
 		-----
 		Declare @InstID1 INT
-		Declare @InstID2 DATETIME
+		Declare @InstID2 DATE
 		SELECT TOP 1 @InstID1 = i.payment_id, @InstID2 = i.deadline
 				from Installment i JOIN Payment p on i.payment_id = p.payment_id AND p.student_id = @stID 
 				AND p.semester_code = @Current_semester_code AND i.status = 'pending'

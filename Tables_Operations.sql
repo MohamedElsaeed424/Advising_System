@@ -165,23 +165,23 @@ CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Payment(
 	payment_id      INT IDENTITY PRIMARY KEY, 
 	amount          INT , 
-	deadline        DATETIME,
+	deadline        DATE,
 	n_installments  INT DEFAULT 0,
 	status          VARCHAR(40) DEFAULT 'notPaid',
 	fund_percentage DECIMAL(5,2), 
 	student_id      INT, 
 	semester_code   VARCHAR(40), 
-	start_date      DATETIME,
+	start_date      DATE,
 	CONSTRAINT FK_student6 FOREIGN KEY (student_id) REFERENCES Student (student_id) ,-- ON DELETE SET NULL,
 	CONSTRAINT FK_semester4 FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) --ON DELETE SET NULL,
 	);
 
 	CREATE TABLE Installment (
 	payment_id     INT , 
-	deadline       DATETIME, 
+	deadline       DATE, 
 	amount         INT, 
 	status         VARCHAR(40)  ,
-	start_date     DATETIME ,
+	start_date     DATE ,
 	CONSTRAINT PK_Installment PRIMARY KEY (payment_id, deadline),
 	CONSTRAINT FK_Payment FOREIGN KEY (payment_id) REFERENCES Payment (payment_id),
 	);

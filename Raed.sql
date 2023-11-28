@@ -78,7 +78,7 @@ CREATE PROC Procedures_AdminLinkInstructor -- update or insert ??
 			PRINT('CAN''T DO THIS SERVICE')
 		END
 	ELSE
-		BEGIN
+		BEGIN ------------- Does instructor teach this course in ||| Instructor_course table ||||
 			UPDATE Slot 
 			SET instructor_id =@instructor_id , course_id = @course_id
 			WHERE slot_id = @slot_id

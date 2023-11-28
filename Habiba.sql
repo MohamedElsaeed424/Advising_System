@@ -75,9 +75,7 @@ AS
 BEGIN 
 	INSERT INTO Student(f_name,l_name,password,faculty,email,major,semester)
 			VALUES(@first_name,@last_name,@password,@faculty,@email,@major,@Semester)
-	SELECT @student_id = S.student_id
-	FROM Student S
-	WHERE S.email = @email
+	SET @student_id = SCOPE_IDENTITY();
 END
 
 

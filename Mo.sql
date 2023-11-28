@@ -9,11 +9,32 @@ BEGIN
 END
 ELSE
 BEGIN
-	SELECT n_installments
-	FROM Payment 
+	DECLARE @num_instalments INT ,
+			@i INT ,
+			@date DATE ,
+			@start_date DATE ,
+			@end_date DATE ,
+			@amount INT
+
+	SELECT @amount = amount ,
+		   @start_date = start_date 
+		   FROM Payment 
 	WHERE payment_id = @paymentID
+
+	SET @num_instalments = MONTH(@end_date) - MONTH(@start_date)
+	SET @amount = @amount / @num_instalments
+	SET @i = 0 
+
+	WHILE @i < @num_instalments
+	BEGIN
+		SET @end_date = DATEADD(MONTH, 1, @start_date)
+		INSERT INTO Installment VALUES(@paymentID ,@end_date ,@amount ,'not paid',@start_date)
+		SET @start_date = DATEADD(MONTH, 1, @start_date)
+		SET @i = @i +1
+	END
 END
 GO
+SELECT * FROM Installment
 
 	--m
 GO

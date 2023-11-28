@@ -180,7 +180,7 @@ CREATE PROCEDURE CreateAllTables AS
 	payment_id     INT , 
 	deadline       DATE, 
 	amount         INT, 
-	status         VARCHAR(40)  ,
+	status         VARCHAR(40),
 	start_date     DATE ,
 	CONSTRAINT PK_Installment PRIMARY KEY (payment_id, deadline),
 	CONSTRAINT FK_Payment FOREIGN KEY (payment_id) REFERENCES Payment (payment_id),

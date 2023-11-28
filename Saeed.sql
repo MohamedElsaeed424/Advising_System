@@ -155,8 +155,7 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	@Student_Current_Semester Varchar (40)
 	AS
 	DECLARE @num_failed_courses INT ,
-	        @IS_SecoundMakeup_Eligible BIT ,
-			@InstructorID INT ;
+	        @IS_SecoundMakeup_Eligible BIT 
 	SET @IS_SecoundMakeup_Eligible = dbo.FN_StudentCheckSMEligiability(@courseID,@StudentID  )
 
 	IF @IS_SecoundMakeup_Eligible = 0
@@ -164,13 +163,16 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	ELSE
 		BEGIN
 
-		SELECT  @InstructorID = instructor_id 
-		FROM    Student_Instructor_Course_Take
-		WHERE   course_id = @courseID AND 
-				student_id = @StudentID 
+		-- insert in exam_student and in reg for fisrt makeup
+
+		UPDATE Student_Instructor_Course_Take
+		SET exam_type = 'Second_makeup'
+		WHERE semester_code = @Student_Current_Semester AND
+			  student_id = @StudentID AND
+			  course_id = @courseID 
   
-		INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
-			   VALUES (@StudentID ,@CourseID , @InstructorID ,@Student_Current_Semester , 'Second_makeup' ,  NULL ) ;
+		--INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
+		--	   VALUES (@StudentID ,@CourseID , @InstructorID ,@Student_Current_Semester , 'Second_makeup' ,  NULL ) ;
 		END	
 --------------------------------------------------Courses Procedures---------------------------------------------------------------------------
 -- LL) 
@@ -202,9 +204,14 @@ GO
 CREATE PROCEDURE Procedures_ViewMS
 	@StudentID int
 	AS
-	SELECT * FROM Course c INNER JOIN Course_Semester CS ON c.course_id = CS.course_id
-	WHERE NOT EXISTS (SELECT * FROM dbo.FN_FIND_OPTIONAL_Courses_HELPER(@StudentID , CS.semester_code , c.course_id) ) AND
-		  NOT EXISTS (SELECT * FROM dbo.FN_FIND_REQ_Courses_HELPER(@StudentID , CS.semester_code , c.course_id))
+	(SELECT * FROM Course c ) 
+	EXCEPT 
+	(SELECT c1.course_id , c1.credit_hours ,c1.is_offered ,c1.major ,c1.name ,c1.semester
+	 FROM   Student_Instructor_Course_Take SC INNER JOIN Student S ON S.student_id = SC.student_id 
+											  INNER JOIN Course c1 ON c1.course_id = SC.course_id
+	 WHERE  SC.student_id = @StudentID AND
+			c1.major = S.major
+	)
 GO
 -- OO)
 CREATE PROCEDURE Procedures_ChooseInstructor

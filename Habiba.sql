@@ -2,7 +2,7 @@
 CREATE VIEW view_Students AS 
 SELECT * 
 FROM student 
-WHERE financial_status = 1; --REMINDER: Need to make view for student with derived financial status
+WHERE financial_status = 1;
 
 GO
 CREATE VIEW view_Course_prerequisites AS 

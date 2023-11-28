@@ -23,24 +23,34 @@ Create PROC Procedures_AdvisorApproveRejectCHRequest
 	ELSE IF Exists (Select s.student_id from Request R INNER JOIN Student S on r.student_id = s.student_id AND r.type = 'credit hours' /*is type like this?*/
 		AND @RequestID = request_id And s.gpa <= 3.7 AND r.credit_hours <= 3 And r.credit_hours + s.assigned_hours < 34)
 	Begin
-		UPDATE request 
+	----
+		UPDATE Request 
 		Set status = 'accepted'
 		where @RequestID = request_id
 
-		
+		------
 		SET @stID = (SELECT student_id from Request where @RequestID = request_id)
 		SET @ch = (SELECT credits_hours from Request where @RequestID = request_id)
-		UPDATE student
+		UPDATE Student
 		SET assigned_hours = (SELECT assigned_hours + @ch
 							from Student where student_id = @stID)
 		where student_id = @stID
-
-		UPDATE Installments
-		SET amount = (SELECT i.amount + @ch from Installment i JOIN Payment p on i.payment_id = p.payment_id AND p.student_id = @stID)
-		-- wahda wahda
+		-----
+		Declare @InstID1 INT
+		Declare @InstID2 DATETIME
+		SELECT TOP 1 @InstID1 = i.payment_id, @InstID2 = i.deadline
+				from Installment i JOIN Payment p on i.payment_id = p.payment_id AND p.student_id = @stID 
+				AND p.semester_code = @Current_semester_code AND i.status = 'pending'
+				Order by i.deadline
+		
+		UPDATE Installment
+		SET amount = (SELECT TOP 1 i.amount + @ch*1000 
+				from Installment 
+				WHERE payment_id = @InstID1 AND deadline = @InstID2)
+		where payment_id = @InstID1 AND deadline = @InstID2
 	End
 	ELSE
-		UPDATE request
+		UPDATE Request
 		Set status = 'rejected'
 		where @RequestID = request_id
 	GO

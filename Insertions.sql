@@ -245,4 +245,5 @@ INSERT INTO Installment VALUES
 
 SELECT * FROM Student
 SELECT * FROM Payment
+SELECT * FROM Slot	
 SELECT * FROM Installment

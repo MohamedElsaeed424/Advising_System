@@ -36,6 +36,6 @@ DROP PROC Procedures_AdvisorAddCourseGP
 DROP PROC Procedures_AdvisorUpdateGP
 DROP PROC Procedures_AdvisorDeleteFromGP
 DROP FUNCTION FN_AdvisorLogin 
-DROP FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER
+
 
 EXEC CreateAllTables

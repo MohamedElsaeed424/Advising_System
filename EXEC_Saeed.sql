@@ -8,6 +8,7 @@ EXEC clearAllTables;
 DROP PROCEDURE CreateAllTables;
 DROP PROC DropAllTables;
 DROP PROC clearAllTables;
+DROP FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER
 
 
 EXEC Procedures_StudentRegisterFirstMakeup 

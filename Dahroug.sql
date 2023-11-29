@@ -130,6 +130,15 @@ CREATE PROC Procedures_StudentaddMobile
 		INSERT INTO Student_Phone values(@StudentID ,@mobile_number);
 	END
 	GO
+/*CC*/
+CREATE FUNCTION FN_SemsterAvailableCourses (@semester_code varchar (40))
+	RETURNS TABLE
+	AS
+	RETURN (
+		Select c.course_id, c.name
+		from Course c JOIN Course_Semester cs on c.course_id = cs.course_id
+	);
+GO
 /*DD*/
 CREATE PROC Procedures_StudentSendingCourseRequest
 	@StudentID int, 

@@ -1,4 +1,25 @@
-﻿------------------------------------------2.1----------------------------------------------------
+﻿--N) 2.3
+CREATE PROC Procedure_AdminUpdateStudentStatus @StudentID INT
+AS
+IF @StudentID IS NULL
+BEGIN
+	PRINT 'INVALID INPUT'
+END
+ELSE
+BEGIN
+DECLARE @financial_status BIT ;
+				SET @financial_status = CASE WHEN Exists (Select * 
+												  from (SELECT CASE WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 'notPaid'  THEN 0 ELSE 1 END as paid
+														from Installment i INNER JOIN Payment p on (p.payment_id = i.payment_id 
+															AND p.student_id = @StudentID)) as paids 
+											      WHERE paids.paid = 0) Then 0 ELSE 1 END
+		UPDATE Student
+		SET Student.financial_status = @financial_status
+		WHERE student_id = @StudentID
+END
+GO
+
+------------------------------------------2.1----------------------------------------------------
 --2)
 CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Course (

@@ -1,5 +1,5 @@
 EXEC Procedures_AdminIssueInstallment
-@paymentID = 1234 ;
+@paymentID = 11 ;
 EXEC Procedures_AdminDeleteCourse
 @courseID = 5678;
 EXEC Procedure_AdminUpdateStudentStatus
@@ -28,7 +28,6 @@ EXEC Procedures_AdvisorUpdateGP
 
 DROP PROC Procedures_AdminIssueInstallment
 DROP PROC Procedures_AdminDeleteCourse
-DROP PROC Procedure_AdminUpdateStudentStatus
 DROP VIEW all_Pending_Requests
 DROP PROC Procedures_AdminDeleteSlots
 DROP PROC Procedures_AdvisorCreateGP
@@ -36,5 +35,6 @@ DROP PROC Procedures_AdvisorAddCourseGP
 DROP PROC Procedures_AdvisorUpdateGP
 DROP PROC Procedures_AdvisorDeleteFromGP
 DROP FUNCTION FN_AdvisorLogin 
+
 
 EXEC CreateAllTables

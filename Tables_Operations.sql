@@ -1,4 +1,26 @@
-﻿
+﻿--N) 2.3
+CREATE PROC Procedure_AdminUpdateStudentStatus @StudentID INT
+AS
+IF @StudentID IS NULL
+BEGIN
+	PRINT 'INVALID INPUT'
+END
+ELSE
+BEGIN
+DECLARE @financial_status BIT ;
+				SET @financial_status = CASE WHEN Exists (Select * 
+												  from (SELECT CASE WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 'notPaid'  THEN 0 ELSE 1 END as paid
+														from Installment i INNER JOIN Payment p on (p.payment_id = i.payment_id 
+															AND p.student_id = @StudentID)) as paids 
+											      WHERE paids.paid = 0) Then 0 ELSE 1 END
+		UPDATE Student
+		SET Student.financial_status = @financial_status
+		WHERE student_id = @StudentID
+END
+GO
+
+------------------------------------------2.1----------------------------------------------------
+--2)
 CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Course (
 	course_id             INT IDENTITY PRIMARY KEY,
@@ -42,13 +64,7 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40) UNIQUE, 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	financial_status      BIT ,
-							--AS		(SELECT          --CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-							--		CASE
-							--		WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 1 
-							--		THEN 1 ELSE 0 END
-							--		from Installment i INNER JOIN Payment p on p.payment_id = i.payment_id 
-							--		 AND p.student_id = Student.student_id),
+	financial_status      AS dbo.CALC_STUDENT_FINANTIAL_STATUS_HELPER(student_id)  ,		
 	semester              INT, 
 	acquired_hours        INT, 
 	assigned_hours        INT DEFAULT NULL, 
@@ -171,29 +187,28 @@ CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Payment(
 	payment_id      INT IDENTITY PRIMARY KEY, 
 	amount          INT , 
-	deadline        DATETIME,
+	startdate       DATE,
+	deadline        DATE,
 	n_installments  INT DEFAULT 0,
 	status          VARCHAR(40) DEFAULT 'notPaid',
 	fund_percentage DECIMAL(5,2), 
 	student_id      INT, 
 	semester_code   VARCHAR(40), 
-	start_date      DATETIME,
 	CONSTRAINT FK_student6 FOREIGN KEY (student_id) REFERENCES Student (student_id) ,-- ON DELETE SET NULL,
 	CONSTRAINT FK_semester4 FOREIGN KEY (semester_code) REFERENCES Semester (semester_code) --ON DELETE SET NULL,
 	);
 
 	CREATE TABLE Installment (
 	payment_id     INT , 
-	deadline       DATETIME, 
+	deadline       DATE, 
 	amount         INT, 
-	status         VARCHAR(40)  ,
-	start_date     DATETIME ,
+	status         VARCHAR(40),
+	start_date     DATE ,
 	CONSTRAINT PK_Installment PRIMARY KEY (payment_id, deadline),
 	CONSTRAINT FK_Payment FOREIGN KEY (payment_id) REFERENCES Payment (payment_id),
 	);
-
 GO
-
+--3)
 CREATE PROCEDURE  DropAllTables AS
 	DROP TABLE Installment;
 	DROP TABLE Payment;
@@ -215,7 +230,7 @@ CREATE PROCEDURE  DropAllTables AS
 	DROP TABLE Course;
 
 GO
-
+--4)
 CREATE PROCEDURE clearAllTables AS
 	ALTER TABLE Student DROP CONSTRAINT FK_advisor1
 	ALTER TABLE Student_Phone DROP CONSTRAINT FK_student1
@@ -296,4 +311,20 @@ CREATE PROCEDURE clearAllTables AS
 	ALTER TABLE Payment ADD CONSTRAINT FK_semester4 FOREIGN KEY (semester_code) REFERENCES Semester (semester_code)
 	ALTER TABLE Installment ADD CONSTRAINT FK_Payment FOREIGN KEY (payment_id) REFERENCES Payment (payment_id)
 
+GO
+
+------------------------------Helper for student status------------------------------------------
+CREATE FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER (@StudentId INT)
+	RETURNS BIT
+	BEGIN
+		DECLARE @financial_status BIT;
+
+		SET @financial_status = CASE WHEN Exists (Select * 
+												  from (SELECT CASE WHEN CURRENT_TIMESTAMP > i.deadline AND i.status = 'notPaid'  THEN 0 ELSE 1 END as paid
+														from Installment i INNER JOIN Payment p on (p.payment_id = i.payment_id 
+															AND p.student_id = @StudentID)) as paids 
+											      WHERE paids.paid = 0) Then 0 ELSE 1 END
+
+	RETURN @financial_status
+	END
 GO

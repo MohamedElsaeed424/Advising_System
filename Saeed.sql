@@ -58,17 +58,41 @@ CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
 	@courseID int, 
 	@studentCurrentsemester varchar (40)
 	AS
-	DECLARE @InstructorID INT ;
-		SELECT  @InstructorID = instructor_id 
-		FROM Student_Instructor_Course_Take
-		WHERE course_id = @courseID  AND
-			  student_id = @StudentID
-  
-		INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
-			   VALUES (@StudentID ,@CourseID , @InstructorID ,@studentCurrentsemester , 'First_makeup' ,  NULL ) ;
+	DECLARE @InstructorID INT ,
+			@Grade_Normal_Exam VARCHAR(40) ,
+			@IF_course_firstMakeup INT
 
--- JJ) How will i check for time of student makeup
+		SELECT @IF_course_firstMakeup=COUNT(*)
+		FROM  Student_Instructor_Course_Take 
+		WHERE course_id = @CourseID AND
+			  student_id = @StudentID AND
+			  semester_code = @studentCurrentsemester AND
+			  exam_type LIKE '%makeup%' 
+		IF @IF_course_firstMakeup <> 0
+			BEGIN PRINT ('YOU CANT REGISTER FOR THE FIRST MAKEUP YOU REGISTERED BEFOR FOR A MAKEUP EXAM') END
+		ELSE 
+			BEGIN
+				SELECT @Grade_Normal_Exam = grade 
+				FROM Student_Instructor_Course_Take
+				WHERE student_id = @StudentID AND
+					  course_id = @courseID AND
+					  exam_type = 'Normal' AND
+					  semester_code = @studentCurrentsemester 
+				IF @Grade_Normal_Exam <> 'FF' OR @Grade_Normal_Exam <> 'F' OR @Grade_Normal_Exam <> 'NULL'
+					BEGIN PRINT('YOUR GRADE NOT FF OR F TO REGISTER ON THIS EXAM') END
+				ELSE
+					BEGIN
 
+						SELECT  @InstructorID = instructor_id 
+						FROM Student_Instructor_Course_Take
+						WHERE course_id = @courseID  AND
+							  student_id = @StudentID
+			
+						INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
+							   VALUES (@StudentID ,@CourseID , @InstructorID ,@studentCurrentsemester , 'First_makeup' ,  NULL ) ;
+					END
+			END
+-- JJ) 
 GO
 CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
 	RETURNS BIT 
@@ -121,7 +145,7 @@ CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
     RETURN @IS_Eligible ;
 END;
 
--- KK) what tables should i insert into  and how to get table from anotehr procedure
+-- KK)
 GO
 CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	@StudentID int, 
@@ -129,8 +153,7 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	@Student_Current_Semester Varchar (40)
 	AS
 	DECLARE @num_failed_courses INT ,
-	        @IS_SecoundMakeup_Eligible BIT ,
-			@InstructorID INT ;
+	        @IS_SecoundMakeup_Eligible BIT 
 	SET @IS_SecoundMakeup_Eligible = dbo.FN_StudentCheckSMEligiability(@courseID,@StudentID  )
 
 	IF @IS_SecoundMakeup_Eligible = 0
@@ -138,13 +161,16 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	ELSE
 		BEGIN
 
-		SELECT  @InstructorID = instructor_id 
-		FROM    Student_Instructor_Course_Take
-		WHERE   course_id = @courseID AND 
-				student_id = @StudentID 
+		-- insert in exam_student and in reg for fisrt makeup
+
+		UPDATE Student_Instructor_Course_Take
+		SET exam_type = 'Second_makeup'
+		WHERE semester_code = @Student_Current_Semester AND
+			  student_id = @StudentID AND
+			  course_id = @courseID 
   
-		INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
-			   VALUES (@StudentID ,@CourseID , @InstructorID ,@Student_Current_Semester , 'Second_makeup' ,  NULL ) ;
+		--INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
+		--	   VALUES (@StudentID ,@CourseID , @InstructorID ,@Student_Current_Semester , 'Second_makeup' ,  NULL ) ;
 		END	
 --------------------------------------------------Courses Procedures---------------------------------------------------------------------------
 -- LL) 
@@ -158,7 +184,7 @@ CREATE PROCEDURE  Procedures_ViewRequiredCourses
 					  INNER JOIN Student S ON SC.student_id = S.student_id )
 	 WHERE  S.student_id = @Student_ID AND
 			c1.semester <= S.semester AND
-		    ( SC.grade = 'F' OR SC.grade ='FF' OR SC.grade IS NULL ) AND               -- check for grade
+		    ( SC.grade = 'F' OR SC.grade ='FF' OR SC.grade = 'FA' OR  SC.grade IS NULL ) AND               -- check for grade
 			dbo.FN_IS_COURSE_OFFERED_HELPER(c1.course_id , @Current_semester_code) = 1 --check if course offered in current semester
 GO 
 -- MM) Check again
@@ -183,16 +209,18 @@ CREATE PROCEDURE Procedures_ViewMS
 											  INNER JOIN Course c1 ON c1.course_id = SC.course_id
 	 WHERE  SC.student_id = @StudentID AND
 			c1.major = S.major
-	)	  
+	)
 GO
 -- OO)
 CREATE PROCEDURE Procedures_ChooseInstructor
 	 @StudentID int, 
 	 @InstructorID int,
-	 @CourseID int
+	 @CourseID int ,
+	 @current_semester_code varchar(40) 
 	 AS
-	 INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id) 
-	 VALUES (@StudentID ,@CourseID , @InstructorID) ;
+	 UPDATE Student_Instructor_Course_Take
+	 SET instructor_id = @InstructorID
+	 WHERE student_id =@StudentID AND course_id = @CourseID AND semester_code = @current_semester_code
 
 ---------------------------------------------------------------HELPER FUNCTIONS-------------------------------------------------------
 GO
@@ -211,19 +239,6 @@ CREATE FUNCTION FN_IS_COURSE_OFFERED_HELPER (@CourseID INT , @Current_Semester_C
 			BEGIN  SET @Is_offered  = 0 END
 	RETURN @Is_offered ;
 END
-GO
-CREATE FUNCTION FN_FIND_REQ_Courses_HELPER (@Student_ID int  , @Current_semester_code Varchar (40) , @CourseID INT) 
-	RETURNS TABLE
-	AS
-	RETURN 
-		 SELECT c1.course_id , c1.name , c1.major ,c1.is_offered ,c1.credit_hours ,c1.semester
-		 FROM ( Course c1 INNER JOIN Student_Instructor_Course_Take SC ON c1.course_id = SC.course_id
-						  INNER JOIN Student S ON SC.student_id = S.student_id )
-		 WHERE  S.student_id = @Student_ID AND
-				c1.course_id = @CourseID AND
-				c1.semester <= S.semester AND
-				( SC.grade = 'F' OR SC.grade ='FF' OR SC.grade IS NULL ) AND               -- check for grade
-				dbo.FN_IS_COURSE_OFFERED_HELPER(c1.course_id , @Current_semester_code) = 1 	
 GO
 CREATE FUNCTION FN_IS_prerequisite_Courses_TAKEN_HELPER (@StudentID INT , @CourseID INT ) 
 	RETURNS BIT 
@@ -253,6 +268,31 @@ CREATE FUNCTION FN_IS_prerequisite_Courses_TAKEN_HELPER (@StudentID INT , @Cours
 	RETURN @Is_ALL_PRE_TAKEN ;
 	END ;
 GO
+CREATE FUNCTION FN_FIND_REQ_Courses_HELPER (@Student_ID int  , @Current_semester_code Varchar (40) , @CourseID INT) 
+	RETURNS TABLE
+	AS
+	RETURN 
+		 SELECT c1.course_id , c1.name , c1.major ,c1.is_offered ,c1.credit_hours ,c1.semester
+		 FROM ( Course c1 INNER JOIN Student_Instructor_Course_Take SC ON c1.course_id = SC.course_id
+						  INNER JOIN Student S ON SC.student_id = S.student_id )
+		 WHERE  S.student_id = @Student_ID AND
+				c1.course_id = @CourseID AND
+				c1.semester <= S.semester AND
+				( SC.grade = 'F' OR SC.grade ='FF' OR SC.grade='FA' OR SC.grade IS NULL ) AND               -- check for grade
+				dbo.FN_IS_COURSE_OFFERED_HELPER(c1.course_id , @Current_semester_code) = 1 	
+GO
+
+CREATE FUNCTION FN_FIND_OPTIONAL_Courses_HELPER (@Student_ID int  , @Current_semester_code Varchar (40) , @CourseID Varchar (40) ) 
+	RETURNS TABLE
+	AS
+	RETURN 
+	SELECT c.course_id , c.name , c.major ,c.is_offered ,c.credit_hours ,c.semester
+	FROM Course c 
+	WHERE dbo.FN_IS_COURSE_OFFERED_HELPER(c.course_id , @Current_semester_code) = 1 AND  -- course is offered 
+		  dbo.FN_IS_prerequisite_Courses_TAKEN_HELPER(@Student_ID , c.course_id) =1 AND  -- Took all prerequisite
+		  NOT EXISTS  ( SELECT * FROM dbo.FN_FIND_REQ_Courses_HELPER (@Student_ID   , @Current_semester_code  , c.course_id) )
+GO
+
 CREATE FUNCTION FN_num_of_falied_courses_HELPER (@Season1 VARCHAR(40) , @Season2 VARCHAR(40) , @Season3 VARCHAR(40),@CourseID INT , @StudentID INT)
 	RETURNS INT
 	AS

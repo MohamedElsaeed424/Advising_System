@@ -6,6 +6,7 @@ EXEC Procedures_AdvisorRegistration
 	 @email = 'HOTMAIL',
 	 @office = 'C6205',
 	 @advisor_id = @result OUTPUT;
+
 EXEC Procedures_AdminListStudents;
 EXEC Procedures_AdminListAdvisors;
 EXEC AdminListStudentsWithAdvisors

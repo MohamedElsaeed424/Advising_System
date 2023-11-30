@@ -79,9 +79,9 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 			FROM PreqCourse_course p
 			INNER JOIN Request r ON p.course_id = r.course_id AND r.request_id = @RequestID
 			LEFT JOIN Student_Instructor_Course_Take sic ON p.prerequisite_course_id = sic.course_id AND sic.student_id = r.student_id
-			WHERE sic.course_id IS NULL
-		) THEN 1
-		ELSE 0
+			WHERE sic.course_id IS NULL OR sic.grade IS NULL OR sic.grade = 'FA'
+		) THEN 0
+		ELSE 1
 		END;
 	Declare @enough_hours BIT
 	SET @enough_hours  = CASE

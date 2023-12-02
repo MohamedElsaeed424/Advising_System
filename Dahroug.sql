@@ -16,9 +16,8 @@ Create PROC Procedures_AdvisorApproveRejectCHRequest
 	AS
 	Declare @stID INT
 	Declare @ch INT
-
-	IF @RequestID IS NULL OR @Current_semester_code IS NULL OR Not EXISTS (Select s.student_id from Request r WHERE r.type = 'credit_hours' AND @RequestID = request_id)
-		Print 'ERROR'
+	IF @RequestID IS NULL OR @Current_semester_code IS NULL OR Not EXISTS (Select * from Request WHERE type LIKE 'credit_hours' AND @RequestID = request_id AND status = 'pending')
+		Print 'No such pending request'
 
 	ELSE IF Exists (Select s.student_id from Request R INNER JOIN Student S on r.student_id = s.student_id AND r.type = 'credit hours' /*is type like this?*/
 		AND @RequestID = request_id And s.gpa <= 3.7 AND r.credit_hours <= 3 And r.credit_hours + s.assigned_hours < 34)
@@ -30,7 +29,7 @@ Create PROC Procedures_AdvisorApproveRejectCHRequest
 
 		------
 		SET @stID = (SELECT student_id from Request where @RequestID = request_id)
-		SET @ch = (SELECT credits_hours from Request where @RequestID = request_id)
+		SET @ch = (SELECT credit_hours from Request where @RequestID = request_id)
 		UPDATE Student
 		SET assigned_hours = (SELECT assigned_hours + @ch
 							from Student where student_id = @stID)

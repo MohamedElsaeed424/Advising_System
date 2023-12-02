@@ -239,6 +239,9 @@ INSERT INTO Installment VALUES
 ( 10,'2023-12-10', 58, 0,'2023-12-10');
 
 SELECT * FROM Student
+SELECT * FROM Student_Instructor_Course_Take
 SELECT * FROM Payment
 SELECT * FROM Slot	
 SELECT * FROM Installment
+SELECT * FROM Request
+SELECT * FROM Semester

@@ -9,28 +9,27 @@ CREATE FUNCTION FN_Advisors_Requests (@advisorID INT)
 	);
 GO
 
-/*W What to do with semester code?????*/
+/*              W             */
 Create PROC Procedures_AdvisorApproveRejectCHRequest
 	@RequestID int, 
 	@Current_semester_code varchar (40)
 	AS
 	Declare @stID INT
 	Declare @ch INT
-
-	IF @RequestID IS NULL OR @Current_semester_code IS NULL OR Not EXISTS (Select s.student_id from Request r WHERE r.type = 'credit hours' AND @RequestID = request_id)
-		Print 'Not Found'
+	IF @RequestID IS NULL OR @Current_semester_code IS NULL OR Not EXISTS (Select * from Request WHERE type LIKE 'credit_hours' AND @RequestID = request_id AND status = 'pending')
+		Print 'No such pending request'
 
 	ELSE IF Exists (Select s.student_id from Request R INNER JOIN Student S on r.student_id = s.student_id AND r.type = 'credit hours' /*is type like this?*/
 		AND @RequestID = request_id And s.gpa <= 3.7 AND r.credit_hours <= 3 And r.credit_hours + s.assigned_hours < 34)
 	Begin
 	----
 		UPDATE Request 
-		Set status = 'accepted'
+		Set status = 'approved'
 		where @RequestID = request_id
 
 		------
 		SET @stID = (SELECT student_id from Request where @RequestID = request_id)
-		SET @ch = (SELECT credits_hours from Request where @RequestID = request_id)
+		SET @ch = (SELECT credit_hours from Request where @RequestID = request_id)
 		UPDATE Student
 		SET assigned_hours = (SELECT assigned_hours + @ch
 							from Student where student_id = @stID)
@@ -44,9 +43,7 @@ Create PROC Procedures_AdvisorApproveRejectCHRequest
 				Order by i.deadline
 		
 		UPDATE Installment
-		SET amount = (SELECT TOP 1 i.amount + @ch*1000 
-				from Installment 
-				WHERE payment_id = @InstID1 AND deadline = @InstID2)
+		SET amount = amount + @ch*1000
 		where payment_id = @InstID1 AND deadline = @InstID2
 	End
 	ELSE
@@ -62,37 +59,56 @@ CREATE PROC Procedures_AdvisorViewAssignedStudents
 	Select s.student_id, Concat(s.f_name, ' ', s.l_name) as Student_name , s.major as Student_major, c.name as course_name 
 				from student s INNER JOIN Student_Instructor_Course_Take t on s.student_id = t.student_id
 				INNER JOIN Course c on t.course_id = c.course_id
-				where s.advisor_id = @AdvisorID And s.major = @major;
+				AND s.advisor_id = @AdvisorID And s.major = @major;
 	GO
-/*Y               NOT FINISHED     Missing semester code */
+/*                              Y              */
 CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 	@RequestID int,
-	@studentID int,
-	@advisorID int
+	@current_semester_code varchar(40)
 	AS
-	DECLARE @Current_semester_code varchar(40)
-	SET @Current_semester_code = (SELECT TOP 1 semester_code from Semester 
-			Where CURRENT_TIMESTAMP <= end_date and CURRENT_TIMESTAMP >= start_date)
+	IF @RequestID IS NULL OR @current_semester_code IS NULL OR Not EXISTS (Select s.student_id from Request r WHERE r.type = 'course' AND @RequestID = request_id)
+	BEGIN
+		Print 'ERROR' 
+		RETURN
+	END
 	DECLARE @prereq BIT
 	SET @prereq = CASE
 		WHEN EXISTS (
 			SELECT p.prerequisite_course_id
 			FROM PreqCourse_course p
-			INNER JOIN request r ON p.course_id = r.course_id AND r.request_id = @RequestID
-			LEFT JOIN Student_Instructor_Course_Take sic ON p.prerequisite_course_id = sic.course_id AND sic.student_id = @studentID
-			WHERE sic.course_id IS NULL
-		) THEN 1
-		ELSE 0
+			INNER JOIN Request r ON p.course_id = r.course_id AND r.request_id = @RequestID
+			LEFT JOIN Student_Instructor_Course_Take sic ON p.prerequisite_course_id = sic.course_id AND sic.student_id = r.student_id
+			WHERE sic.course_id IS NULL OR sic.grade IS NULL OR sic.grade = 'FA'
+		) THEN 0
+		ELSE 1
 		END;
-	Declare @check_advisor_and_enough_hours BIT
-	SET @check_advisor_and_enough_hours  = CASE
-		WHEN EXISTS (Select * from
-			(Select student_id from student where student_id = @studentID AND advisor_id = @advisorID) s 
-			INNER JOIN Student_Instructor_Course_Take sic on s.student_id = sic.student_id INNER JOIN Course c on c.course_id = sic.course_id
-
+	Declare @enough_hours BIT
+	SET @enough_hours  = CASE
+		WHEN EXISTS ( Select c.credit_hours from Request r JOIN Course c on r.course_id = c.course_id AND r.request_id = @RequestID
+			JOIN Student s on r.student_id = s.student_id AND s.assigned_hours >= c.credit_hours
 			) THEN 1
 			ELSE 0
 			END;
+
+	Declare @studentID INT
+	Declare @course_hours INT
+	Declare @courseID INT
+	Select @studentID = r.student_id, @course_hours = c.credit_hours, @courseID = c.course_id
+	from Request r JOIN Course c on r.course_id = c.course_id AND r.request_id = @RequestID
+
+	IF @prereq = 1 AND @enough_hours = 1
+	BEGIN
+		UPDATE Request
+		SET status = 'approved'
+		WHERE @RequestID = request_id
+
+		UPDATE Student
+		SET assigned_hours = assigned_hours - @course_hours
+		WHERE student_id = @studentID
+
+		INSERT INTO Student_Instructor_Course_Take(student_id, course_id, semester_code) VALUES
+		(@studentID, @courseID, @current_semester_code)
+	END
 	
 
 	GO
@@ -130,6 +146,15 @@ CREATE PROC Procedures_StudentaddMobile
 		INSERT INTO Student_Phone values(@StudentID ,@mobile_number);
 	END
 	GO
+/*CC*/
+CREATE FUNCTION FN_SemsterAvailableCourses (@semester_code varchar (40))
+	RETURNS TABLE
+	AS
+	RETURN (
+		Select c.course_id, c.name
+		from Course c JOIN Course_Semester cs on c.course_id = cs.course_id
+	);
+GO
 /*DD*/
 CREATE PROC Procedures_StudentSendingCourseRequest
 	@StudentID int, 
@@ -153,7 +178,7 @@ CREATE PROC Procedures_StudentSendingCHRequest
 	@type varchar (40),
 	@comment varchar (40) 
 	AS
-	IF @StudentID IS NULL OR @courseID IS NULL
+	IF @StudentID IS NULL OR @credit_hours IS NULL
 	BEGIN
 		PRINT 'ERROR';
 	END

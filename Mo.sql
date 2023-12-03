@@ -7,7 +7,7 @@ BEGIN
 	PRINT 'INVALID INPUT'
 END
 ELSE
-BEGIN ------ add condition if procedure is done twice on same payment_id i.e. if exists installment with payment_id
+BEGIN
 	DECLARE @num_instalments INT ,
 			@i INT ,
 			@date DATE ,

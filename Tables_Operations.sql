@@ -36,7 +36,8 @@ CREATE PROCEDURE CreateAllTables AS
 	name                 VARCHAR(40) ,
 	email                VARCHAR(40) UNIQUE,
 	faculty              VARCHAR(40),
-	office               VARCHAR(40)
+	office               VARCHAR(40),
+	Check(email LIKE '%@%.%') ------------------------------additional constraint e7teyatiiiiii-------
 	) ;
 
 	CREATE TABLE Semester (
@@ -50,7 +51,8 @@ CREATE PROCEDURE CreateAllTables AS
 	name              VARCHAR(40),
 	email             VARCHAR(40) UNIQUE, 
 	office            VARCHAR(40), 
-	password          VARCHAR(40)
+	password          VARCHAR(40),
+	Check(email LIKE '%@%.%') ------------------------------additional constraint e7teyatiiiiii-------
 	);
 
 
@@ -69,7 +71,9 @@ CREATE PROCEDURE CreateAllTables AS
 	acquired_hours        INT, 
 	assigned_hours        INT DEFAULT NULL, 
 	advisor_id            INT ,
-	CONSTRAINT FK_advisor1 FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) --ON DELETE SET NULL
+	CONSTRAINT FK_advisor1 FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id), --ON DELETE SET NULL
+	Check(email LIKE '%@%.%'), ------------------------------additional constraint e7teyatiiiiii-------
+	Check (gpa between 0.7 AND 5.0)
 	);
 	
 	CREATE TABLE Student_Phone (

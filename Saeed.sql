@@ -253,17 +253,23 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 	ELSE
 		BEGIN
 
-		-- insert in exam_student and in reg for fisrt makeup
-
-		UPDATE Student_Instructor_Course_Take
-		SET exam_type = 'Second_makeup'
-		WHERE semester_code = @Student_Current_Semester AND
-			  student_id = @StudentID AND
-			  course_id = @courseID AND 
-			  exam_type = 'First_makeup'
-  
-		--INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
-		--	   VALUES (@StudentID ,@CourseID , @InstructorID ,@Student_Current_Semester , 'Second_makeup' ,  NULL ) ;
+			IF @Student_Current_Semester IN (SELECT semester_code
+			FROM Student_Instructor_Course_Take
+			WHERE student_id = @StudentID AND
+				  exam_type = 'First_makeup' AND
+				  course_id = @courseID     ) 
+			BEGIN PRINT('YOU CANT TAKE TWO MAKEUPS IN THE SAME SEMESTER') END
+			ELSE
+			BEGIN
+				UPDATE Student_Instructor_Course_Take
+			SET exam_type = 'Second_makeup' ,
+				grade = NULL
+			WHERE semester_code = @Student_Current_Semester AND
+				  student_id = @StudentID AND
+				  course_id = @courseID AND 
+				  exam_type = 'First_makeup'
+			END
+		
 		END	
 --------------------------------------------------Courses Procedures---------------------------------------------------------------------------
 -- LL) 

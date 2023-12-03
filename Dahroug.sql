@@ -16,10 +16,10 @@ Create PROC Procedures_AdvisorApproveRejectCHRequest
 	AS
 	Declare @stID INT
 	Declare @ch INT
-	IF @RequestID IS NULL OR @Current_semester_code IS NULL OR Not EXISTS (Select * from Request WHERE type LIKE 'credit_hours' AND @RequestID = request_id AND status = 'pending')
+	IF @RequestID IS NULL OR @Current_semester_code IS NULL OR Not EXISTS (Select * from Request WHERE type LIKE 'credit%' AND @RequestID = request_id AND status = 'pending')
 		Print 'No such pending request'
 
-	ELSE IF Exists (Select s.student_id from Request R INNER JOIN Student S on r.student_id = s.student_id AND r.type = 'credit hours' /*is type like this?*/
+	ELSE IF Exists (Select s.student_id from Request R INNER JOIN Student S on r.student_id = s.student_id AND r.type LIKE 'credit%' /*is type like this?*/
 		AND @RequestID = request_id And s.gpa <= 3.7 AND r.credit_hours <= 3 And r.credit_hours + s.assigned_hours < 34)
 	Begin
 	----
@@ -66,7 +66,7 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 	@RequestID int,
 	@current_semester_code varchar(40)
 	AS
-	IF @RequestID IS NULL OR @current_semester_code IS NULL OR Not EXISTS (Select s.student_id from Request r WHERE r.type = 'course' AND @RequestID = request_id)
+	IF @RequestID IS NULL OR @current_semester_code IS NULL OR Not EXISTS (Select * from Request WHERE type = 'course' AND @RequestID = request_id AND status='pending')
 	BEGIN
 		Print 'ERROR' 
 		RETURN
@@ -109,7 +109,12 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 		INSERT INTO Student_Instructor_Course_Take(student_id, course_id, semester_code) VALUES
 		(@studentID, @courseID, @current_semester_code)
 	END
-	
+	ELSE
+	BEGIN
+		UPDATE Request
+		SET status = 'rejected'
+		WHERE @RequestID = request_id
+	END
 
 	GO
 /*Z*/
@@ -117,7 +122,7 @@ CREATE PROC Procedures_AdvisorViewPendingRequests
 	@AdvisorID int
 	AS
 	Select * from request 
-		where student_id in (Select student_id from student where advisor_id = @AdvisorID);
+		where status = 'pending' AND student_id in (Select student_id from student where advisor_id = @AdvisorID);
 	GO
 
 

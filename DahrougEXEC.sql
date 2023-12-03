@@ -1,6 +1,9 @@
 ﻿EXEC Procedures_AdvisorApproveRejectCHRequest @RequestID=3, @current_semester_code = 'W24'
 EXEC Procedures_AdvisorViewAssignedStudents @AdvisorID=1, @major='CS'
+EXEC Procedures_AdvisorApproveRejectCourseRequest @RequestID=1, @current_semester_code = 'W24'
 
+
+SELECT * FROM FN_Advisors_Requests(8)
 
 DROP FUNCTION FN_Advisors_Requests
 DROP PROC Procedures_AdvisorApproveRejectCHRequest

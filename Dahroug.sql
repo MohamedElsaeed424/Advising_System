@@ -193,7 +193,7 @@ CREATE PROC Procedures_StudentSendingCHRequest
 	END
 	ELSE
 	BEGIN
-		INSERT INTO request (student_id, course_id, type, comment) values (@StudentID ,@courseID ,@type ,@comment) 
+		INSERT INTO request (student_id, credit_hours, type, comment) values (@StudentID ,@credit_hours ,@type ,@comment) 
 	END
 	GO
 

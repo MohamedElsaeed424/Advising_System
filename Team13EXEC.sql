@@ -97,12 +97,12 @@ EXEC Procedures_AdvisorCreateGP
 @studentid = 1 ;
 
 EXEC Procedures_AdvisorAddCourseGP
-@student_Id = 342 ,
+@student_Id = 2 ,
 @Semester_code = 'jh322' ,
 @course_name = 'lol' ;
 
 EXEC Procedures_AdvisorDeleteFromGP
-@student_Id = 342 ,
+@student_Id = 2 ,
 @Semester_code = 'jh322' ,
 @course_name = 'lol' ;
 --next precedure will cause an error 

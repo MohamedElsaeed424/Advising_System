@@ -212,6 +212,8 @@ CREATE PROCEDURE CreateAllTables AS
 	CONSTRAINT FK_Payment FOREIGN KEY (payment_id) REFERENCES Payment (payment_id),
 	);
 GO
+EXEC CreateAllTables;
+GO
 --3)
 CREATE PROCEDURE  DropAllTables AS
 	DROP TABLE Installment;
@@ -391,7 +393,7 @@ FROM ((Course_Semester  CS
 GO 
 --I)
 CREATE VIEW Advisors_Graduation_Plan AS
-SELECT GP.expected_grad_semester ,GP.student_id ,GP.semester_credit_hours , 
+SELECT GP.expected_grad_date ,GP.student_id ,GP.semester_credit_hours , 
 	   GP.semester_code ,GP.plan_id  , A.advisor_id , A.name AS 'Advisor name'
 FROM Graduation_Plan GP INNER JOIN Advisor A on A.advisor_id = GP.advisor_id;
 GO 

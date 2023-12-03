@@ -224,7 +224,7 @@ INSERT INTO Payment (amount, startdate,n_installments, status, fund_percentage, 
 
 
 -- Adding 10 records to the Installment table
-INSERT INTO Installment (payment_id, startdate, amount, status, deadline) VALUES
+INSERT INTO Installment (payment_id, start_date, amount, status, deadline) VALUES
 (1, '2023-11-22', 50, 'notPaid','2023-12-22'),
 (2, '2023-11-23', 70, 'notPaid','2023-12-23'),
 (3, '2023-12-24', 60, 'notPaid','2024-01-24'),

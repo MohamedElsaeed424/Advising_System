@@ -35,7 +35,8 @@ EXEC Procedures_ViewMS
 EXEC Procedures_ChooseInstructor  
 @StudentID=1, 
 @InstructorID=1 ,
-@CourseID=1 ;
+@CourseID=1 ,
+@current_semester_code ='W23';
 
 
 

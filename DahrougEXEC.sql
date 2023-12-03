@@ -11,7 +11,7 @@ EXEC Procedures_StudentaddMobile @StudentID=1, @mobile_number='543209463'
 --DD
 EXEC Procedures_StudentSendingCourseRequest @StudentID=3, @courseID=4, @type='course', @comment='null ba3d keda'
 --EE
-EXEC Procedures_StudentSendingCourseRequest @StudentID=5, @credit_hours=1, @type='credit', @comment='null ba3d keda'
+EXEC Procedures_StudentSendingCHRequest @StudentID=5, @credit_hours=1, @type='credit', @comment='null ba3d keda'
 
 
 --V
@@ -30,6 +30,7 @@ DROP PROC Procedures_AdvisorViewAssignedStudents
 DROP PROC Procedures_AdvisorApproveRejectCourseRequest
 DROP PROC Procedures_AdvisorViewPendingRequests
 DROP FUNCTION FN_StudentLogin
+DROP FUNCTION FN_SemsterAvailableCourses
 DROP PROC Procedures_StudentaddMobile
 DROP PROC Procedures_StudentSendingCourseRequest
 DROP PROC Procedures_StudentSendingCHRequest

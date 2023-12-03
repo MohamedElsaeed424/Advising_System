@@ -89,14 +89,18 @@ CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 			) THEN 1
 			ELSE 0
 			END;
-
+	Declare @already_taken BIT 
+	SET @already_taken= CASE 
+				WHEN EXISTS (Select * from Request r JOIN Student_Instructor_Course_Take sic 
+				on r.student_id = sic.student_id AND r.course_id = sic.course_id AND r.request_id = @RequestID
+				AND sic.semester_code = @current_semester_code) THEN 1 ELSE 0 END
 	Declare @studentID INT
 	Declare @course_hours INT
 	Declare @courseID INT
 	Select @studentID = r.student_id, @course_hours = c.credit_hours, @courseID = c.course_id
 	from Request r JOIN Course c on r.course_id = c.course_id AND r.request_id = @RequestID
 
-	IF @prereq_taken = 1 AND @enough_hours = 1
+	IF @prereq_taken = 1 AND @enough_hours = 1 AND @already_taken = 0
 	BEGIN
 		UPDATE Request
 		SET status = 'approved'

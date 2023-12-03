@@ -29,10 +29,11 @@ EXEC Procedures_StudentRegistration
 	 @last_name = '' ,
 	 @password = '' ,
 	 @faculty = '' ,
-	 @email  = '' ,
+	 @email  = 'dasf@gam.to' ,
 	 @major = '' ,
 	 @Semester = 1 ,
 	 @student_id = @Student_id OUTPUT;
+Print @Student_id
 
 
 

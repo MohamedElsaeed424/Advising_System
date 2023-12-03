@@ -156,6 +156,8 @@ AS
 IF  @student_Id IS NULL
 	OR @Semester_code IS NULL
 	OR @course_name IS NULL
+	OR NOT EXISTS (SELECT * FROM Graduation_Plan WHERE student_id = @student_Id)
+	OR NOT EXISTS (SELECT * FROM Student WHERE student_id = @student_Id)
 BEGIN
 	PRINT 'INVALID INPUT'
 END

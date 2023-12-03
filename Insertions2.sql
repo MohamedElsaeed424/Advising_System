@@ -209,7 +209,7 @@ INSERT INTO Exam_Student(exam_id, student_id,course_id) VALUES (3, 5, 9);
 INSERT INTO Exam_Student(exam_id, student_id,course_id) VALUES (4, 4, 10);
 
 -- Adding 10 records to the Payment table
-INSERT INTO Payment (amount, startdate,n_installments, status, fund_percentage, student_id, semester_code, deadline)  VALUES
+INSERT INTO Payment (amount, start_date,n_installments, status, fund_percentage, student_id, semester_code, deadline)  VALUES
 ( 500, '2023-11-22', 1, 'notPaid', 50.00, 1, 'W23', '2023-12-22'),
 ( 700, '2023-11-23', 1, 'notPaid', 60.00, 2, 'S23', '2023-12-23'),
 ( 600, '2023-11-24', 4, 'notPaid', 40.00, 3, 'S23R1', '2024-03-24'),

@@ -4,17 +4,22 @@ EXEC Procedures_AdminDeleteCourse
 @courseID = 5678;
 EXEC Procedure_AdminUpdateStudentStatus
 @StudentID = 910 ;
-EXEC all_Pending_Requests
+SELECT * FROM all_Pending_Requests
 EXEC Procedures_AdminDeleteSlots
 @current_semester = '7aseb keda'
+
 EXEC Procedures_AdvisorCreateGP
-@ID = 1234 ,
-@password = 'not password' ;
+@expected_graduation_date = '2003-4-1',
+@sem_credit_hours= 2 ,
+@Semestercode = 'W22',
+@advisorid = 1 ,
+@studentid = 1 ;
+
 EXEC Procedures_AdvisorAddCourseGP
-@expected_graduation_date = '2003-4-1' ,
-@sem_credit_hours = 789 ,
-@advisorid = 987 ,
-@studentid = 423 ;
+@student_Id = 342 ,
+@Semester_code = 'jh322' ,
+@course_name = 'lol' ;
+
 EXEC Procedures_AdvisorDeleteFromGP
 @student_Id = 342 ,
 @Semester_code = 'jh322' ,
@@ -22,9 +27,9 @@ EXEC Procedures_AdvisorDeleteFromGP
 --next precedure will cause an error 
 --waiting for the Q&A response
 EXEC Procedures_AdvisorUpdateGP
-@student_Id = 342 ,
-@Semester_code = 'jh322' ,
-@course_name = 'lol' ;
+@studentID = 3 ,
+@expected_grad_date = '2003-4-1'
+
 
 DROP PROC Procedures_AdminIssueInstallment
 DROP PROC Procedures_AdminDeleteCourse

@@ -191,7 +191,7 @@ CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Payment(
 	payment_id      INT IDENTITY PRIMARY KEY, 
 	amount          INT , 
-	startdate       DATE,
+	start_date       DATE,
 	deadline        DATE,
 	n_installments  INT DEFAULT 0,
 	status          VARCHAR(40) DEFAULT 'notPaid',

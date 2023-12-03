@@ -106,7 +106,8 @@ GO
 --R)
 --TO BE CHECKED SINCE THE INPUT IS A DATE AND IT SHOULD BE AN INTEGER REPRESENTING THE SEMESTER
 --TO BE ASKED IN Q&A
-CREATE PROC Procedures_AdvisorCreateGP @Semestercode VARCHAR(40)
+CREATE PROC Procedures_AdvisorCreateGP 
+	 @Semestercode VARCHAR(40)
 	,@expected_graduation_date DATE
 	,@sem_credit_hours INT
 	,@advisorid INT

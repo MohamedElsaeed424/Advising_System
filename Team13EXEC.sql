@@ -98,13 +98,13 @@ EXEC Procedures_AdvisorCreateGP
 
 EXEC Procedures_AdvisorAddCourseGP
 @student_Id = 2 ,
-@Semester_code = 'jh322' ,
+@semesterCode = 'jh322' ,
 @course_name = 'lol' ;
 
 EXEC Procedures_AdvisorDeleteFromGP
-@student_Id = 2 ,
-@Semester_code = 'jh322' ,
-@course_name = 'lol' ;
+@studentID = 2 ,
+@semesterCode = 'jh322' ,
+@course_name = 'CSEN 2' ;
 --next precedure will cause an error 
 --waiting for the Q&A response
 EXEC Procedures_AdvisorUpdateGP

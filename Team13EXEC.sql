@@ -88,7 +88,7 @@ EXEC Procedure_AdminUpdateStudentStatus
 SELECT * FROM all_Pending_Requests
 EXEC Procedures_AdminDeleteSlots
 @current_semester = '7aseb keda'
-
+PRINT 'CHECK'
 EXEC Procedures_AdvisorCreateGP
 @expected_graduation_date = '2003-4-1',
 @sem_credit_hours= 2 ,
@@ -103,14 +103,15 @@ EXEC Procedures_AdvisorAddCourseGP
 
 EXEC Procedures_AdvisorDeleteFromGP
 @studentID = 2 ,
-@semesterCode = 'jh322' ,
-@course_name = 'CSEN 2' ;
+@semesterCode = 'W23' ,
+@courseID = 2 ;
 --next precedure will cause an error 
 --waiting for the Q&A response
 EXEC Procedures_AdvisorUpdateGP
 @studentID = 3 ,
 @expected_grad_date = '2003-4-1'
 
+PRINT 'MID'
 
 -----------------------------------------------
 
@@ -123,7 +124,7 @@ EXEC Procedures_AdvisorApproveRejectCourseRequest @RequestID=1, @current_semeste
 --Z
 EXEC Procedures_AdvisorViewPendingRequests @AdvisorID=1
 --BB
-EXEC Procedures_StudentaddMobile @StudentID=1, @mobile_number='543209463'
+EXEC Procedures_StudentaddMobile @StudentID=1, @mobile_number='54374'
 --DD
 EXEC Procedures_StudentSendingCourseRequest @StudentID=3, @courseID=4, @type='course', @comment='null ba3d keda'
 --EE

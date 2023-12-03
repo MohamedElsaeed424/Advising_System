@@ -245,3 +245,4 @@ SELECT * FROM Slot
 SELECT * FROM Installment
 SELECT * FROM Request
 SELECT * FROM Semester
+SELECT * FROM Advisor

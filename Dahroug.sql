@@ -9,7 +9,7 @@ CREATE FUNCTION FN_Advisors_Requests (@advisorID INT)
 	);
 GO
 
-/*W What to do with semester code?????*/
+/*              W             */
 Create PROC Procedures_AdvisorApproveRejectCHRequest
 	@RequestID int, 
 	@Current_semester_code varchar (40)
@@ -61,7 +61,7 @@ CREATE PROC Procedures_AdvisorViewAssignedStudents
 				INNER JOIN Course c on t.course_id = c.course_id
 				AND s.advisor_id = @AdvisorID And s.major = @major;
 	GO
-/*Y               NOT FINISHED     Missing semester code */
+/*                              Y              */
 CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
 	@RequestID int,
 	@current_semester_code varchar(40)

@@ -9,7 +9,7 @@ CREATE FUNCTION FN_Advisors_Requests (@advisorID INT)
 	);
 GO
 
-/*              W             */
+/*                     W                          */
 Create PROC Procedures_AdvisorApproveRejectCHRequest
 	@RequestID int,
 	@Current_semester_code varchar (40)
@@ -161,7 +161,7 @@ CREATE FUNCTION FN_SemsterAvailableCourses (@semester_code varchar (40))
 	AS
 	RETURN (
 		Select c.* ----- basss????
-		from Course c JOIN Course_Semester cs on c.course_id = cs.course_id AND cs.semester_code = @semester_code
+		from Course c JOIN Course_Semester cs on c.course_id = cs.course_id AND cs.semester_code = @semester_code AND c.is_offered = 1
 	);
 GO
 /*DD*/

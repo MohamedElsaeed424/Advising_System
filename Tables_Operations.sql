@@ -66,7 +66,7 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40) UNIQUE, 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	financial_status      AS dbo.CALC_STUDENT_FINANTIAL_STATUS_HELPER(student_id)  ,		
+	financial_status      BIT  ,		
 	semester              INT, 
 	acquired_hours        INT, 
 	assigned_hours        INT DEFAULT NULL, 

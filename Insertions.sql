@@ -246,3 +246,4 @@ SELECT * FROM Installment
 SELECT * FROM Request
 SELECT * FROM Semester
 SELECT * FROM Advisor
+SELECT * FROM Course

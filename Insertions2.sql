@@ -37,7 +37,7 @@ INSERT INTO Semester(semester_code, start_date, end_date) VALUES
 ('S24R2', '2024-08-01', '2024-08-31')
 
 -- Adding 10 records to the Advisor table
-INSERT INTO Advisor(advisor_name, email, office, password) VALUES
+INSERT INTO Advisor(name, email, office, password) VALUES
 ( 'Dr. Anderson', 'anderson@example.com', 'Office A', 'password1'),
 ( 'Prof. Baker', 'baker@example.com', 'Office B', 'password2'),
 ( 'Dr. Carter', 'carter@example.com', 'Office C', 'password3'),
@@ -145,7 +145,7 @@ INSERT INTO Slot (day, time, location, course_id, instructor_id) VALUES
 
 
 -- Adding 10 records to the Graduation_Plan table
-INSERT INTO Graduation_Plan (semester_code, semester_credit_hours, expected_grad_semester, student_id, advisor_id) VALUES
+INSERT INTO Graduation_Plan (semester_code, semester_credit_hours, expected_grad_date, student_id, advisor_id) VALUES
 ( 'W23', 90,    '2024-01-31' ,   1, 1),
 ( 'S23', 85,    '2025-01-31'  ,     2, 2),
 ( 'S23R1', 75,  '2025-06-30' ,  3, 3),

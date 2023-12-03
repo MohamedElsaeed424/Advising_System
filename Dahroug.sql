@@ -178,7 +178,7 @@ CREATE PROC Procedures_StudentSendingCHRequest
 	@type varchar (40),
 	@comment varchar (40) 
 	AS
-	IF @StudentID IS NULL OR @courseID IS NULL
+	IF @StudentID IS NULL OR @credit_hours IS NULL
 	BEGIN
 		PRINT 'ERROR';
 	END

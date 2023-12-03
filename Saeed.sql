@@ -5,12 +5,12 @@ AS
 RETURN
     SELECT 
 		S.student_id                    AS 'Student Id',
-		CONCAT(S.f_name, ' ', S.l_name) AS ' Student_name', 
-		GP.plan_id                      AS ' graduation Plan Id', 
+		CONCAT(S.f_name, ' ', S.l_name) AS 'Student_name', 
+		GP.plan_id                      AS 'graduation Plan Id', 
 		c.course_id                     AS 'Course id',
 		c.name                          AS 'Course name', 
 		GP.semester_code                AS 'Semester code', 
-		SE.end_date                     AS 'expected graduation date', --IS this correct ??
+		GP.expected_grad_date           AS 'expected graduation date',
 		GP.semester_credit_hours        AS 'Semester credit hours', 
 		GP.advisor_id                   AS 'advisor id'
     FROM ((Student S INNER JOIN Graduation_Plan GP ON S.student_id = GP.student_id
@@ -31,7 +31,7 @@ CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)
 	FROM (Student S INNER JOIN Payment P ON S.student_id = P.student_id
                     INNER JOIN Installment I ON P.payment_id = I.payment_id ) 
 	WHERE P.status = 'notPaid' AND
-		  I.status = 0
+		  I.status = 'notPaid'
 	RETURN @first_instalment_deadline ;
 END
 

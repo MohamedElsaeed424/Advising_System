@@ -204,7 +204,7 @@ CREATE PROCEDURE Procedures_ViewMS
 	AS
 	(SELECT * FROM Course c ) 
 	EXCEPT 
-	(SELECT c1.course_id , c1.credit_hours ,c1.is_offered ,c1.major ,c1.name ,c1.semester
+	(SELECT c1.*
 	 FROM   Student_Instructor_Course_Take SC INNER JOIN Student S ON S.student_id = SC.student_id 
 											  INNER JOIN Course c1 ON c1.course_id = SC.course_id
 	 WHERE  SC.student_id = @StudentID AND

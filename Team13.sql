@@ -1671,8 +1671,7 @@ EXEC Procedure_AdminUpdateStudentStatus
 @StudentID = 5 ;
 SELECT * FROM all_Pending_Requests
 EXEC Procedures_AdminDeleteSlots
-@current_semester = 'W23'
-PRINT 'CHECK' -----------------------------------------
+@current_semester = 'W23' -----------------------------------------
 
 DECLARE @y BIT
 SET @y = dbo.FN_AdvisorLogin(2,'password')
@@ -1700,7 +1699,6 @@ EXEC Procedures_AdvisorDeleteFromGP
 @studentID = 2 ,
 @semesterCode = 'W23' ,
 @courseID = 2 ;
-PRINT 'MID' ----------------------------------
 
 -----------------------------------------------
 
@@ -1759,5 +1757,4 @@ EXEC Procedures_ChooseInstructor
 @InstructorID=1 ,
 @CourseID=1 ,
 @current_semester_code ='W23';
-
-PRINT 'END' ----------------------------------------
+----------------------------------------

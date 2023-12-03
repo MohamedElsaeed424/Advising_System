@@ -88,7 +88,7 @@ EXEC Procedure_AdminUpdateStudentStatus
 SELECT * FROM all_Pending_Requests
 EXEC Procedures_AdminDeleteSlots
 @current_semester = '7aseb keda'
-PRINT 'CHECK'
+PRINT 'CHECK' -----------------------------------------
 EXEC Procedures_AdvisorCreateGP
 @expected_graduation_date = '2003-4-1',
 @sem_credit_hours= 2 ,
@@ -111,7 +111,7 @@ EXEC Procedures_AdvisorUpdateGP
 @studentID = 3 ,
 @expected_grad_date = '2003-4-1'
 
-PRINT 'MID'
+PRINT 'MID' ----------------------------------
 
 -----------------------------------------------
 
@@ -160,7 +160,7 @@ EXEC Procedures_ChooseInstructor
 @CourseID=1 ,
 @current_semester_code ='W23';
 
-PRINT 'END'
+PRINT 'END' ----------------------------------------
 
 DROP DATABASE Advising_Team_13 ;
 --------------------------------------

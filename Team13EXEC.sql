@@ -92,14 +92,14 @@ EXEC Procedures_AdminDeleteSlots
 EXEC Procedures_AdvisorCreateGP
 @expected_graduation_date = '2003-4-1',
 @sem_credit_hours= 2 ,
-@Semestercode = 'W22',
+@Semestercode = 'W23',
 @advisorid = 1 ,
-@studentid = 1 ;
+@studentid = 11 ;
 
 EXEC Procedures_AdvisorAddCourseGP
-@student_Id = 2 ,
-@semesterCode = 'jh322' ,
-@course_name = 'lol' ;
+@student_Id = 11 ,
+@Semester_code = 'W23' ,
+@course_name = 'CSEN 2' ;
 
 EXEC Procedures_AdvisorDeleteFromGP
 @studentID = 2 ,
@@ -158,6 +158,8 @@ EXEC Procedures_ChooseInstructor
 @InstructorID=1 ,
 @CourseID=1 ,
 @current_semester_code ='W23';
+
+PRINT 'END'
 
 DROP DATABASE Advising_Team_13 ;
 --------------------------------------

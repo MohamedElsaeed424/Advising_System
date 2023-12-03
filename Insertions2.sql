@@ -61,7 +61,8 @@ INSERT INTO Student (f_name, l_name, GPA, faculty, email, major, password, finan
 ( 'Sophie', 'Clark', 3.6, 'Engineering', 'sophie.clark@example.com', 'Mechatronics', 'passwordmno', 1, 8, 92, 34, 8),
 ( 'Daniel', 'Wilson', 3.3, 'Engineering', 'daniel.wilson@example.com', 'DMET', 'passwordpqr', 1, 9, 87, 34, 9),
 ( 'Olivia', 'Anderson', 3.7, 'Engineeringe', 'olivia.anderson@example.com', 'Mechatronics', 'passwordstu', 0, 10, 89, 34, 10);
-
+INSERT INTO Student (f_name, l_name, GPA, faculty, email, major, password, financial_status, semester, acquired_hours, assigned_hours, advisor_id)   VALUES 
+('mahmoud', 'dahroug', 0.7,'Engineering', 'mahmoiuod.dahroug@example.com', 'CS', 'password123', 1, 1, 1325, 30, 1)
 
 -- Adding 10 records to the Student_Phone table
 INSERT INTO Student_Phone(student_id, phone_number) VALUES
@@ -245,3 +246,4 @@ SELECT * FROM Request
 SELECT * FROM Semester
 SELECT * FROM Advisor
 SELECT * FROM Course
+SELECT * FROM Graduation_Plan

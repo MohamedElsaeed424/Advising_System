@@ -12,8 +12,8 @@ CREATE PROC Procedures_AdvisorRegistration
 		END
 	 ELSE
 		BEGIN 
-			 INSERT INTO Advisor(advisor_id,name,password,email,office)
-			 VALUES(@advisor_id,@name,@password,@email,@office);
+			 INSERT INTO Advisor(name,password,email,office)
+			 VALUES(@name,@password,@email,@office);
 			 SET @advisor_id = SCOPE_IDENTITY() ;
 		END 
 GO
@@ -141,7 +141,7 @@ GO
 --K)
 CREATE PROC Procedures_AdminAddExam
 	@Type VARCHAR (40),
-	@date DATETIME,
+	@date DATE,
 	@course_id INT
 	AS
 	IF @Type IS NULL OR @date IS NULL OR @course_id IS NULL

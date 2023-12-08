@@ -106,7 +106,8 @@ GO
 --R)
 --TO BE CHECKED SINCE THE INPUT IS A DATE AND IT SHOULD BE AN INTEGER REPRESENTING THE SEMESTER
 --TO BE ASKED IN Q&A
-CREATE PROC Procedures_AdvisorCreateGP @Semestercode VARCHAR(40)
+CREATE PROC Procedures_AdvisorCreateGP 
+	 @Semestercode VARCHAR(40)
 	,@expected_graduation_date DATE
 	,@sem_credit_hours INT
 	,@advisorid INT
@@ -155,6 +156,10 @@ AS
 IF  @student_Id IS NULL
 	OR @Semester_code IS NULL
 	OR @course_name IS NULL
+	OR NOT EXISTS (SELECT * FROM Graduation_Plan WHERE student_id = @student_Id)
+	OR NOT EXISTS (SELECT * FROM Student WHERE student_id = @student_Id)
+	OR NOT EXISTS (SELECT * FROM Course WHERE name = @course_name)
+	OR NOT EXISTS (SELECT * FROM Semester WHERE semester_code = @Semester_code)
 BEGIN
 	PRINT 'INVALID INPUT'
 END

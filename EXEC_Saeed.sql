@@ -5,12 +5,15 @@ EXEC CreateAllTables;
 EXEC DropAllTables;
 EXEC clearAllTables;
 
-DROP FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER
-DROP PROC Procedure_AdminUpdateStudentStatus
+
 DROP PROCEDURE CreateAllTables;
 DROP PROC DropAllTables;
 DROP PROC clearAllTables;
+DROP FUNCTION CALC_STUDENT_FINANTIAL_STATUS_HELPER
+DROP PROC Procedure_AdminUpdateStudentStatus
 
+EXEC Procedure_AdminUpdateStudentStatus 
+@StudentID =1
 
 
 EXEC Procedures_StudentRegisterFirstMakeup 
@@ -32,7 +35,10 @@ EXEC Procedures_ViewMS
 EXEC Procedures_ChooseInstructor  
 @StudentID=1, 
 @InstructorID=1 ,
-@CourseID=1 ;
+@CourseID=1 ,
+@current_semester_code ='W23';
+
+
 
 DROP FUNCTION FN_IS_COURSE_OFFERED_HELPER
 DROP FUNCTION FN_FIND_OPTIONAL_Courses_HELPER

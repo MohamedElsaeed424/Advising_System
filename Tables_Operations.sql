@@ -36,7 +36,8 @@ CREATE PROCEDURE CreateAllTables AS
 	name                 VARCHAR(40) ,
 	email                VARCHAR(40) UNIQUE,
 	faculty              VARCHAR(40),
-	office               VARCHAR(40)
+	office               VARCHAR(40),
+	Check(email LIKE '%@%.%') ------------------------------additional constraint e7teyatiiiiii-------
 	) ;
 
 	CREATE TABLE Semester (
@@ -50,7 +51,8 @@ CREATE PROCEDURE CreateAllTables AS
 	name              VARCHAR(40),
 	email             VARCHAR(40) UNIQUE, 
 	office            VARCHAR(40), 
-	password          VARCHAR(40)
+	password          VARCHAR(40),
+	Check(email LIKE '%@%.%') ------------------------------additional constraint e7teyatiiiiii-------
 	);
 
 
@@ -64,12 +66,14 @@ CREATE PROCEDURE CreateAllTables AS
 	email                 VARCHAR (40) UNIQUE, 
 	major                 VARCHAR (40),
 	password              VARCHAR (40), 
-	financial_status      AS dbo.CALC_STUDENT_FINANTIAL_STATUS_HELPER(student_id)  ,		
+	financial_status      BIT  ,		
 	semester              INT, 
 	acquired_hours        INT, 
 	assigned_hours        INT DEFAULT NULL, 
 	advisor_id            INT ,
-	CONSTRAINT FK_advisor1 FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id) --ON DELETE SET NULL
+	CONSTRAINT FK_advisor1 FOREIGN KEY (advisor_id) REFERENCES Advisor (advisor_id), --ON DELETE SET NULL
+	Check(email LIKE '%@%.%'), ------------------------------additional constraint e7teyatiiiiii-------
+	Check (gpa between 0.7 AND 5.0)
 	);
 	
 	CREATE TABLE Student_Phone (
@@ -187,7 +191,7 @@ CREATE PROCEDURE CreateAllTables AS
 	CREATE TABLE Payment(
 	payment_id      INT IDENTITY PRIMARY KEY, 
 	amount          INT , 
-	startdate       DATE,
+	start_date       DATE,
 	deadline        DATE,
 	n_installments  INT DEFAULT 0,
 	status          VARCHAR(40) DEFAULT 'notPaid',

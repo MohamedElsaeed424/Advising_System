@@ -1127,10 +1127,10 @@ CREATE PROC Procedures_AdvisorViewAssignedStudents
 	@AdvisorID int,
 	@major varchar (40)
 	AS
-	Select s.student_id as 'Student id', Concat(s.f_name, ' ', s.l_name) as 'Student name' , s.major as 'Student major', c.name as 'Course name'
-				from student s INNER JOIN Student_Instructor_Course_Take t on s.student_id = t.student_id
-				INNER JOIN Course c on t.course_id = c.course_id
-				AND s.advisor_id = @AdvisorID And s.major = @major;
+		Select Student.student_id, Student.f_name+' ' + Student.l_name as Student_name, Student.major, Course.name as Course_name
+		from Student left outer join Student_Instructor_Course_take on Student.student_id = Student_Instructor_Course_take.student_id
+		left outer join Course on Student_Instructor_Course_take.course_id = Course.course_id
+		where Student.advisor_id = @AdvisorID and Student.major = @major
 	GO
 /*                              Y              */
 CREATE PROC Procedures_AdvisorApproveRejectCourseRequest

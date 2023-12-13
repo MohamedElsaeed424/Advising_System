@@ -125,7 +125,7 @@ SELECT * FROM FN_Advisors_Requests(8)
 --W
 EXEC Procedures_AdvisorApproveRejectCHRequest @RequestID=3, @current_semester_code = 'W24'
 --X
-EXEC Procedures_AdvisorViewAssignedStudents @AdvisorID=1, @major='CS'
+EXEC Procedures_AdvisorViewAssignedStudents @AdvisorID=10, @major='Mechatronics'
 --Y
 EXEC Procedures_AdvisorApproveRejectCourseRequest @RequestID=1, @current_semester_code = 'W24'
 --Z

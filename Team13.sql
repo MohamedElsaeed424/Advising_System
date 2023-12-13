@@ -1,4 +1,4 @@
-﻿--CREATE DATABASE Advising_Team_13---------------********************************
+﻿CREATE DATABASE Advising_Team_13---------------********************************
 USE Advising_Team_13
 GO
 
@@ -591,12 +591,11 @@ SELECT c.course_id , c.name ,c.credit_hours ,c.is_offered ,c.major ,c.semester ,
 FROM Course c INNER JOIN PreqCourse_course PC on c.course_id = PC.prerequisite_course_id; 
 GO
 --C)
-CREATE VIEW Instructors_AssignedCourses AS
-SELECT I.instructor_id ,I.name AS 'Instructor name' ,I.email ,I.faculty ,I.office ,
-	  c.course_id , c.name AS 'Course name',c.credit_hours ,c.is_offered ,c.major ,c.semester 
-FROM ( Instructor I INNER JOIN Instructor_Course IC on I.instructor_id = IC.instructor_id 
-					INNER JOIN Course c ON IC.course_id = c.course_id )
-GO
+CREATE  VIEW  Instructors_AssignedCourses AS
+Select Instructor.instructor_id, Instructor.name as Instructor, Course.course_id, Course.name As Course
+from Instructor inner join Student_Instructor_Course_take t on Instructor.instructor_id = t.instructor_id
+inner join Course On Course.course_id = t.course_id 
+go;
 --D)
 CREATE VIEW  Student_Payment AS
 SELECT P.amount ,P.deadline ,P.fund_percentage ,P.n_installments ,P.payment_id ,P.semester_code ,
@@ -628,12 +627,11 @@ CREATE VIEW Students_Courses_transcript AS
 	;
 GO
 --H)
-CREATE VIEW  Semster_offered_Courses AS 
-SELECT CS.course_id , c.name AS ' Course name' , CS.semester_code
-FROM ((Course_Semester  CS
-		INNER JOIN Semester S on S.semester_code = CS.semester_code)
-		INNER JOIN course c on c.course_id= CS.course_id );
-GO 
+CREATE  VIEW  Semster_offered_Courses AS
+Select Course.course_id, Course.name, Semester.semester_code
+from Course inner join Course_Semester on Course.course_id = Course_Semester.course_id
+inner join Semester on Course_Semester.semester_code = semester.semester_code
+go 
 --I)
 CREATE VIEW Advisors_Graduation_Plan AS
 SELECT GP.expected_grad_date ,GP.student_id ,GP.semester_credit_hours , 
@@ -688,68 +686,62 @@ CREATE PROC Procedures_AdminListAdvisors
 	SELECT * FROM Advisor;	
 GO
 --E)
-CREATE PROC AdminListStudentsWithAdvisors
-	AS
-	SELECT Student.f_name,Student.l_name , Advisor.name
-	FROM Student INNER JOIN Advisor ON Student.advisor_id = Advisor.advisor_id;
-GO
+Create Proc [AdminListStudentsWithAdvisors] AS
+Select Student.student_id, Student.f_name, Student.l_name, Advisor.advisor_id, Advisor.name
+from Student inner join Advisor on Student.advisor_id = Advisor.advisor_id
+go
 --F)
-CREATE PROC AdminAddingSemester 
-	@start_date DATE,
-	@end_date DATE,
-	@semester_code VARCHAR(40)
-	AS
-	IF @start_date IS NULL OR @end_date IS NULL OR @semester_code IS NULL 
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	ELSE
-		BEGIN
-			INSERT INTO Semester VALUES(@semester_code,@start_date,@end_date);
-		END
-GO
+CREATE PROC [AdminAddingSemester]
+
+    @start_date date,
+    @end_date date, 
+    @semester_code Varchar(40)
+
+     AS 
+     IF @start_date IS NULL or @end_date IS NULL or @semester_code IS NULL 
+    print 'One of the inputs is null'
+    Else
+     insert into Semester(start_date, end_date, semester_code) 
+     values (@start_date, @end_date, @semester_code)
+     
+Go
 --G)
-CREATE PROC Procedures_AdminAddingCourse 
-	@major VARCHAR (40), 
-	@semester INT, 
-	@credit_hours INT, 
-	@name VARCHAR (40), 
-	@is_offered BIT
-	AS
-	IF @major IS NULL OR @semester IS NULL OR @credit_hours IS NULL OR @name IS NULL OR @is_offered IS NULL 
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE');
-		END
-	ELSE
-		BEGIN
-			INSERT INTO Course(name,major,is_offered,credit_hours,semester)
-			VALUES(@name,@major,@is_offered,@credit_hours,@semester);
-		END
-GO
+CREATE PROC [Procedures_AdminAddingCourse]
+
+    @major varchar(20),
+    @semester int, 
+    @credit_hours int, 
+    @name varchar(30),
+    @is_offered bit
+
+
+     AS 
+     IF @major IS NULL or @semester IS NULL or @name IS NULL or @credit_hours is Null or
+     @is_offered is Null
+    print 'One of the inputs is null'
+    Else
+     insert into Course(name, major,semester,credit_hours,is_offered) 
+     values (@name, @major, @semester,@credit_hours,@is_offered)
+     
+Go
+
 --H)
-CREATE PROC Procedures_AdminLinkInstructor -- update or insert ??
-	@instructor_id INT,
-	@course_id INT,
-	@slot_id INT
-	AS
-	IF @instructor_id IS NULL OR @course_id IS NULL OR @slot_id IS NULL 
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	IF 
-		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
-		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
-		not exists(SELECT slot_id FROM Slot WHERE slot_id=@slot_id)
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	ELSE
-		BEGIN ------------- Does instructor teach this course in ||| Instructor_course table ||||
-			UPDATE Slot 
-			SET instructor_id =@instructor_id , course_id = @course_id
-			WHERE slot_id = @slot_id
-		END
-GO
+CREATE PROC [Procedures_AdminLinkInstructor]
+@cours_id int,
+@instructor_id int, 
+@slot_id int
+As
+
+IF @cours_id IS NULL or @instructor_id IS NULL or @slot_id IS NULL 
+    print 'One of the inputs is null'
+
+Else
+update Slot 
+set course_id =@cours_id,
+instructor_id =@instructor_id 
+where slot_id = @slot_id;
+
+Go
 --I)
 CREATE PROC Procedures_AdminLinkStudent
 	@instructor_id INT,
@@ -886,17 +878,9 @@ END
 GO
 --N) moved before the Tables creation 
 --O)
-CREATE VIEW all_Pending_Requests
-	AS
-	SELECT R.*
-		  ,S.f_name
-		  ,S.l_name
-		  ,A.name
-	FROM Request R
-		INNER JOIN Student S ON S.student_id = R.student_id
-		INNER JOIN Advisor A ON A.advisor_id = R.advisor_id
-	WHERE R.status = 'pending'
-GO
+Create View all_Pending_Requests As
+	Select * from Request where status = 'Pending';
+GO;
 --P)
 CREATE PROC Procedures_AdminDeleteSlots @current_semester VARCHAR(40)
 AS

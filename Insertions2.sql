@@ -50,19 +50,18 @@ INSERT INTO Advisor(name, email, office, password) VALUES
 ( 'Prof. Johnson', 'johnson@example.com', 'Office J', 'password10');
 
 -- Adding 10 records to the Student table
-INSERT INTO Student (f_name, l_name, GPA, faculty, email, major, password, financial_status, semester, acquired_hours, assigned_hours, advisor_id)   VALUES 
-( 'John', 'Doe', 3.5, 'Engineering', 'john.doe@example.com', 'CS', 'password123', 1, 1, 90, 30, 1),
-( 'Jane', 'Smith', 3.8, 'Engineering', 'jane.smith@example.com', 'CS', 'password456', 1, 2, 85, 34, 2),
-( 'Mike', 'Johnson', 3.2, 'Engineering', 'mike.johnson@example.com', 'CS', 'password789', 1, 3, 75, 34, 3),
-( 'Emily', 'White', 3.9, 'Engineering', 'emily.white@example.com', 'CS', 'passwordabc', 0, 4, 95, 34, 4),
-( 'David', 'Lee', 3.4, 'Engineering', 'david.lee@example.com', 'IET', 'passworddef', 1, 5, 80, 34, 5),
-( 'Grace', 'Brown', 3.7, 'Engineering', 'grace.brown@example.com', 'IET', 'passwordghi', 0, 6, 88, 34, 6),
-( 'Robert', 'Miller', 3.1, 'Engineerings', 'robert.miller@example.com', 'IET', 'passwordjkl', 1, 7, 78, 34, 7),
-( 'Sophie', 'Clark', 3.6, 'Engineering', 'sophie.clark@example.com', 'Mechatronics', 'passwordmno', 1, 8, 92, 34, 8),
-( 'Daniel', 'Wilson', 3.3, 'Engineering', 'daniel.wilson@example.com', 'DMET', 'passwordpqr', 1, 9, 87, 34, 9),
-( 'Olivia', 'Anderson', 3.7, 'Engineeringe', 'olivia.anderson@example.com', 'Mechatronics', 'passwordstu', 0, 10, 89, 34, 10);
-INSERT INTO Student (f_name, l_name, GPA, faculty, email, major, password, financial_status, semester, acquired_hours, assigned_hours, advisor_id)   VALUES 
-('mahmoud', 'dahroug', 0.7,'Engineering', 'mahmoiuod.dahroug@example.com', 'CS', 'password123', 1, 1, 1325, 30, 1)
+INSERT INTO Student (f_name, l_name, GPA,major , email,faculty, password, semester, acquired_hours, assigned_hours, advisor_id)   VALUES 
+( 'John', 'Doe', 3.5, 'Engineering', 'john.doe@example.com', 'CS', 'password123',  1, 90, 30, 1),
+( 'Jane', 'Smith', 3.8, 'Engineering', 'jane.smith@example.com', 'CS', 'password456',  2, 85, 34, 2),
+( 'Mike', 'Johnson', 3.2, 'Engineering', 'mike.johnson@example.com', 'CS', 'password789', 3, 75, 34, 3),
+( 'Emily', 'White', 3.9, 'Applied Sciences and Arts', 'emily.white@example.com', 'CS', 'passwordabc', 4, 95, 34, 4),
+( 'David', 'Lee', 3.4, 'Engineering', 'david.lee@example.com', 'IET', 'passworddef', 5, 80, 34, 5),
+( 'Grace', 'Brown', 3.7, 'Engineering and Materials Science', 'grace.brown@example.com', 'IET', 'passwordghi', 6, 88, 34, 6),
+( 'Robert', 'Miller', 3.1, 'Pharmacy and Biotechnology', 'robert.miller@example.com', 'IET', 'passwordjkl', 7, 78, 34, 7),
+( 'Sophie', 'Clark', 3.6, 'Engineering', 'sophie.clark@example.com', 'Mechatronics', 'passwordmno', 8, 92, 34, 8),
+( 'Daniel', 'Wilson', 3.3, 'IET', 'daniel.wilson@example.com', 'DMET', 'passwordpqr', 9, 87, 34, 9),
+( 'Olivia', 'Anderson', 3.7, 'BI', 'olivia.anderson@example.com', 'Mechatronics', 'passwordstu', 10, 89, 34, 10),
+( 'Mohamed', 'Elsaeed', 3.7, 'MET', 'coco.anderson@example.com', 'MET', 'passwordstu', 10, 89, 34, 10);
 
 -- Adding 10 records to the Student_Phone table
 INSERT INTO Student_Phone(student_id, phone_number) VALUES
@@ -114,7 +113,8 @@ INSERT INTO Student_Instructor_Course_Take (student_id, course_id, instructor_id
 (7, 7, 7, 'S24', 'Second_makeup', 'C+'),
 (8, 8, 8, 'S24R1', 'Normal', 'A+'),
 (9, 9, 9, 'S24R2', 'Normal', 'FF'),
-(10, 10, 10, 'S24', 'First_makeup', 'B-');
+(10, 10, 10, 'S24', 'First_makeup', 'B-') ,
+(11,10,10,'S24', 'First_makeup', 'B-');
 
 
 
@@ -238,12 +238,15 @@ INSERT INTO Installment (payment_id, start_date, amount, status, deadline) VALUE
 ( 10,'2023-11-30', 58, 'Paid','2023-12-30');
 
 SELECT * FROM Student
+SELECT * FROM Advisor
 SELECT * FROM Student_Instructor_Course_Take
+
 SELECT * FROM Payment
 SELECT * FROM Slot	
 SELECT * FROM Installment
 SELECT * FROM Request
 SELECT * FROM Semester
-SELECT * FROM Advisor
+
 SELECT * FROM Course
 SELECT * FROM Graduation_Plan
+

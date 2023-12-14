@@ -238,8 +238,13 @@ INSERT INTO Installment (payment_id, start_date, amount, status, deadline) VALUE
 ( 10,'2023-11-30', 58, 'Paid','2023-12-30');
 
 SELECT * FROM Student
-SELECT * FROM Advisor
 SELECT * FROM Student_Instructor_Course_Take
+SELECT * FROM Advisor
+
+SELECT * FROM Student_Phone
+
+SELECT * FROM Course_Semester
+
 
 SELECT * FROM Payment
 SELECT * FROM Slot	

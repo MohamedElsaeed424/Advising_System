@@ -1,4 +1,4 @@
-﻿CREATE DATABASE Advising_Team_13---------------********************************
+﻿--CREATE DATABASE Advising_Team_13---------------********************************
 USE Advising_Team_13
 GO
 
@@ -595,7 +595,7 @@ CREATE  VIEW  Instructors_AssignedCourses AS
 Select Instructor.instructor_id, Instructor.name as Instructor, Course.course_id, Course.name As Course
 from Instructor inner join Student_Instructor_Course_take t on Instructor.instructor_id = t.instructor_id
 inner join Course On Course.course_id = t.course_id 
-go;
+go
 --D)
 CREATE VIEW  Student_Payment AS
 SELECT P.amount ,P.deadline ,P.fund_percentage ,P.n_installments ,P.payment_id ,P.semester_code ,
@@ -866,7 +866,7 @@ GO
 --O)
 Create View all_Pending_Requests As
 	Select * from Request where status = 'Pending';
-GO;
+GO
 --P)
 CREATE PROC Procedures_AdminDeleteSlots @current_semester VARCHAR(40)
 AS

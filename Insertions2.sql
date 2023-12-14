@@ -250,3 +250,5 @@ SELECT * FROM Semester
 SELECT * FROM Course
 SELECT * FROM Graduation_Plan
 
+
+update Student Set financial_status = 1 ;

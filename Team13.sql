@@ -640,22 +640,26 @@ FROM Graduation_Plan GP INNER JOIN Advisor A on A.advisor_id = GP.advisor_id;
 GO 
 ------------------------------------------2.3----------------------------------------------------
 --A)
-CREATE PROCEDURE Procedures_StudentRegistration 
-@first_name varchar (40),
-@last_name varchar (40), 
-@password varchar (40),
-@faculty varchar (40),
-@email varchar (40), 
-@major varchar (40), 
-@Semester int,
-@student_id INT OUTPUT
-AS 
-BEGIN 
-	INSERT INTO Student(f_name,l_name,password,faculty,email,major,semester)
-			VALUES(@first_name,@last_name,@password,@faculty,@email,@major,@Semester)
-	SET @student_id = SCOPE_IDENTITY();
-END
-GO
+CREATE PROC [Procedures_StudentRegistration]
+     @first_name varchar(20), 
+     @last_name varchar(20), 
+     @password varchar(20), 
+     @faculty varchar(20), 
+     @email varchar(50), 
+     @major varchar(20),
+     @Semester int,
+     @Student_id int OUTPUT
+     AS 
+     insert into Student  (f_name,l_name,password, faculty, email, major, semester) 
+     values (@first_name, @last_name, @password, @faculty, @email, @major, @Semester)
+    
+    Select @Student_id =  student_id from Student 
+     where f_name = @first_name and
+     l_name= @last_name and
+     password = @password  and
+     email = @email 
+    
+Go
 --B)
 CREATE PROC Procedures_AdvisorRegistration
 	 @name VARCHAR(40),
@@ -743,53 +747,35 @@ where slot_id = @slot_id;
 
 Go
 --I)
-CREATE PROC Procedures_AdminLinkStudent
-	@instructor_id INT,
-	@student_id INT,
-	@course_id INT,
-	@semester_code VARCHAR(40)
-	AS
-	IF @instructor_id IS NULL OR @student_id IS NULL OR @course_id IS NULL OR @semester_code IS NULL  
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	IF 
-		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
-		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
-		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
-		not exists(SELECT semester_code FROM Semester WHERE semester_code=@semester_code)
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	ELSE
-		BEGIN
-			INSERT INTO Student_Instructor_Course_Take(student_id,course_id,instructor_id,semester_code)
-			VALUES(@student_id,@course_id,@instructor_id,@semester_code);
-		END	
-GO 
+CREATE PROC [Procedures_AdminLinkStudent]
+@cours_id int,
+@instructor_id int, 
+@studentID int,
+@semester_code varchar(40)
+As
+
+IF @cours_id IS NULL or @instructor_id IS NULL or @studentID IS NULL or @semester_code IS NULL
+    print 'One of the inputs is null'
+
+Else
+insert into Student_Instructor_Course_take ( instructor_id, course_id,student_id, semester_code) values (@instructor_id,@cours_id,@studentID,@semester_code) 
+
+Go
 --J)
-CREATE PROC Procedures_AdminLinkStudentToAdvisor --update or insert ??
-	@student_id INT,
-	@advisor_id INT
-	AS
-	IF  @student_id IS NULL OR @advisor_id IS NULL  
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	IF
-		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
-		not exists(SELECT advisor_id FROM Advisor WHERE advisor_id=@advisor_id)
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	ELSE
-		BEGIN
-			--INSERT INTO Student(student_id,advisor_id) VALUES(@student_id,@advisor_id);
-			UPDATE Student
-			SET advisor_id = @advisor_id
-			WHERE student_id = @student_id
-		END
-GO 
+CREATE PROC [Procedures_AdminLinkStudentToAdvisor]
+
+@studentID int, 
+@advisorID int
+
+As
+IF @studentID IS NULL or @advisorID IS NULL 
+    print 'One of the inputs is null'
+
+Else
+update Student 
+set advisor_id = @advisorID
+where student_id = @studentID
+Go
 --K)
 CREATE PROC Procedures_AdminAddExam
 	@Type VARCHAR (40),
@@ -1186,30 +1172,35 @@ CREATE PROC Procedures_AdvisorViewPendingRequests
 
 
 /* AA  */
-CREATE FUNCTION  FN_StudentLogin(@StudentID int, @password varchar (40))
-	RETURNS BIT
-	AS
-	BEGIN
-		RETURN CASE WHEN EXISTS (SELECT 1 from Student
-							WHERE student_id = @StudentID AND password = @password)
-			   THEN 1 ELSE 0 END
-	END;
-GO
+CREATE FUNCTION [FN_StudentLogin]
+(@Student_id int, @password varchar(40))     --Define Function Input
+Returns bit   	  --Define Function Output
+
+AS
+Begin
+Declare
+@success bit,
+@pass varchar(40)
+
+if(@Student_id is null or @password is null)
+return 0
+
+select @pass = password from Student where Student.student_id = @Student_id and Student.financial_status = 1
+if(@pass = @password)
+set @success = 1 
+else 
+set @success = 0
+
+Return @success
+END
+Go
 
 /*BB*/
-CREATE PROC Procedures_StudentaddMobile
-	@StudentID int, 
-	@mobile_number varchar (40)
-	AS
-	IF NOT EXISTS(Select student_id from student where student_id = @StudentID) OR  @StudentID IS NULL OR @mobile_number IS NULL
-	BEGIN
-		PRINT 'ERROR';
-	END
-	ELSE
-	BEGIN
-		INSERT INTO Student_Phone values(@StudentID ,@mobile_number);
-	END
-	GO
+Create PROC [Procedures_StudentaddMobile]
+@StudentID int, @mobile_number varchar(40)
+As
+Insert into Student_Phone values (@StudentID, @mobile_number)
+Go
 /*CC*/
 CREATE FUNCTION FN_SemsterAvailableCourses (@semester_code varchar (40))
 	RETURNS TABLE

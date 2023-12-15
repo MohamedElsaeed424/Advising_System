@@ -1,4 +1,5 @@
-﻿CREATE DATABASE Advising_Team_13---------------********************************
+﻿--Drop database Advising_Team_13
+CREATE DATABASE Advising_Team_13---------------********************************
 USE Advising_Team_13
 GO
 

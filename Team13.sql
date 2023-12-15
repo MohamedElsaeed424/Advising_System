@@ -1,5 +1,4 @@
-﻿--Drop database Advising_Team_13
-CREATE DATABASE Advising_Team_13---------------********************************
+﻿--CREATE DATABASE Advising_Team_13---------------********************************
 USE Advising_Team_13
 GO
 
@@ -592,12 +591,11 @@ SELECT c.course_id , c.name ,c.credit_hours ,c.is_offered ,c.major ,c.semester ,
 FROM Course c INNER JOIN PreqCourse_course PC on c.course_id = PC.prerequisite_course_id; 
 GO
 --C)
-CREATE VIEW Instructors_AssignedCourses AS
-SELECT I.instructor_id ,I.name AS 'Instructor name' ,I.email ,I.faculty ,I.office ,
-	  c.course_id , c.name AS 'Course name',c.credit_hours ,c.is_offered ,c.major ,c.semester 
-FROM ( Instructor I INNER JOIN Instructor_Course IC on I.instructor_id = IC.instructor_id 
-					INNER JOIN Course c ON IC.course_id = c.course_id )
-GO
+CREATE  VIEW  Instructors_AssignedCourses AS
+Select Instructor.instructor_id, Instructor.name as Instructor, Course.course_id, Course.name As Course
+from Instructor inner join Student_Instructor_Course_take t on Instructor.instructor_id = t.instructor_id
+inner join Course On Course.course_id = t.course_id 
+go
 --D)
 CREATE VIEW  Student_Payment AS
 SELECT P.amount ,P.deadline ,P.fund_percentage ,P.n_installments ,P.payment_id ,P.semester_code ,
@@ -629,12 +627,11 @@ CREATE VIEW Students_Courses_transcript AS
 	;
 GO
 --H)
-CREATE VIEW  Semster_offered_Courses AS 
-SELECT CS.course_id , c.name AS ' Course name' , CS.semester_code
-FROM ((Course_Semester  CS
-		INNER JOIN Semester S on S.semester_code = CS.semester_code)
-		INNER JOIN course c on c.course_id= CS.course_id );
-GO 
+CREATE  VIEW  Semster_offered_Courses AS
+Select Course.course_id, Course.name, Semester.semester_code
+from Course inner join Course_Semester on Course.course_id = Course_Semester.course_id
+inner join Semester on Course_Semester.semester_code = semester.semester_code
+go 
 --I)
 CREATE VIEW Advisors_Graduation_Plan AS
 SELECT GP.expected_grad_date ,GP.student_id ,GP.semester_credit_hours , 
@@ -643,22 +640,26 @@ FROM Graduation_Plan GP INNER JOIN Advisor A on A.advisor_id = GP.advisor_id;
 GO 
 ------------------------------------------2.3----------------------------------------------------
 --A)
-CREATE PROCEDURE Procedures_StudentRegistration 
-@first_name varchar (40),
-@last_name varchar (40), 
-@password varchar (40),
-@faculty varchar (40),
-@email varchar (40), 
-@major varchar (40), 
-@Semester int,
-@student_id INT OUTPUT
-AS 
-BEGIN 
-	INSERT INTO Student(f_name,l_name,password,faculty,email,major,semester)
-			VALUES(@first_name,@last_name,@password,@faculty,@email,@major,@Semester)
-	SET @student_id = SCOPE_IDENTITY();
-END
-GO
+CREATE PROC [Procedures_StudentRegistration]
+     @first_name varchar(20), 
+     @last_name varchar(20), 
+     @password varchar(20), 
+     @faculty varchar(20), 
+     @email varchar(50), 
+     @major varchar(20),
+     @Semester int,
+     @Student_id int OUTPUT
+     AS 
+     insert into Student  (f_name,l_name,password, faculty, email, major, semester) 
+     values (@first_name, @last_name, @password, @faculty, @email, @major, @Semester)
+    
+    Select @Student_id =  student_id from Student 
+     where f_name = @first_name and
+     l_name= @last_name and
+     password = @password  and
+     email = @email 
+    
+Go
 --B)
 CREATE PROC Procedures_AdvisorRegistration
 	 @name VARCHAR(40),
@@ -689,116 +690,92 @@ CREATE PROC Procedures_AdminListAdvisors
 	SELECT * FROM Advisor;	
 GO
 --E)
-CREATE PROC AdminListStudentsWithAdvisors
-	AS
-	SELECT Student.f_name,Student.l_name , Advisor.name
-	FROM Student INNER JOIN Advisor ON Student.advisor_id = Advisor.advisor_id;
-GO
+Create Proc [AdminListStudentsWithAdvisors] AS
+Select Student.student_id, Student.f_name, Student.l_name, Advisor.advisor_id, Advisor.name
+from Student inner join Advisor on Student.advisor_id = Advisor.advisor_id
+go
 --F)
-CREATE PROC AdminAddingSemester 
-	@start_date DATE,
-	@end_date DATE,
-	@semester_code VARCHAR(40)
-	AS
-	IF @start_date IS NULL OR @end_date IS NULL OR @semester_code IS NULL 
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	ELSE
-		BEGIN
-			INSERT INTO Semester VALUES(@semester_code,@start_date,@end_date);
-		END
-GO
+CREATE PROC [AdminAddingSemester]
+
+    @start_date date,
+    @end_date date, 
+    @semester_code Varchar(40)
+
+     AS 
+     IF @start_date IS NULL or @end_date IS NULL or @semester_code IS NULL 
+    print 'One of the inputs is null'
+    Else
+     insert into Semester(start_date, end_date, semester_code) 
+     values (@start_date, @end_date, @semester_code)
+     
+Go
 --G)
-CREATE PROC Procedures_AdminAddingCourse 
-	@major VARCHAR (40), 
-	@semester INT, 
-	@credit_hours INT, 
-	@name VARCHAR (40), 
-	@is_offered BIT
-	AS
-	IF @major IS NULL OR @semester IS NULL OR @credit_hours IS NULL OR @name IS NULL OR @is_offered IS NULL 
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE');
-		END
-	ELSE
-		BEGIN
-			INSERT INTO Course(name,major,is_offered,credit_hours,semester)
-			VALUES(@name,@major,@is_offered,@credit_hours,@semester);
-		END
-GO
+CREATE PROC [Procedures_AdminAddingCourse]
+
+    @major varchar(20),
+    @semester int, 
+    @credit_hours int, 
+    @name varchar(30),
+    @is_offered bit
+
+
+     AS 
+     IF @major IS NULL or @semester IS NULL or @name IS NULL or @credit_hours is Null or
+     @is_offered is Null
+    print 'One of the inputs is null'
+    Else
+     insert into Course(name, major,semester,credit_hours,is_offered) 
+     values (@name, @major, @semester,@credit_hours,@is_offered)
+     
+Go
+
 --H)
-CREATE PROC Procedures_AdminLinkInstructor -- update or insert ??
-	@instructor_id INT,
-	@course_id INT,
-	@slot_id INT
-	AS
-	IF @instructor_id IS NULL OR @course_id IS NULL OR @slot_id IS NULL 
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	IF 
-		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
-		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
-		not exists(SELECT slot_id FROM Slot WHERE slot_id=@slot_id)
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	ELSE
-		BEGIN ------------- Does instructor teach this course in ||| Instructor_course table ||||
-			UPDATE Slot 
-			SET instructor_id =@instructor_id , course_id = @course_id
-			WHERE slot_id = @slot_id
-		END
-GO
+CREATE PROC [Procedures_AdminLinkInstructor]
+@cours_id int,
+@instructor_id int, 
+@slot_id int
+As
+
+IF @cours_id IS NULL or @instructor_id IS NULL or @slot_id IS NULL 
+    print 'One of the inputs is null'
+
+Else
+update Slot 
+set course_id =@cours_id,
+instructor_id =@instructor_id 
+where slot_id = @slot_id;
+
+Go
 --I)
-CREATE PROC Procedures_AdminLinkStudent
-	@instructor_id INT,
-	@student_id INT,
-	@course_id INT,
-	@semester_code VARCHAR(40)
-	AS
-	IF @instructor_id IS NULL OR @student_id IS NULL OR @course_id IS NULL OR @semester_code IS NULL  
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	IF 
-		not exists(SELECT instructor_id FROM Instructor WHERE instructor_id=@instructor_id) OR
-		not exists(SELECT course_id FROM Course WHERE course_id=@course_id)OR
-		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
-		not exists(SELECT semester_code FROM Semester WHERE semester_code=@semester_code)
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	ELSE
-		BEGIN
-			INSERT INTO Student_Instructor_Course_Take(student_id,course_id,instructor_id,semester_code)
-			VALUES(@student_id,@course_id,@instructor_id,@semester_code);
-		END	
-GO 
+CREATE PROC [Procedures_AdminLinkStudent]
+@cours_id int,
+@instructor_id int, 
+@studentID int,
+@semester_code varchar(40)
+As
+
+IF @cours_id IS NULL or @instructor_id IS NULL or @studentID IS NULL or @semester_code IS NULL
+    print 'One of the inputs is null'
+
+Else
+insert into Student_Instructor_Course_take ( instructor_id, course_id,student_id, semester_code) values (@instructor_id,@cours_id,@studentID,@semester_code) 
+
+Go
 --J)
-CREATE PROC Procedures_AdminLinkStudentToAdvisor --update or insert ??
-	@student_id INT,
-	@advisor_id INT
-	AS
-	IF  @student_id IS NULL OR @advisor_id IS NULL  
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	IF
-		not exists(SELECT student_id FROM Student WHERE student_id=@student_id)OR
-		not exists(SELECT advisor_id FROM Advisor WHERE advisor_id=@advisor_id)
-		BEGIN
-			PRINT('CAN''T DO THIS SERVICE')
-		END
-	ELSE
-		BEGIN
-			--INSERT INTO Student(student_id,advisor_id) VALUES(@student_id,@advisor_id);
-			UPDATE Student
-			SET advisor_id = @advisor_id
-			WHERE student_id = @student_id
-		END
-GO 
+CREATE PROC [Procedures_AdminLinkStudentToAdvisor]
+
+@studentID int, 
+@advisorID int
+
+As
+IF @studentID IS NULL or @advisorID IS NULL 
+    print 'One of the inputs is null'
+
+Else
+update Student 
+set advisor_id = @advisorID
+where student_id = @studentID
+Go
 --K)
 CREATE PROC Procedures_AdminAddExam
 	@Type VARCHAR (40),
@@ -887,16 +864,8 @@ END
 GO
 --N) moved before the Tables creation 
 --O)
-CREATE VIEW all_Pending_Requests
-	AS
-	SELECT R.*
-		  ,S.f_name
-		  ,S.l_name
-		  ,A.name
-	FROM Request R
-		INNER JOIN Student S ON S.student_id = R.student_id
-		INNER JOIN Advisor A ON A.advisor_id = R.advisor_id
-	WHERE R.status = 'pending'
+Create View all_Pending_Requests As
+	Select * from Request where status = 'Pending';
 GO
 --P)
 CREATE PROC Procedures_AdminDeleteSlots @current_semester VARCHAR(40)
@@ -1128,10 +1097,10 @@ CREATE PROC Procedures_AdvisorViewAssignedStudents
 	@AdvisorID int,
 	@major varchar (40)
 	AS
-		Select Student.student_id, Student.f_name+' ' + Student.l_name as Student_name, Student.major, Course.name as Course_name
-		from Student left outer join Student_Instructor_Course_take on Student.student_id = Student_Instructor_Course_take.student_id
-		left outer join Course on Student_Instructor_Course_take.course_id = Course.course_id
-		where Student.advisor_id = @AdvisorID and Student.major = @major
+	Select s.student_id as 'Student id', Concat(s.f_name, ' ', s.l_name) as 'Student name' , s.major as 'Student major', c.name as 'Course name'
+				from student s INNER JOIN Student_Instructor_Course_Take t on s.student_id = t.student_id
+				INNER JOIN Course c on t.course_id = c.course_id
+				AND s.advisor_id = @AdvisorID And s.major = @major;
 	GO
 /*                              Y              */
 CREATE PROC Procedures_AdvisorApproveRejectCourseRequest
@@ -1203,55 +1172,60 @@ CREATE PROC Procedures_AdvisorViewPendingRequests
 
 
 /* AA  */
-CREATE FUNCTION  FN_StudentLogin(@StudentID int, @password varchar (40))
-	RETURNS BIT
-	AS
-	BEGIN
-		RETURN CASE WHEN EXISTS (SELECT 1 from Student
-							WHERE student_id = @StudentID AND password = @password)
-			   THEN 1 ELSE 0 END
-	END;
-GO
+CREATE FUNCTION [FN_StudentLogin]
+(@Student_id int, @password varchar(40))     --Define Function Input
+Returns bit   	  --Define Function Output
+
+AS
+Begin
+Declare
+@success bit,
+@pass varchar(40)
+
+if(@Student_id is null or @password is null)
+return 0
+
+select @pass = password from Student where Student.student_id = @Student_id and Student.financial_status = 1
+if(@pass = @password)
+set @success = 1 
+else 
+set @success = 0
+
+Return @success
+END
+Go
 
 /*BB*/
-CREATE PROC Procedures_StudentaddMobile
-	@StudentID int, 
-	@mobile_number varchar (40)
-	AS
-	IF NOT EXISTS(Select student_id from student where student_id = @StudentID) OR  @StudentID IS NULL OR @mobile_number IS NULL
-	BEGIN
-		PRINT 'ERROR';
-	END
-	ELSE
-	BEGIN
-		INSERT INTO Student_Phone values(@StudentID ,@mobile_number);
-	END
-	GO
+Create PROC [Procedures_StudentaddMobile]
+@StudentID int, @mobile_number varchar(40)
+As
+Insert into Student_Phone values (@StudentID, @mobile_number)
+Go
 /*CC*/
-CREATE FUNCTION FN_SemsterAvailableCourses (@semester_code varchar (40))
-	RETURNS TABLE
-	AS
-	RETURN (
-		Select c.* ----- basss????
-		from Course c JOIN Course_Semester cs on c.course_id = cs.course_id AND cs.semester_code = @semester_code AND c.is_offered = 1
-	);
+CREATE FUNCTION [FN_SemsterAvailableCourses]
+     (@semstercode varchar(40))
+   RETURNs table
+   AS
+   RETURN (
+   Select Course.name, Course.course_id 
+   from Course inner join Course_Semester 
+   on Course.course_id = Course_Semester.course_id and Course_Semester.semester_code = @semstercode
+   )
 GO
 /*DD*/
-CREATE PROC Procedures_StudentSendingCourseRequest
-	@StudentID int, 
-	@courseID int, 
-	@type varchar (40),
-	@comment varchar (40) 
-	AS
-	IF @StudentID IS NULL OR @courseID IS NULL OR @type NOT LIKE 'course%'
-	BEGIN
-		PRINT 'ERROR';
-	END
-	ELSE
-	BEGIN
-		INSERT INTO request (student_id, course_id, type, comment) values (@StudentID ,@courseID ,@type ,@comment) 
-	END
-	GO
+Create PROC [Procedures_StudentSendingCourseRequest]
+@courseID int, 
+@StudentID int, 
+@type varchar(40), 
+@comment varchar(40)
+AS
+declare
+@advisorID int
+
+Select @advisorID = Student.advisor_id from student where Student.student_id = @StudentID
+
+Insert into Request (type,comment,course_id, student_id,advisor_id) values (@type, @comment, @courseID, @StudentID, @advisorID)
+Go
 /*EE*/
 CREATE PROC Procedures_StudentSendingCHRequest
 	@StudentID int, 
@@ -1545,42 +1519,171 @@ CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
 --------------------------------------------------Courses Procedures---------------------------------------------------------------------------
 -- LL) 
 GO
-CREATE PROCEDURE  Procedures_ViewRequiredCourses
-	 @Student_ID int,
-	 @Current_semester_code Varchar (40)
-	 AS 
-	 SELECT c1.course_id , c1.name , c1.major ,c1.is_offered ,c1.credit_hours ,c1.semester
-	 FROM ( Course c1 INNER JOIN Student_Instructor_Course_Take SC ON c1.course_id = SC.course_id
-					  INNER JOIN Student S ON SC.student_id = S.student_id )
-	 WHERE  S.student_id = @Student_ID AND
-			c1.semester <= S.semester AND
-		    ( SC.grade = 'F' OR SC.grade ='FF' OR SC.grade = 'FA' OR  SC.grade IS NULL ) AND               -- check for grade
-			dbo.FN_IS_COURSE_OFFERED_HELPER(c1.course_id , @Current_semester_code) = 1 --check if course offered in current semester
-GO 
+Create PROC [Procedures_ViewRequiredCourses]
+@StudentID int,
+@current_semester_code varchar(40)
+As
+declare @student_semester int
+
+select @student_semester = Student.semester FROM Student where Student.student_id = @StudentID
+select Course.name, Course.course_id
+from Course 
+where Course.course_id in (select * from dbo.FN_StudentFailedAndNotEligibleCourse(@StudentID,@current_semester_code)) 
+or Course.course_id in (select * from dbo.FN_StudentUnattendedCourses(@StudentID,@current_semester_code,@student_semester))
+GO
+CREATE FUNCTION [FN_StudentUnattendedCourses]
+     (@StudentID int,@current_semester_code varchar(40),@student_semester int)
+   RETURNs table
+   AS
+   RETURN ( select Course_Semester.course_id
+from Course_Semester inner join Course on Course_Semester.course_id = Course.course_id 
+inner join Student on Student.major = Course.major
+where  Student.student_id= @StudentID and   Course_Semester.semester_code = @current_semester_code and course.semester < @student_semester and Course_Semester.course_id Not In (
+select Student_Instructor_Course_take.course_id
+from Student_Instructor_Course_take
+where Student_Instructor_Course_take.student_id = @StudentID
+   ) or Course_Semester.course_id
+   In (select Student_Instructor_Course_take.course_id
+from Student_Instructor_Course_take
+where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.grade = 'FA' ))
+go
+CREATE FUNCTION [FN_StudentFailedAndNotEligibleCourse]
+     (@StudentID int, @current_semester_code varchar(40))
+   RETURNs table
+   AS
+   RETURN ( select Student_Instructor_Course_take.course_id
+    from Student_Instructor_Course_take inner join Course_Semester on Student_Instructor_Course_take.course_id = Course_Semester.course_id
+    where Student_Instructor_Course_take.student_id = @StudentID and 
+    Student_Instructor_Course_take.grade in ('F','FF') and
+    dbo.FN_StudentCheckSMEligibility(@StudentID,Student_Instructor_Course_take .course_id) = 0 
+    and Course_Semester.semester_code = @current_semester_code
+    )
+go
+CREATE FUNCTION [FN_SemesterCodeCheck]
+     (@SemesterCode varchar(40))
+   RETURNs varchar(40)
+   begin
+   declare @output varchar(40)
+if @SemesterCode like '%R1%' or  @SemesterCode like '%W%'
+set @output = 'Odd'
+else 
+set @output =  'Even'
+return @output
+end
+go
+CREATE FUNCTION [FN_StudentCheckSMEligibility]
+     (@CourseID int, @StudentID int)
+   RETURNs bit
+Begin
+declare 
+@eligable bit,
+@countOfRows int,
+@Student_semester int,
+@course_semester varchar(40),
+@StudentSemesterCode varchar(40),
+@failedGradesCount int
+
+select @countOfRows = COUNT(*) 
+from Student_Instructor_Course_take where Student_Instructor_Course_take.exam_type In ( 'First_Makeup', 'Normal') and
+Student_Instructor_Course_take.grade in ('F','FF',NULL) 
+AND Student_Instructor_Course_take.course_id = @CourseID
+AND Student_Instructor_Course_take.student_id = @StudentID
+
+if @countOfRows = 0
+return 0
+
+else
+
+begin
+select @Student_semester = Student.semester from Student where  Student.student_id = @StudentID
+
+if (@Student_semester % 2) = 0
+set @StudentSemesterCode = 'Even'
+Else 
+set @StudentSemesterCode = 'Odd'
+
+select @failedGradesCount = count(*)
+from Student_Instructor_Course_take
+where dbo.FN_SemesterCodeCheck(Student_Instructor_Course_take.semester_code) = @StudentSemesterCode and 
+Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.grade in ('F','FF')
+group by Student_Instructor_Course_take.grade
+
+end
+
+if @failedGradesCount <=2
+begin
+set @eligable = 1
+end
+else
+set @eligable = 0
+
+return @eligable
+END
+go
 -- MM) Check again
-CREATE PROCEDURE Procedures_ViewOptionalCourse
-	 @Student_ID int,
-	 @Current_semester_code Varchar(40)
-	AS
-	SELECT c.course_id , c.name , c.major ,c.is_offered ,c.credit_hours ,c.semester
-	FROM Course c 
-	WHERE dbo.FN_IS_COURSE_OFFERED_HELPER(c.course_id , @Current_semester_code) = 1 AND  -- course is offered 
-		  dbo.FN_IS_prerequisite_Courses_TAKEN_HELPER(@Student_ID , c.course_id) =1 AND  -- Took all prerequisite
-		  NOT EXISTS  ( SELECT * FROM dbo.FN_FIND_REQ_Courses_HELPER (@Student_ID   , @Current_semester_code  , c.course_id))  --not required
-GO
+Create PROC [Procedures_ViewOptionalCourse]
+@StudentID int,
+@current_semester_code varchar(40)
+As
+declare @student_semester int
+select @student_semester = Student.semester FROM Student where Student.student_id = @StudentID
+
+select Course_Semester.course_id, Course.name
+from Course_Semester inner join Course on Course_Semester.course_id = Course.course_id
+where Course_Semester.semester_code = @current_semester_code AND  (Course.semester >= @student_semester and dbo.FN_check_prerequiste(@StudentID, Course_Semester.course_id) = 1 )
+GO 
+
+CREATE FUNCTION [FN_check_prerequiste]
+(@studentid int, @requestcourse_id varchar(40))
+returns bit
+Begin
+declare 
+@success bit,
+@student_id_target int
+
+set @student_id_target = -1
+
+Select @student_id_target = Student.student_id
+from Student 
+where Student.student_id = @studentid AND  Student.student_id In(
+SELECT Student.student_id
+FROM Student
+WHERE NOT EXISTS (
+    (SELECT PreqCourse_course.prerequisite_course_id
+    FROM PreqCourse_course
+    WHERE PreqCourse_course.course_id = @requestcourse_id)
+
+    EXCEPT
+
+    (SELECT Student_Instructor_Course_take.course_id
+    FROM Student_Instructor_Course_take
+    INNER JOIN PreqCourse_course ON Student_Instructor_Course_take.course_id = PreqCourse_course.prerequisite_course_id
+    where Student_Instructor_Course_take.student_id =  Student.student_id)
+)
+)
+if @student_id_target = -1
+set @success = 0
+else
+set @success = 1
+return @success
+End
+Go
 -- NN) 
-CREATE PROCEDURE Procedures_ViewMS
-	@StudentID int
-	AS
-	(SELECT c.* FROM Course c INNER JOIN Student S ON c.major = S.major ) 
-	EXCEPT 
-	(SELECT c1.*
-	 FROM   Student_Instructor_Course_Take SC INNER JOIN Student S ON S.student_id = SC.student_id 
-											  INNER JOIN Course c1 ON c1.course_id = SC.course_id
-	 WHERE  SC.student_id = @StudentID AND
-			c1.major = S.major
-	)
+Create PROC [Procedures_ViewMS]
+@StudentID int
+As
+declare @student_major varchar(40)
+Select @student_major = major from Student where student_id = @StudentID 
+
+select Course.course_id, Course.name
+from Course 
+where  Course.major = @student_major and   Course.course_id not in (select Student_Instructor_Course_take.course_id
+from Student_Instructor_Course_take
+where Student_Instructor_Course_take.student_id = @StudentID) OR course.course_id in (select Student_Instructor_Course_take.course_id
+from Student_Instructor_Course_take
+where Student_Instructor_Course_take.student_id = @StudentID AND grade in ('F','FF'))
 GO
+
 -- OO)
 CREATE PROCEDURE Procedures_ChooseInstructor
 	 @StudentID int, 

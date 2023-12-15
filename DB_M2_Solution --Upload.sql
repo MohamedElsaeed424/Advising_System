@@ -73,9 +73,10 @@ primary key(plan_id, semester_code)
 create table Instructor (
 instructor_id int primary key,
 name varchar(40),
-email varchar(40), 
+email varchar(40) UNIQUE, 
 faculty varchar(40), 
 office varchar(40)
+Check(email LIKE '%@%.%')
 )
 --------------------------------Instructor_Course-----------------------------------
 create table Instructor_Course (
@@ -161,7 +162,7 @@ primary key(exam_id, student_id)
 create table Payment(
 payment_id int primary key,
 amount int,
-startdate datetime,
+start_date datetime,
 deadline datetime,
 n_installments int,
 fund_percentage decimal(10,2),
@@ -172,7 +173,7 @@ semester_code varchar(40) Foreign key references Semester(semester_code) on upda
 ----------------------------Installment-------------------------------------
 Create table Installment (
 payment_id int not null Foreign key references Payment(payment_id) on update cascade on delete cascade,
-startdate datetime,
+start_date datetime,
 deadline datetime not null,
 amount int,
 status varchar(40) default 'notPaid',

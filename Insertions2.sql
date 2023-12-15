@@ -241,6 +241,9 @@ SELECT * FROM Student
 SELECT * FROM Student_Instructor_Course_Take
 SELECT * FROM Advisor
 
+SELECT * FROM  FN_Advisors_Requests(8) WHERE status LIKE '%'
+INSERT INTO Request (type, comment, status, credit_hours, course_id, student_id, advisor_id) VALUES
+('credit_hours', 'PLEASE', 'pending', 2, null, 11, 8)
 SELECT * FROM Student_Phone
 
 SELECT * FROM Course_Semester
@@ -255,5 +258,6 @@ SELECT * FROM Semester
 SELECT * FROM Course
 SELECT * FROM Graduation_Plan
 
+SELECT dbo.FN_AdvisorLogin(student_id, 'password1') AS Success from Student
 
 update Student Set financial_status = 1 ;

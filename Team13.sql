@@ -1,4 +1,4 @@
-﻿--CREATE DATABASE Advising_Team_13---------------********************************
+﻿CREATE DATABASE Advising_Team_13---------------********************************
 USE Advising_Team_13
 GO
 
@@ -796,37 +796,43 @@ GO
 
 
 --L)
-CREATE PROC Procedures_AdminIssueInstallment @paymentID INT --mahmoud mabsoot
-AS
-IF @paymentID IS NULL OR EXISTS(SELECT * FROM Installment WHERE payment_id = @paymentID)
-BEGIN
-	PRINT 'INVALID INPUT'
-END
-ELSE
-BEGIN
-	DECLARE @num_instalments INT ,
-			@i INT ,
-			@date DATE ,
-			@start_date DATE ,
-			@end_date DATE ,
-			@amount INT
-	SELECT @amount = amount ,
-		   @start_date = start_date,
-		   @end_date = deadline
-	FROM Payment 
-	WHERE payment_id = @paymentID
-	SET @num_instalments = MONTH(@end_date) - MONTH(@start_date)
-	SET @amount = @amount / @num_instalments
-	SET @i = 0 
+CREATE PROC [Procedures_AdminIssueInstallment]
+@payment_id int
 
-	WHILE @i < @num_instalments
-	BEGIN
-		SET @end_date = DATEADD(MONTH, 1, @start_date)
-		INSERT INTO Installment VALUES(@paymentID ,@end_date ,@amount ,'notPaid',@start_date)
-		SET @start_date = DATEADD(MONTH, 1, @start_date)
-		SET @i = @i +1
-	END
-END
+As
+Declare 
+@payment_amount int,
+@startdate datetime,
+@deadline datetime,
+@num_of_installment int,
+
+@installment_amount int,
+@num_of_insertions int,
+@install_start_date date,
+@install_deadline date,
+@add_month int
+
+Select @payment_amount = amount from Payment where payment_id = @payment_id
+Select @startdate = payment.start_date from Payment where payment_id = @payment_id
+Select @deadline = deadline from Payment where payment_id = @payment_id
+Select @num_of_installment = n_installments from Payment where payment_id = @payment_id
+-------
+set @installment_amount = @payment_amount/ @num_of_installment
+set @num_of_insertions = @num_of_installment
+set @install_start_date =  @startdate
+set @add_month =1
+
+while @num_of_insertions > 0
+Begin
+
+Set @install_deadline = DATEADD(month, 1, @install_start_date)  
+
+insert into Installment values (@payment_id,@install_deadline,@installment_amount,'NotPaid', @install_start_date)
+
+set @install_start_date = DATEADD(month, 1, @install_start_date) --@install_start_date  +1 
+set @num_of_insertions = @num_of_insertions -1
+
+End 
 GO
 --M)
 CREATE PROC Procedures_AdminDeleteCourse @courseID INT

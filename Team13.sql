@@ -1359,6 +1359,8 @@ RETURN
 
 -- GG)
 GO
+SELECT * FROM FN_StudentViewGP(1) WHERE [advisor id] = 1
+GO
 CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)
 	RETURNS DATE 
 	AS

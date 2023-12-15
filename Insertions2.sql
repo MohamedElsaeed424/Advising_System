@@ -261,3 +261,4 @@ SELECT * FROM Graduation_Plan
 SELECT dbo.FN_AdvisorLogin(student_id, 'password1') AS Success from Student
 
 update Student Set financial_status = 1 ;
+SELECT * FROM Graduation_Plan WHERE advisor_id = 8

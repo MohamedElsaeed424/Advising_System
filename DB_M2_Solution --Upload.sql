@@ -1,4 +1,4 @@
-﻿--drop database Advising_system;
+﻿drop database Advising_system;
 Create Database Advising_System;
 go
 Use Advising_System
@@ -15,7 +15,7 @@ advisor_id int primary key identity,
 name varchar(40),
 email varchar(40) UNIQUE,
 office varchar(40),
-password varchar(40) not null
+password varchar(40) not null,
 Check(email LIKE '%@%.%')
 ) 
 -----------------------Student Table--------------------------------------
@@ -33,8 +33,8 @@ Check(email LIKE '%@%.%')
      semester int, 
      acquired_hours int, 
      assigned_hours int, 
-     advisor_id int Foreign key references Advisor(advisor_id) on update cascade on delete cascade
-     Check(email LIKE '%@%.%')
+     advisor_id int Foreign key references Advisor(advisor_id) on update cascade on delete cascade,
+     Check(email LIKE '%@%.%'),
      Check (gpa between 0.7 AND 5.0)
    )
  ---------------------------Student_Phone----------------------------------
@@ -75,7 +75,7 @@ instructor_id int primary key,
 name varchar(40),
 email varchar(40) UNIQUE, 
 faculty varchar(40), 
-office varchar(40)
+office varchar(40),
 Check(email LIKE '%@%.%')
 )
 --------------------------------Instructor_Course-----------------------------------
@@ -241,7 +241,7 @@ go
 -----------------------------graduation plans along with their initiated advisors-----------------------------------------------------
 
 CREATE  VIEW  Advisors_Graduation_Plan AS
-Select Graduation_Plan.*, Advisor.advisor_id as AdvisorID, Advisor.advisor_name
+Select Graduation_Plan.*, Advisor.advisor_id as AdvisorID, Advisor.name
 from Graduation_Plan inner join Advisor on Graduation_Plan.advisor_id = Advisor.advisor_id
 
 ------------------------------------------------------------------------------------
@@ -284,11 +284,11 @@ CREATE PROC [Procedures_AdvisorRegistration]
      @office varchar(20),
      @Advisor_id int OUTPUT
      AS 
-     insert into Advisor(advisor_name,password, email, office) 
+     insert into Advisor(name,password, email, office) 
      values (@advisor_name, @password, @email, @office)
     
     Select @Advisor_id =  advisor_id from Advisor 
-     where advisor_name = @advisor_name and
+     where name = @advisor_name and
      password = @password  and
      email = @email 
     
@@ -313,7 +313,7 @@ Select * from Advisor
 -----------------------List all Students with their Advisors--------------------------------------
 go
 Create Proc [AdminListStudentsWithAdvisors] AS
-Select Student.student_id, Student.f_name, Student.l_name, Advisor.advisor_id, Advisor.advisor_name
+Select Student.student_id, Student.f_name, Student.l_name, Advisor.advisor_id, Advisor.name
 from Student inner join Advisor on Student.advisor_id = Advisor.advisor_id
 go
 
@@ -474,7 +474,7 @@ Declare
 @add_month int
 
 Select @payment_amount = amount from Payment where payment_id = @payment_id
-Select @startdate = payment.startdate from Payment where payment_id = @payment_id
+Select @startdate = payment.start_date from Payment where payment_id = @payment_id
 Select @deadline = deadline from Payment where payment_id = @payment_id
 Select @num_of_installment = n_installments from Payment where payment_id = @payment_id
 -------
@@ -732,11 +732,11 @@ set student.assigned_hours = @new_studentCH
 where Student.student_id = @studentid
 
 select @paymentid = payment.payment_id from Payment where payment.student_id = @studentid and semester_code = @current_sem_code
-Select Top 1 @nextinstalldate =  Installment.startdate from Installment where installment.status = 'notPaid' order by Installment.startdate ASC 
+Select Top 1 @nextinstalldate =  Installment.start_date from Installment where installment.status = 'notPaid' order by Installment.start_date ASC 
 
 update installment
 set installment.amount = installment.amount + (1000*@requestCreditHours)
-where payment_id = @paymentid and Installment.startdate =@nextinstalldate
+where payment_id = @paymentid and Installment.start_date =@nextinstalldate
 
 update Payment
 set payment.amount = payment.amount + (1000*@requestCreditHours)

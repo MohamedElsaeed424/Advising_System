@@ -445,17 +445,18 @@ INSERT INTO Payment (amount, start_date,n_installments, status, fund_percentage,
 
 
 -- Adding 10 records to the Installment table
-INSERT INTO Installment (payment_id, start_date, amount, status, deadline) VALUES
-(1, '2023-11-22', 50, 'notPaid','2023-12-22'),
-(2, '2023-11-23', 70, 'notPaid','2023-12-23'),
-(3, '2023-12-24', 60, 'notPaid','2024-01-24'),
-( 4,'2023-11-25', 80, 'notPaid','2023-12-25'),
-(5, '2024-2-26', 55, 'notPaid','2024-3-26'),
-( 6,'2023-11-27', 90, 'notPaid','2023-12-06'),
-(7, '2023-10-28', 75, 'Paid','2023-11-28'),
-( 7,'2023-11-28', 62, 'Paid','2023-12-28'),
-( 9,'2023-12-30', 72, 'notPaid','2024-01-30'),
-( 10,'2023-11-30', 58, 'Paid','2023-12-30');
+--INSERT INTO Installment (payment_id, start_date, amount, status, deadline) VALUES
+--(1, '2023-11-22', 50, 'notPaid','2023-12-22'),
+--(2, '2023-11-23', 70, 'notPaid','2023-12-23'),
+--(3, '2023-12-24', 60, 'notPaid','2024-01-24'),
+--( 4,'2023-11-25', 80, 'notPaid','2023-12-25'),
+--(5, '2024-2-26', 55, 'notPaid','2024-3-26'),
+--( 6,'2023-11-27', 90, 'notPaid','2023-12-06'),
+--(7, '2023-10-28', 75, 'Paid','2023-11-28'),
+--( 7,'2023-11-28', 62, 'Paid','2023-12-28'),
+--( 9,'2023-12-30', 72, 'notPaid','2024-01-30'),
+--( 10,'2023-11-30', 58, 'Paid','2023-12-30');
+--Truncate table Installment
 
 GO
 --3)

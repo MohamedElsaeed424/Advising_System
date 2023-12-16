@@ -1488,38 +1488,34 @@ END;
 
 -- KK)
 GO
-CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
-	@StudentID int, 
-	@courseID int, 
-	@Student_Current_Semester Varchar (40)
-	AS
-	DECLARE @IS_SecoundMakeup_Eligible BIT 
-	SET @IS_SecoundMakeup_Eligible = dbo.FN_StudentCheckSMEligiability(@courseID,@StudentID  )
+Create PROC [Procedures_StudentRegisterSecondMakeup]
+@StudentID int, @courseID int, @Student_Current_Semester varchar(40)
+AS
+declare 
+@exam_id int,
+@instructor_id int
+if dbo.FN_StudentCheckSMEligibility(@StudentID, @courseID) = 0
+    Print 'Your are not eligible to take 2nd makeup'
 
-	IF @IS_SecoundMakeup_Eligible = 0
-		BEGIN PRINT('YOU CANT REGISTER FOR THE SECOUND MAKEUP ') END
-	ELSE
-		BEGIN
-
-			IF @Student_Current_Semester IN (SELECT semester_code
+else
+begin
+    IF @Student_Current_Semester IN (SELECT semester_code
 			FROM Student_Instructor_Course_Take
 			WHERE student_id = @StudentID AND
 				  exam_type = 'First_makeup' AND
-				  course_id = @courseID     ) 
-			BEGIN PRINT('YOU CANT TAKE TWO MAKEUPS IN THE SAME SEMESTER') END
-			ELSE
-			BEGIN
-				UPDATE Student_Instructor_Course_Take
-			SET exam_type = 'Second_makeup' ,
-				grade = NULL
-			WHERE semester_code = @Student_Current_Semester AND
-				  student_id = @StudentID AND
-				  course_id = @courseID AND 
-				  exam_type = 'First_makeup'
-			END
-		
-		END	
---------------------------------------------------Courses Procedures---------------------------------------------------------------------------
+				  course_id = @courseID     )
+    BEGIN
+        Select @exam_id = MakeUp_Exam.exam_id from MakeUp_Exam where MakeUp_Exam.course_id = @courseID
+        Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take 
+        where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID
+        insert into Exam_Student values (@exam_id, @StudentID, @courseID)
+        Update Student_Instructor_Course_take 
+        Set exam_type = 'Second_makeup' , grade= null
+        where  student_id = @StudentID and course_id = @courseID and
+         semester_code = @Student_Current_Semester
+    END
+end
+Go--------------------------------------------------Courses Procedures---------------------------------------------------------------------------
 -- LL) 
 GO
 Create PROC [Procedures_ViewRequiredCourses]

@@ -1168,18 +1168,25 @@ declare
 @exam_id int,
 @instructor_id int
 if dbo.FN_StudentCheckSMEligibility(@StudentID, @courseID) = 0
-Print 'Your are not eligible to take 2nd makeup'
+    Print 'Your are not eligible to take 2nd makeup'
 
 else
 begin
-Select @exam_id = MakeUp_Exam.exam_id from MakeUp_Exam where MakeUp_Exam.course_id = @courseID
-Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take 
-where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID
-insert into Exam_Student values (@exam_id, @StudentID, @courseID)
-Update Student_Instructor_Course_take 
-Set exam_type = 'Second_makeup' , grade= null
-where  student_id = @StudentID and course_id = @courseID and
- semester_code = @Student_Current_Semester
+    IF @Student_Current_Semester IN (SELECT semester_code
+			FROM Student_Instructor_Course_Take
+			WHERE student_id = @StudentID AND
+				  exam_type = 'First_makeup' AND
+				  course_id = @courseID     )
+    BEGIN
+        Select @exam_id = MakeUp_Exam.exam_id from MakeUp_Exam where MakeUp_Exam.course_id = @courseID
+        Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take 
+        where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID
+        insert into Exam_Student values (@exam_id, @StudentID, @courseID)
+        Update Student_Instructor_Course_take 
+        Set exam_type = 'Second_makeup' , grade= null
+        where  student_id = @StudentID and course_id = @courseID and
+         semester_code = @Student_Current_Semester
+    END
 end
 Go
 

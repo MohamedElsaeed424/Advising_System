@@ -1,5 +1,6 @@
 ﻿--Drop Database Advising_Team_13
-CREATE DATABASE Advising_Team_13---------------********************************
+CREATE DATABASE Advising_Team_13
+GO---------------********************************
 USE Advising_Team_13
 GO
 
@@ -972,7 +973,7 @@ ELSE
 	END
 GO
 --S)
-CREATE PROC Procedures_AdvisorAddCourseGP 
+CREATE PROC   
 	 @student_Id INT
 	,@Semester_code VARCHAR(40)
 	,@course_name VARCHAR(40)
@@ -1695,6 +1696,7 @@ CREATE PROCEDURE Procedures_ChooseInstructor
 	 SET instructor_id = @InstructorID
 	 WHERE student_id =@StudentID AND course_id = @CourseID AND semester_code = @current_semester_code
 GO
+Select * from Student_Instructor_Course_Take t INNER JOIN Course c on c.course_id = t.course_id
 ----------------------------------------------------------------------------*************
 EXEC Procedure_AdminUpdateStudentStatus 
 @StudentID =1

@@ -1,4 +1,4 @@
-﻿drop database Advising_system;
+﻿--drop database Advising_system;
 Create Database Advising_System;
 go
 Use Advising_System

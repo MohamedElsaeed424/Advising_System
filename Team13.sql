@@ -880,9 +880,6 @@ BEGIN
 	WHERE course_id = @courseID;
 END
 GO
-EXEC Procedures_AdminDeleteCourse @courseID=2
-Drop PROC Procedures_AdminDeleteCourse
-GO
 --N) moved before the Tables creation 
 --O)
 Create View all_Pending_Requests As

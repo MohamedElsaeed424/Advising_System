@@ -1409,51 +1409,32 @@ RETURN
 
 GO
 --II) what is the date of first or secound makeup
-CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
-	@StudentID int, 
-	@courseID int, 
-	@studentCurrentsemester varchar (40)
-	AS
-	DECLARE @InstructorID INT ,
-			@Grade_Normal_Exam VARCHAR(40) ,
-			@IF_course_firstMakeup INT
+Create PROC [Procedures_StudentRegisterFirstMakeup]
+@StudentID int, @courseID int, @studentCurrentsemester varchar(40)
+AS
+declare 
+@exam_id int,
+@instructor_id int
 
-		SELECT @IF_course_firstMakeup=COUNT(*)
-		FROM  Student_Instructor_Course_Take 
-		WHERE course_id = @CourseID AND
-			  student_id = @StudentID AND
-			  semester_code = @studentCurrentsemester AND
-			  exam_type LIKE '%makeup%'
-		IF @IF_course_firstMakeup <> 0
-			BEGIN PRINT ('YOU CANT REGISTER FOR THE FIRST MAKEUP YOU REGISTERED BEFOR FOR A MAKEUP EXAM') END
-		ELSE 
-			BEGIN
-				SELECT @Grade_Normal_Exam = grade 
-				FROM Student_Instructor_Course_Take
-				WHERE student_id = @StudentID AND
-					  course_id = @courseID AND
-					  exam_type = 'Normal' AND
-					  semester_code = @studentCurrentsemester 
-				IF @Grade_Normal_Exam <> 'FF' OR @Grade_Normal_Exam <> 'F' OR @Grade_Normal_Exam <> 'NULL'
-					BEGIN PRINT('YOUR GRADE NOT FF OR F TO REGISTER ON THIS EXAM') END
-				ELSE
-					BEGIN
-						Declare @nextSemester VARCHAR(40)
-						SET @nextSemester =  (SELECT TOP 1 semester_code
-											FROM Semester Where semester_code <> @studentCurrentsemester AND 
-											start_date >= (SELECT end_date FROM Semester WHERE semester_code=@studentCurrentsemester)
-											ORDER BY start_date ASC)
-						SELECT  @InstructorID = instructor_id 
-						FROM Student_Instructor_Course_Take
-						WHERE course_id = @courseID  AND
-							  student_id = @StudentID
-			
-						INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
-							   VALUES (@StudentID ,@CourseID , @InstructorID ,@nextSemester , 'First_makeup' ,  NULL ) ;
-					END
-			END
--- JJ) 
+
+If(not exists( Select * from Student_Instructor_Course_take where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id
+= @courseID and Student_Instructor_Course_take.exam_type in ('First_makeup','Second_makeup')))
+begin 
+    If(exists(Select * from Student_Instructor_Course_take where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id
+    = @courseID  and Student_Instructor_Course_take.exam_type = 'Normal' and Student_Instructor_Course_take.grade in ('F','FF',null)))
+    begin 
+        Select @exam_id = MakeUp_Exam.exam_id from MakeUp_Exam where MakeUp_Exam.course_id = @courseID
+        Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take 
+        where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID 
+        insert into Exam_Student values (@exam_id, @StudentID, @courseID)
+        Update Student_Instructor_Course_take 
+        Set exam_type = 'first_makeup' , grade= null
+        where  student_id = @StudentID and course_id = @courseID and
+         semester_code = @studentCurrentsemester
+    end
+end
 GO
+-- JJ) 
 CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
 	RETURNS BIT 
 	AS

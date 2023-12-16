@@ -93,7 +93,7 @@ CREATE PROCEDURE CreateAllTables AS
 	prerequisite_course_id  INT ,
 	course_id               INT NOT NULL ,
 	CONSTRAINT PK_PreqCourse_course PRIMARY KEY (prerequisite_course_id, course_id),
-	CONSTRAINT FK_PreqCourse_course FOREIGN KEY (prerequisite_course_id ) REFERENCES Course (course_id ) ON DELETE CASCADE ,
+	CONSTRAINT FK_PreqCourse_course FOREIGN KEY (prerequisite_course_id ) REFERENCES Course (course_id ), --ON DELETE CASCADE ,
 	CONSTRAINT FK_PreqCourse_course2 FOREIGN KEY (course_id ) REFERENCES Course (course_id)  --ON DELETE CASCADE
 	);
 
@@ -134,8 +134,8 @@ CREATE PROCEDURE CreateAllTables AS
 	location          VARCHAR(40), 
 	course_id         INT , 
 	instructor_id     INT,
-	CONSTRAINT FK_course4 FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE SET NULL,
-	CONSTRAINT FK_instructor3 FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) ON DELETE SET NULL
+	CONSTRAINT FK_course4 FOREIGN KEY (course_id) REFERENCES Course (course_id), --ON DELETE SET NULL,
+	CONSTRAINT FK_instructor3 FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) --ON DELETE SET NULL
 	);
 
 	CREATE TABLE Graduation_Plan (
@@ -848,25 +848,38 @@ BEGIN
 	WHERE course_id = @courseID;
 
 	DELETE
-	FROM GradPlan_Course
+	FROM Instructor_Course
 	Where course_id = @courseID;
 	DELETE
-	FROM Instructor_Course
-	Where course_id = @courseID;	
-	DELETE
-	FROM PreqCourse_course
+	FROM Student_Instructor_Course_Take
 	Where course_id = @courseID;
 	DELETE
 	FROM Course_Semester
 	Where course_id = @courseID;
 	DELETE
-	FROM Exam_Student
+	FROM Request
 	Where course_id = @courseID;
+	
+	DELETE
+	FROM Exam_Student
+	Where course_id = @courseID OR exam_id in (Select exam_id from MakeUp_Exam where course_id = @courseID);
+	DELETE
+	FROM MakeUp_Exam
+	Where course_id = @courseID;
+	DELETE
+	FROM GradPlan_Course
+	Where course_id = @courseID;
+	DELETE
+	FROM PreqCourse_course
+	Where course_id = @courseID OR prerequisite_course_id = @courseID;
 
 	DELETE
 	FROM Course
 	WHERE course_id = @courseID;
 END
+GO
+EXEC Procedures_AdminDeleteCourse @courseID=2
+Drop PROC Procedures_AdminDeleteCourse
 GO
 --N) moved before the Tables creation 
 --O)
@@ -874,7 +887,8 @@ Create View all_Pending_Requests As
 	Select * from Request where status = 'Pending';
 GO
 --P)
-CREATE PROC Procedures_AdminDeleteSlots @current_semester VARCHAR(40)
+CREATE PROC Procedures_AdminDeleteSlots 
+@current_semester VARCHAR(40)
 AS
 IF @current_semester IS NULL
 BEGIN
@@ -1346,12 +1360,12 @@ RETURN
 		S.student_id                    AS 'Student Id',
 		CONCAT(S.f_name, ' ', S.l_name) AS 'Student_name', 
 		GP.plan_id                      AS 'graduation Plan Id', 
-		c.course_id                     AS 'Course id',
-		c.name                          AS 'Course name', 
 		GP.semester_code                AS 'Semester code', 
 		GP.expected_grad_date           AS 'expected graduation date',
 		GP.semester_credit_hours        AS 'Semester credit hours', 
-		GP.advisor_id                   AS 'advisor id'
+		GP.advisor_id                   AS 'advisor id',
+		c.course_id                     AS 'Course id',
+		c.name                          AS 'Course name'
     FROM (Student S INNER JOIN Graduation_Plan GP ON S.student_id = GP.student_id
 					INNER JOIN GradPlan_Course GPC ON (GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code ) )
 					INNER JOIN Course c ON GPC.course_id = c.course_id

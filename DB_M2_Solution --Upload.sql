@@ -509,10 +509,39 @@ CREATE PROC [Procedures_AdminDeleteCourse]
 @courseID int
 
 As
-Delete from Course where course_id = @courseID
-update Slot 
-set course_id = null
-where course_id = @courseId
+    UPDATE Slot
+	SET course_id = NULL
+	WHERE course_id = @courseID;
+
+	DELETE
+	FROM Instructor_Course
+	Where course_id = @courseID;
+	DELETE
+	FROM Student_Instructor_Course_Take
+	Where course_id = @courseID;
+	DELETE
+	FROM Course_Semester
+	Where course_id = @courseID;
+	DELETE
+	FROM Request
+	Where course_id = @courseID;
+	
+	DELETE
+	FROM Exam_Student
+	Where course_id = @courseID OR exam_id in (Select exam_id from MakeUp_Exam where course_id = @courseID);
+	DELETE
+	FROM MakeUp_Exam
+	Where course_id = @courseID;
+	DELETE
+	FROM GradPlan_Course
+	Where course_id = @courseID;
+	DELETE
+	FROM PreqCourse_course
+	Where course_id = @courseID OR prerequisite_course_id = @courseID;
+
+	DELETE
+	FROM Course
+	WHERE course_id = @courseID;
 
 Go
 EXEC Procedures_AdminDeleteCourse @courseID=1

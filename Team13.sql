@@ -1,4 +1,5 @@
-﻿CREATE DATABASE Advising_Team_13---------------********************************
+﻿--Drop Database Advising_Team_13
+CREATE DATABASE Advising_Team_13---------------********************************
 USE Advising_Team_13
 GO
 
@@ -759,7 +760,8 @@ IF @cours_id IS NULL or @instructor_id IS NULL or @studentID IS NULL or @semeste
 
 Else
 insert into Student_Instructor_Course_take ( instructor_id, course_id,student_id, semester_code) values (@instructor_id,@cours_id,@studentID,@semester_code) 
-
+go
+EXEC AdminListStudentsWithAdvisors
 Go
 --J)
 CREATE PROC [Procedures_AdminLinkStudentToAdvisor]
@@ -1569,30 +1571,6 @@ where Student_Instructor_Course_take.student_id = @StudentID
 from Student_Instructor_Course_take
 where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.grade = 'FA' ))
 go
-CREATE FUNCTION [FN_StudentFailedAndNotEligibleCourse]
-     (@StudentID int, @current_semester_code varchar(40))
-   RETURNs table
-   AS
-   RETURN ( select Student_Instructor_Course_take.course_id
-    from Student_Instructor_Course_take inner join Course_Semester on Student_Instructor_Course_take.course_id = Course_Semester.course_id
-    where Student_Instructor_Course_take.student_id = @StudentID and 
-    Student_Instructor_Course_take.grade in ('F','FF') and
-    dbo.FN_StudentCheckSMEligibility(@StudentID,Student_Instructor_Course_take .course_id) = 0 
-    and Course_Semester.semester_code = @current_semester_code
-    )
-go
-CREATE FUNCTION [FN_SemesterCodeCheck]
-     (@SemesterCode varchar(40))
-   RETURNs varchar(40)
-   begin
-   declare @output varchar(40)
-if @SemesterCode like '%R1%' or  @SemesterCode like '%W%'
-set @output = 'Odd'
-else 
-set @output =  'Even'
-return @output
-end
-go
 CREATE FUNCTION [FN_StudentCheckSMEligibility]
      (@CourseID int, @StudentID int)
    RETURNs bit
@@ -1641,6 +1619,31 @@ set @eligable = 0
 
 return @eligable
 END
+go
+CREATE FUNCTION [FN_StudentFailedAndNotEligibleCourse]
+     (@StudentID int, @current_semester_code varchar(40))
+   RETURNs table
+   AS
+   RETURN ( select Student_Instructor_Course_take.course_id
+    from Student_Instructor_Course_take inner join Course_Semester on Student_Instructor_Course_take.course_id = Course_Semester.course_id
+    where Student_Instructor_Course_take.student_id = @StudentID and 
+    Student_Instructor_Course_take.grade in ('F','FF') and
+    dbo.FN_StudentCheckSMEligibility(@StudentID,Student_Instructor_Course_take .course_id) = 0 
+    and Course_Semester.semester_code = @current_semester_code
+    )
+go
+CREATE FUNCTION [FN_SemesterCodeCheck]
+     (@SemesterCode varchar(40))
+   RETURNs varchar(40)
+   begin
+   declare @output varchar(40)
+if @SemesterCode like '%R1%' or  @SemesterCode like '%W%'
+set @output = 'Odd'
+else 
+set @output =  'Even'
+return @output
+end
+
 go
 -- MM) Check again
 Create PROC [Procedures_ViewOptionalCourse]

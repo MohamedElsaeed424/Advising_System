@@ -1,4 +1,5 @@
-﻿CREATE DATABASE Advising_Team_13---------------********************************
+﻿--Drop Database Advising_Team_13
+CREATE DATABASE Advising_Team_13---------------********************************
 USE Advising_Team_13
 GO
 
@@ -93,7 +94,7 @@ CREATE PROCEDURE CreateAllTables AS
 	prerequisite_course_id  INT ,
 	course_id               INT NOT NULL ,
 	CONSTRAINT PK_PreqCourse_course PRIMARY KEY (prerequisite_course_id, course_id),
-	CONSTRAINT FK_PreqCourse_course FOREIGN KEY (prerequisite_course_id ) REFERENCES Course (course_id ) ON DELETE CASCADE ,
+	CONSTRAINT FK_PreqCourse_course FOREIGN KEY (prerequisite_course_id ) REFERENCES Course (course_id ), --ON DELETE CASCADE ,
 	CONSTRAINT FK_PreqCourse_course2 FOREIGN KEY (course_id ) REFERENCES Course (course_id)  --ON DELETE CASCADE
 	);
 
@@ -134,8 +135,8 @@ CREATE PROCEDURE CreateAllTables AS
 	location          VARCHAR(40), 
 	course_id         INT , 
 	instructor_id     INT,
-	CONSTRAINT FK_course4 FOREIGN KEY (course_id) REFERENCES Course (course_id) ON DELETE SET NULL,
-	CONSTRAINT FK_instructor3 FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) ON DELETE SET NULL
+	CONSTRAINT FK_course4 FOREIGN KEY (course_id) REFERENCES Course (course_id), --ON DELETE SET NULL,
+	CONSTRAINT FK_instructor3 FOREIGN KEY (instructor_id) REFERENCES Instructor (instructor_id) --ON DELETE SET NULL
 	);
 
 	CREATE TABLE Graduation_Plan (
@@ -444,17 +445,18 @@ INSERT INTO Payment (amount, start_date,n_installments, status, fund_percentage,
 
 
 -- Adding 10 records to the Installment table
-INSERT INTO Installment (payment_id, start_date, amount, status, deadline) VALUES
-(1, '2023-11-22', 50, 'notPaid','2023-12-22'),
-(2, '2023-11-23', 70, 'notPaid','2023-12-23'),
-(3, '2023-12-24', 60, 'notPaid','2024-01-24'),
-( 4,'2023-11-25', 80, 'notPaid','2023-12-25'),
-(5, '2024-2-26', 55, 'notPaid','2024-3-26'),
-( 6,'2023-11-27', 90, 'notPaid','2023-12-06'),
-(7, '2023-10-28', 75, 'Paid','2023-11-28'),
-( 7,'2023-11-28', 62, 'Paid','2023-12-28'),
-( 9,'2023-12-30', 72, 'notPaid','2024-01-30'),
-( 10,'2023-11-30', 58, 'Paid','2023-12-30');
+--INSERT INTO Installment (payment_id, start_date, amount, status, deadline) VALUES
+--(1, '2023-11-22', 50, 'notPaid','2023-12-22'),
+--(2, '2023-11-23', 70, 'notPaid','2023-12-23'),
+--(3, '2023-12-24', 60, 'notPaid','2024-01-24'),
+--( 4,'2023-11-25', 80, 'notPaid','2023-12-25'),
+--(5, '2024-2-26', 55, 'notPaid','2024-3-26'),
+--( 6,'2023-11-27', 90, 'notPaid','2023-12-06'),
+--(7, '2023-10-28', 75, 'Paid','2023-11-28'),
+--( 7,'2023-11-28', 62, 'Paid','2023-12-28'),
+--( 9,'2023-12-30', 72, 'notPaid','2024-01-30'),
+--( 10,'2023-11-30', 58, 'Paid','2023-12-30');
+--Truncate table Installment
 
 GO
 --3)
@@ -759,7 +761,8 @@ IF @cours_id IS NULL or @instructor_id IS NULL or @studentID IS NULL or @semeste
 
 Else
 insert into Student_Instructor_Course_take ( instructor_id, course_id,student_id, semester_code) values (@instructor_id,@cours_id,@studentID,@semester_code) 
-
+go
+EXEC AdminListStudentsWithAdvisors
 Go
 --J)
 CREATE PROC [Procedures_AdminLinkStudentToAdvisor]
@@ -848,20 +851,30 @@ BEGIN
 	WHERE course_id = @courseID;
 
 	DELETE
-	FROM GradPlan_Course
+	FROM Instructor_Course
 	Where course_id = @courseID;
 	DELETE
-	FROM Instructor_Course
-	Where course_id = @courseID;	
-	DELETE
-	FROM PreqCourse_course
+	FROM Student_Instructor_Course_Take
 	Where course_id = @courseID;
 	DELETE
 	FROM Course_Semester
 	Where course_id = @courseID;
 	DELETE
-	FROM Exam_Student
+	FROM Request
 	Where course_id = @courseID;
+	
+	DELETE
+	FROM Exam_Student
+	Where course_id = @courseID OR exam_id in (Select exam_id from MakeUp_Exam where course_id = @courseID);
+	DELETE
+	FROM MakeUp_Exam
+	Where course_id = @courseID;
+	DELETE
+	FROM GradPlan_Course
+	Where course_id = @courseID;
+	DELETE
+	FROM PreqCourse_course
+	Where course_id = @courseID OR prerequisite_course_id = @courseID;
 
 	DELETE
 	FROM Course
@@ -874,7 +887,8 @@ Create View all_Pending_Requests As
 	Select * from Request where status = 'Pending';
 GO
 --P)
-CREATE PROC Procedures_AdminDeleteSlots @current_semester VARCHAR(40)
+CREATE PROC Procedures_AdminDeleteSlots 
+@current_semester VARCHAR(40)
 AS
 IF @current_semester IS NULL
 BEGIN
@@ -1346,18 +1360,20 @@ RETURN
 		S.student_id                    AS 'Student Id',
 		CONCAT(S.f_name, ' ', S.l_name) AS 'Student_name', 
 		GP.plan_id                      AS 'graduation Plan Id', 
-		c.course_id                     AS 'Course id',
-		c.name                          AS 'Course name', 
 		GP.semester_code                AS 'Semester code', 
 		GP.expected_grad_date           AS 'expected graduation date',
 		GP.semester_credit_hours        AS 'Semester credit hours', 
-		GP.advisor_id                   AS 'advisor id'
+		GP.advisor_id                   AS 'advisor id',
+		c.course_id                     AS 'Course id',
+		c.name                          AS 'Course name'
     FROM (Student S INNER JOIN Graduation_Plan GP ON S.student_id = GP.student_id
 					INNER JOIN GradPlan_Course GPC ON (GP.plan_id = GPC.plan_id AND GP.semester_code = GPC.semester_code ) )
 					INNER JOIN Course c ON GPC.course_id = c.course_id
 	WHERE S.student_id = @student_ID
 
 -- GG)
+GO
+SELECT * FROM FN_StudentViewGP(1) WHERE [advisor id] = 1
 GO
 CREATE FUNCTION FN_StudentUpcoming_installment (@StudentID INT)
 	RETURNS DATE 
@@ -1393,51 +1409,32 @@ RETURN
 
 GO
 --II) what is the date of first or secound makeup
-CREATE PROCEDURE   Procedures_StudentRegisterFirstMakeup
-	@StudentID int, 
-	@courseID int, 
-	@studentCurrentsemester varchar (40)
-	AS
-	DECLARE @InstructorID INT ,
-			@Grade_Normal_Exam VARCHAR(40) ,
-			@IF_course_firstMakeup INT
+Create PROC [Procedures_StudentRegisterFirstMakeup]
+@StudentID int, @courseID int, @studentCurrentsemester varchar(40)
+AS
+declare 
+@exam_id int,
+@instructor_id int
 
-		SELECT @IF_course_firstMakeup=COUNT(*)
-		FROM  Student_Instructor_Course_Take 
-		WHERE course_id = @CourseID AND
-			  student_id = @StudentID AND
-			  semester_code = @studentCurrentsemester AND
-			  exam_type LIKE '%makeup%'
-		IF @IF_course_firstMakeup <> 0
-			BEGIN PRINT ('YOU CANT REGISTER FOR THE FIRST MAKEUP YOU REGISTERED BEFOR FOR A MAKEUP EXAM') END
-		ELSE 
-			BEGIN
-				SELECT @Grade_Normal_Exam = grade 
-				FROM Student_Instructor_Course_Take
-				WHERE student_id = @StudentID AND
-					  course_id = @courseID AND
-					  exam_type = 'Normal' AND
-					  semester_code = @studentCurrentsemester 
-				IF @Grade_Normal_Exam <> 'FF' OR @Grade_Normal_Exam <> 'F' OR @Grade_Normal_Exam <> 'NULL'
-					BEGIN PRINT('YOUR GRADE NOT FF OR F TO REGISTER ON THIS EXAM') END
-				ELSE
-					BEGIN
-						Declare @nextSemester VARCHAR(40)
-						SET @nextSemester =  (SELECT TOP 1 semester_code
-											FROM Semester Where semester_code <> @studentCurrentsemester AND 
-											start_date >= (SELECT end_date FROM Semester WHERE semester_code=@studentCurrentsemester)
-											ORDER BY start_date ASC)
-						SELECT  @InstructorID = instructor_id 
-						FROM Student_Instructor_Course_Take
-						WHERE course_id = @courseID  AND
-							  student_id = @StudentID
-			
-						INSERT INTO Student_Instructor_Course_Take (student_id ,course_id ,instructor_id ,semester_code ,exam_type ,grade) 
-							   VALUES (@StudentID ,@CourseID , @InstructorID ,@nextSemester , 'First_makeup' ,  NULL ) ;
-					END
-			END
--- JJ) 
+
+If(not exists( Select * from Student_Instructor_Course_take where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id
+= @courseID and Student_Instructor_Course_take.exam_type in ('First_makeup','Second_makeup')))
+begin 
+    If(exists(Select * from Student_Instructor_Course_take where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id
+    = @courseID  and Student_Instructor_Course_take.exam_type = 'Normal' and Student_Instructor_Course_take.grade in ('F','FF',null)))
+    begin 
+        Select @exam_id = MakeUp_Exam.exam_id from MakeUp_Exam where MakeUp_Exam.course_id = @courseID
+        Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take 
+        where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID 
+        insert into Exam_Student values (@exam_id, @StudentID, @courseID)
+        Update Student_Instructor_Course_take 
+        Set exam_type = 'first_makeup' , grade= null
+        where  student_id = @StudentID and course_id = @courseID and
+         semester_code = @studentCurrentsemester
+    end
+end
 GO
+-- JJ) 
 CREATE FUNCTION  FN_StudentCheckSMEligiability (@CourseID INT, @StudentID INT)
 	RETURNS BIT 
 	AS
@@ -1491,38 +1488,34 @@ END;
 
 -- KK)
 GO
-CREATE PROCEDURE  Procedures_StudentRegisterSecondMakeup
-	@StudentID int, 
-	@courseID int, 
-	@Student_Current_Semester Varchar (40)
-	AS
-	DECLARE @IS_SecoundMakeup_Eligible BIT 
-	SET @IS_SecoundMakeup_Eligible = dbo.FN_StudentCheckSMEligiability(@courseID,@StudentID  )
+Create PROC [Procedures_StudentRegisterSecondMakeup]
+@StudentID int, @courseID int, @Student_Current_Semester varchar(40)
+AS
+declare 
+@exam_id int,
+@instructor_id int
+if dbo.FN_StudentCheckSMEligibility(@StudentID, @courseID) = 0
+    Print 'Your are not eligible to take 2nd makeup'
 
-	IF @IS_SecoundMakeup_Eligible = 0
-		BEGIN PRINT('YOU CANT REGISTER FOR THE SECOUND MAKEUP ') END
-	ELSE
-		BEGIN
-
-			IF @Student_Current_Semester IN (SELECT semester_code
+else
+begin
+    IF @Student_Current_Semester IN (SELECT semester_code
 			FROM Student_Instructor_Course_Take
 			WHERE student_id = @StudentID AND
 				  exam_type = 'First_makeup' AND
-				  course_id = @courseID     ) 
-			BEGIN PRINT('YOU CANT TAKE TWO MAKEUPS IN THE SAME SEMESTER') END
-			ELSE
-			BEGIN
-				UPDATE Student_Instructor_Course_Take
-			SET exam_type = 'Second_makeup' ,
-				grade = NULL
-			WHERE semester_code = @Student_Current_Semester AND
-				  student_id = @StudentID AND
-				  course_id = @courseID AND 
-				  exam_type = 'First_makeup'
-			END
-		
-		END	
---------------------------------------------------Courses Procedures---------------------------------------------------------------------------
+				  course_id = @courseID     )
+    BEGIN
+        Select @exam_id = MakeUp_Exam.exam_id from MakeUp_Exam where MakeUp_Exam.course_id = @courseID
+        Select @instructor_id = Student_Instructor_Course_take.instructor_id from Student_Instructor_Course_take 
+        where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.course_id = @courseID
+        insert into Exam_Student values (@exam_id, @StudentID, @courseID)
+        Update Student_Instructor_Course_take 
+        Set exam_type = 'Second_makeup' , grade= null
+        where  student_id = @StudentID and course_id = @courseID and
+         semester_code = @Student_Current_Semester
+    END
+end
+Go--------------------------------------------------Courses Procedures---------------------------------------------------------------------------
 -- LL) 
 GO
 Create PROC [Procedures_ViewRequiredCourses]
@@ -1552,30 +1545,6 @@ where Student_Instructor_Course_take.student_id = @StudentID
    In (select Student_Instructor_Course_take.course_id
 from Student_Instructor_Course_take
 where Student_Instructor_Course_take.student_id = @StudentID and Student_Instructor_Course_take.grade = 'FA' ))
-go
-CREATE FUNCTION [FN_StudentFailedAndNotEligibleCourse]
-     (@StudentID int, @current_semester_code varchar(40))
-   RETURNs table
-   AS
-   RETURN ( select Student_Instructor_Course_take.course_id
-    from Student_Instructor_Course_take inner join Course_Semester on Student_Instructor_Course_take.course_id = Course_Semester.course_id
-    where Student_Instructor_Course_take.student_id = @StudentID and 
-    Student_Instructor_Course_take.grade in ('F','FF') and
-    dbo.FN_StudentCheckSMEligibility(@StudentID,Student_Instructor_Course_take .course_id) = 0 
-    and Course_Semester.semester_code = @current_semester_code
-    )
-go
-CREATE FUNCTION [FN_SemesterCodeCheck]
-     (@SemesterCode varchar(40))
-   RETURNs varchar(40)
-   begin
-   declare @output varchar(40)
-if @SemesterCode like '%R1%' or  @SemesterCode like '%W%'
-set @output = 'Odd'
-else 
-set @output =  'Even'
-return @output
-end
 go
 CREATE FUNCTION [FN_StudentCheckSMEligibility]
      (@CourseID int, @StudentID int)
@@ -1625,6 +1594,31 @@ set @eligable = 0
 
 return @eligable
 END
+go
+CREATE FUNCTION [FN_StudentFailedAndNotEligibleCourse]
+     (@StudentID int, @current_semester_code varchar(40))
+   RETURNs table
+   AS
+   RETURN ( select Student_Instructor_Course_take.course_id
+    from Student_Instructor_Course_take inner join Course_Semester on Student_Instructor_Course_take.course_id = Course_Semester.course_id
+    where Student_Instructor_Course_take.student_id = @StudentID and 
+    Student_Instructor_Course_take.grade in ('F','FF') and
+    dbo.FN_StudentCheckSMEligibility(@StudentID,Student_Instructor_Course_take .course_id) = 0 
+    and Course_Semester.semester_code = @current_semester_code
+    )
+go
+CREATE FUNCTION [FN_SemesterCodeCheck]
+     (@SemesterCode varchar(40))
+   RETURNs varchar(40)
+   begin
+   declare @output varchar(40)
+if @SemesterCode like '%R1%' or  @SemesterCode like '%W%'
+set @output = 'Odd'
+else 
+set @output =  'Even'
+return @output
+end
+
 go
 -- MM) Check again
 Create PROC [Procedures_ViewOptionalCourse]

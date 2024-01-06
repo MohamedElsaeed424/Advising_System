@@ -62,6 +62,8 @@ INSERT INTO Student (f_name, l_name, GPA,major , email,faculty, password, semest
 ( 'Daniel', 'Wilson', 3.3, 'IET', 'daniel.wilson@example.com', 'DMET', 'passwordpqr', 9, 87, 34, 9),
 ( 'Olivia', 'Anderson', 3.7, 'BI', 'olivia.anderson@example.com', 'Mechatronics', 'passwordstu', 10, 89, 34, 10),
 ( 'Mohamed', 'Elsaeed', 3.7, 'MET', 'coco.anderson@example.com', 'MET', 'passwordstu', 10, 89, 34, 10);
+INSERT INTO Student (f_name, l_name, GPA,major , email,faculty, password, semester, acquired_hours, assigned_hours, advisor_id)   VALUES
+( 'Mohamed2', 'Elsaeed', 3.7, 'MET', 'mohamed.smenshawy@gmail.com', 'MET', 'passwordstu', 10, 89, 34, 10);
 
 -- Adding 10 records to the Student_Phone table
 INSERT INTO Student_Phone(student_id, phone_number) VALUES
@@ -245,7 +247,6 @@ SELECT * FROM  FN_Advisors_Requests(8) WHERE status LIKE '%'
 INSERT INTO Request (type, comment, status, credit_hours, course_id, student_id, advisor_id) VALUES
 ('credit_hours', 'PLEASE', 'pending', 2, null, 11, 8)
 SELECT * FROM Student_Phone
-
 SELECT * FROM Course_Semester
 
 

@@ -1260,7 +1260,11 @@ CREATE PROC Procedures_StudentSendingCHRequest
 	END
 	ELSE
 	BEGIN
-		INSERT INTO request (student_id, credit_hours, type, comment) values (@StudentID ,@credit_hours ,@type ,@comment) 
+	declare
+	@advisorID int
+
+	Select @advisorID = Student.advisor_id from student where Student.student_id = @StudentID
+		INSERT INTO request (student_id, credit_hours, type, comment, advisor_id) values (@StudentID ,@credit_hours ,@type ,@comment, @advisorID) 
 	END
 	GO
 

@@ -261,4 +261,15 @@ SELECT * FROM Graduation_Plan
 SELECT dbo.FN_AdvisorLogin(student_id, 'password1') AS Success from Student
 
 update Student Set financial_status = 1 ;
-SELECT * FROM Graduation_Plan WHERE advisor_id = 8
+Select * from student
+Select * from Request
+update Student
+SET assigned_hours =25, acquired_hours=180 where student_id=1
+INSERt into Payment values(100000,'2024-3-1','2024-6-30',2,0,null,1,'S24')
+Select * from Student_Instructor_Course_Take
+Select * from Installment
+update Payment
+set fund_percentage=0
+update Student_Instructor_Course_Take
+set grade='F'
+

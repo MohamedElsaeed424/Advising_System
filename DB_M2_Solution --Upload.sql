@@ -665,7 +665,7 @@ AS
 declare @student_acquired int 
 Select @student_acquired  =  Student.acquired_hours from  Student where Student.student_id = @studentid
 If(@student_acquired >=157)
-insert into Graduation_Plan values (@Semestercode, @sem_credit_hours, @expected_graduation_date, @advisorid, @student_id) 
+insert into Graduation_Plan values (@Semestercode, @sem_credit_hours, @expected_graduation_date, @advisorid, @studentid) 
 GO
 
 ---------------------------------------------------------------------
